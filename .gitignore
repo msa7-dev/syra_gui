@@ -2,5 +2,8 @@
 poetry.lock
 .vscode
 mira/meas/hdf5/*
+!mira/meas/hdf5/.gitkeep
 mira/meas/npy/*
+!mira/meas/npy/.gitkeep
 mira/meas/mat/*
+!mira/meas/mat/.gitkeep
