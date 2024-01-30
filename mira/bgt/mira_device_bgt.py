@@ -187,13 +187,7 @@ class MIRA_DEVICE:
         self.radar_param.sys.mid_frequency = self.radar_param.sys.start_frequency \
                                              + (self.radar_param.sys.ramp_bandwidth / 2)
         self.radar_param.sys.lambda_freq = c / self.radar_param.sys.mid_frequency
-        self.radar_param.sys.max_velocity = np.float32(self.radar_param.sys.lambda_freq[0] \
-                                                        / (4 * self.radar_param.sys.ramp_time[0]))
-        
-        self.radar_param.sys.resolution_velocity = \
-            np.float32(self.radar_param.sys.lambda_freq[0] \
-                        / (2 * self.radar_param.sys.ramp_time[0]\
-                        * self.radar_param.sys.n_frames_range_doppler * 2))
+
                                                    
         self.delta_range = np.float32(c / (2 * self.radar_param.sys.ramp_bandwidth[0]))
         self.radar_param.sys.max_dsp_freq = self.radar_param.sys.sampling_frequency / 2  # Nyquist Frequency 
@@ -204,11 +198,33 @@ class MIRA_DEVICE:
                                           / (self.radar_param.sys.ramp_slope[0] * 2) # minimum detectable range
         self.radar_param.sys.max_range = c * self.radar_param.sys.max_dsp_freq \
                                           / (self.radar_param.sys.ramp_slope[0] * 2)
-                                          
-        self.radar_param.sys.frame_duration = sum(self.radar_param.sys.t_ed[0:2]) + self.radar_param.sys.t_init0 + self.radar_param.sys.t_init1 +\
-            + self.radar_param.sys.t_start + self.radar_param.sys.t_end + self.radar_param.sys.t_sstart + sum(self.radar_param.sys.t_sed[0:2]) +\
-            + self.radar_param.sys.t_paen + self.radar_param.sys.t_wkup + self.radar_param.sys.t_fed 
+
+        timing_once_each_frame = self.radar_param.sys.t_wkup + self.radar_param.sys.t_fed + self.radar_param.sys.t_init0 + self.radar_param.sys.t_init1
+        const_timings_each_chirp = self.radar_param.sys.t_start + self.radar_param.sys.t_end + self.radar_param.sys.t_sstart + self.radar_param.sys.t_paen
+        chirp_timings = [(self.radar_param.sys.t_ed[0] + self.radar_param.sys.ramp_time[0] + self.radar_param.sys.t_ed[4]),
+                        (self.radar_param.sys.t_ed[1] + self.radar_param.sys.ramp_time[1] + self.radar_param.sys.t_ed[5])]
+        shape_timing = self.radar_param.sys.t_sed[0] + self.radar_param.sys.t_sed[1]
+        print(f"{timing_once_each_frame=}", f"{const_timings_each_chirp=}", f"{chirp_timings=}", f"{self.radar_param.sys.t_sed=}")
+        print(f'{self.radar_param.sys.t_ed=}')
+
+        self.radar_param.sys.frame_duration = timing_once_each_frame + shape_timing * (self.radar_param.sys.shape_set_repetition-1) +\
+                                           (((const_timings_each_chirp + chirp_timings[0]) * self.radar_param.sys.shape_repetition[0]) + \
+                                             (const_timings_each_chirp + chirp_timings[1]) * self.radar_param.sys.shape_repetition[1]) * (self.radar_param.sys.shape_set_repetition) 
         print(f'{self.radar_param.sys.frame_duration=}')
+
+
+        print(self.radar_param.sys.pulse_repetition_time) 
+        self.radar_param.sys.pulse_repetition_time = chirp_timings[0] + const_timings_each_chirp + self.radar_param.sys.t_sed[0]
+        print(self.radar_param.sys.pulse_repetition_time) 
+        self.radar_param.sys.coherent_pulse_interval = self.radar_param.sys.pulse_repetition_time + chirp_timings[1] + const_timings_each_chirp + chirp_timings[0] + const_timings_each_chirp + self.radar_param.sys.t_sed[1]
+        print(self.radar_param.sys.coherent_pulse_interval) 
+
+        self.radar_param.sys.max_velocity = np.float32(self.radar_param.sys.lambda_freq[0] \
+                                                        / (4 * self.radar_param.sys.pulse_repetition_time))
+        
+        self.radar_param.sys.resolution_velocity = \
+            np.float32(self.radar_param.sys.lambda_freq[0] \
+                        / (4 * self.radar_param.sys.coherent_pulse_interval * 2))
         
     @property
     def CONTENT(self):

@@ -127,7 +127,7 @@ class MIRA6024_GUI_CTRL():
         self.qt_self.label_rx_tx_mode.setText(f'{int(self.qt_self.radar_param.sys.rx_active_antennas[0])} / ' +
                                               f'{int(sum(self.qt_self.radar_param.sys.tx_active_antennas))}')
         self.qt_self.label_tx1_power.setText(f'{int(self.qt_self.radar_param.sys.tx_power[0][0])} / {int(self.qt_self.radar_param.sys.tx_power[1][1])} dBm')
-        self.qt_self.label_tx2_power.setText(f' ')
+        self.qt_self.label_tx2_power.setText(f' {self.radar_param.sys.resolution_velocity}')
         self.qt_self.label_sampling_frequency.setText(f'{round(float(self.qt_self.radar_param.sys.sampling_frequency*1e-6), 2)} MHz')
         self.qt_self.label_chrip_sample.setText(str(int(self.qt_self.radar_param.sys.n_samples_per_chirp[0])))
         self.qt_self.label_frequency.setText(f'{round(float(self.qt_self.radar_param.sys.start_frequency[0] * 1e-9), 2)} - '+
@@ -383,13 +383,10 @@ class MIRA6024_GUI_CTRL():
             plot.clear()
 
         self.mira_plotter.spectrogram.clear_plot()
+        self.mira_plotter.range_doppler.clear_plot()
+        self.mira_plotter.range_azimuth.clear_plot()
 
-        for _, plot in self.mira_plotter.range_doppler.plotlines.items():
-            plot.clear()
 
-        for _, plot in self.mira_plotter.range_azimuth.plotlines.items():
-            
-            plot.clear()
 
 
     def build_process_param_queue(self) -> dict:

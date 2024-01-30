@@ -344,12 +344,11 @@ class SPECTROGRAM_PLOTTER():
             plotline_spectrogram.setTransform(tr)
             
     def clear_plot(self):
-            for plot_spectrogram, title in zip(self.plot_spectrogram_list, self.titles):
-                index = title.split(' - ')[1]
-
-                self.plotlines[f"Waterfall Spectrogram {index}"].clear()
-                self.plots[f"Waterfall Spectrogram {index}"].clear()
-                self.create_spectrogram_plot(plot_spectrogram, title)
+        for plot_spectrogram, title in zip(self.plot_spectrogram_list, self.titles):
+            index = title.split(' - ')[1]
+            self.plotlines[f"Waterfall Spectrogram {index}"].clear()
+            self.plots[f"Waterfall Spectrogram {index}"].clear()
+            self.create_spectrogram_plot(plot_spectrogram, title)
 
 # ==============================================================================
 # Class Name: RANGE_DOPPLER_PLOTTER
@@ -371,14 +370,14 @@ class RANGE_DOPPLER_PLOTTER():
 
     def init_plot_parameters(self):
         self.plotlines = {}
+        self.plots = {}
+        self.titles = ['Channel - RX1 TX1', 'Channel - RX2 TX1', 
+                       'Channel - RX3 TX1', 'Channel - RX4 TX1',
+                       'Channel - RX1 TX2', 'Channel - RX2 TX2', 
+                       'Channel - RX3 TX2', 'Channel - RX4 TX2',
+                       'Range Doppler - RX1_TX1',]
 
-        titles = ['Channel - RX1 TX1', 'Channel - RX2 TX1', 
-                  'Channel - RX3 TX1', 'Channel - RX4 TX1',
-                  'Channel - RX1 TX2', 'Channel - RX2 TX2', 
-                  'Channel - RX3 TX2', 'Channel - RX4 TX2',
-                  'Range Doppler - RX1_TX1',]
-
-        for plot_range_doppler, title in zip(self.plot_range_doppler_list, titles):
+        for plot_range_doppler, title in zip(self.plot_range_doppler_list, self.titles):
             self.create_range_doppler_plot(plot_range_doppler, title)
 
     def create_range_doppler_plot(self, plot, title):
@@ -395,6 +394,7 @@ class RANGE_DOPPLER_PLOTTER():
         
         index = title.split(' - ')[1]
         self.plotlines['Range Doppler' + f' {index}'] = plotline
+        self.plots[f"Range Doppler {index}"] = plot
 
     def configure_axis(self, plot):
         axis = plot.getAxis("bottom")
@@ -450,6 +450,12 @@ class RANGE_DOPPLER_PLOTTER():
         for _, plotline_range_doppler in self.plotlines.items():
             plotline_range_doppler.setTransform(tr)
 
+    def clear_plot(self):
+        for plot_spectrogram, title in zip(self.plot_range_doppler_list, self.titles):
+            index = title.split(' - ')[1]
+            self.plotlines[f"Range Doppler {index}"].clear()
+            self.plots[f"Range Doppler {index}"].clear()
+            self.create_range_doppler_plot(plot_spectrogram, title)
 
 # ==============================================================================
 # Class Name: RANGE_AZIMUTH_PLOTTER
@@ -465,10 +471,10 @@ class RANGE_AZIMUTH_PLOTTER():
 
     def init_plot_parameters(self):
         self.plotlines = {}
-
-        indexs = ['Range Azimuth', 'Waterfall Azimuth', 'Range Doppler Azimuth']
-        titles = ['Range Azimuth', 'Range Azimuth', 'Range Azimuth']
-        for plot_range_azimuth, title, index in zip(self.plot_range_azimuth_list, titles, indexs):
+        self.plots = {}
+        self.indexs = ['Range Azimuth', 'Waterfall Azimuth', 'Range Doppler Azimuth']
+        self.titles = ['Range Azimuth', 'Range Azimuth', 'Range Azimuth']
+        for plot_range_azimuth, title, index in zip(self.plot_range_azimuth_list, self.titles, self.indexs):
             self.create_range_azimuth_plot(plot_range_azimuth, title, index)
 
     def create_range_azimuth_plot(self, plot, title, index):
@@ -482,7 +488,9 @@ class RANGE_AZIMUTH_PLOTTER():
 
         plotline.getViewBox().setAutoVisible(x=False, y=False)
         plotline.setLevels((-40, 40))
-        self.plotlines[f'{index}'] = plotline
+        self.plotlines[f'{index}'] = plotline        
+        self.plots[f"{index}"] = plot
+
 
     def configure_axis(self, plot):
         for axis_position in ["bottom", "left"]:
@@ -526,3 +534,9 @@ class RANGE_AZIMUTH_PLOTTER():
 
         for _, plotline in self.plotlines.items():
             plotline.setTransform(tr)
+
+    def clear_plot(self):
+        for plot, index, title in zip(self.plot_range_azimuth_list, self.indexs, self.titles):
+            self.plotlines[f"{index}"].clear()
+            self.plots[f"{index}"].clear()
+            self.create_range_azimuth_plot(plot, title, index)

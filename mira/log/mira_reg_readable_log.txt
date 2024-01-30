@@ -497,17 +497,17 @@ HPF_SEL1         |      0       |     0x0      |     0b0
 _____________________________________________________________
 
 CSU1_2 (0x12):
-Register Value:  0xf39ce7
+Register Value:  0xf9ce73
 Register Symbol  | Value (dec)  | Value (hex)  | Value (bin) 
 _____________________________________________________________
 HP_GAIN          |      15      |     0xf      |    0b1111   
-VGA_GAIN4        |      1       |     0x1      |     0b1     
+VGA_GAIN4        |      4       |     0x4      |    0b100    
 HPF_SEL4         |      3       |     0x3      |     0b11    
-VGA_GAIN3        |      1       |     0x1      |     0b1     
+VGA_GAIN3        |      4       |     0x4      |    0b100    
 HPF_SEL3         |      3       |     0x3      |     0b11    
-VGA_GAIN2        |      1       |     0x1      |     0b1     
+VGA_GAIN2        |      4       |     0x4      |    0b100    
 HPF_SEL2         |      3       |     0x3      |     0b11    
-VGA_GAIN1        |      1       |     0x1      |     0b1     
+VGA_GAIN1        |      4       |     0x4      |    0b100    
 HPF_SEL1         |      3       |     0x3      |     0b11    
 _____________________________________________________________
 
@@ -527,17 +527,17 @@ HPF_SEL1         |      0       |     0x0      |     0b0
 _____________________________________________________________
 
 CSU2_2 (0x19):
-Register Value:  0xf39ce7
+Register Value:  0xf9ce73
 Register Symbol  | Value (dec)  | Value (hex)  | Value (bin) 
 _____________________________________________________________
 HP_GAIN          |      15      |     0xf      |    0b1111   
-VGA_GAIN4        |      1       |     0x1      |     0b1     
+VGA_GAIN4        |      4       |     0x4      |    0b100    
 HPF_SEL4         |      3       |     0x3      |     0b11    
-VGA_GAIN3        |      1       |     0x1      |     0b1     
+VGA_GAIN3        |      4       |     0x4      |    0b100    
 HPF_SEL3         |      3       |     0x3      |     0b11    
-VGA_GAIN2        |      1       |     0x1      |     0b1     
+VGA_GAIN2        |      4       |     0x4      |    0b100    
 HPF_SEL2         |      3       |     0x3      |     0b11    
-VGA_GAIN1        |      1       |     0x1      |     0b1     
+VGA_GAIN1        |      4       |     0x4      |    0b100    
 HPF_SEL1         |      3       |     0x3      |     0b11    
 _____________________________________________________________
 
@@ -728,11 +728,11 @@ TR_FED_MUL       |      5       |     0x5      |    0b101
 _____________________________________________________________
 
 CCR2 (0x2e):
-Register Value:  0x3f000
+Register Value:  0xf000
 Register Symbol  | Value (dec)  | Value (hex)  | Value (bin) 
 _____________________________________________________________
 MAX_FRAME_CNT    |      0       |     0x0      |     0b0     
-FRAME_LEN        |      63      |     0x3f     |   0b111111  
+FRAME_LEN        |      15      |     0xf      |    0b1111   
 _____________________________________________________________
 
 CCR3 (0x2f):
@@ -954,27 +954,27 @@ TR_EDD           |      0       |     0x0      |     0b0
 _____________________________________________________________
 
 PLL1_7 (0x37):
-Register Value:  0x36a910
+Register Value:  0x78910
 Register Symbol  | Value (dec)  | Value (hex)  | Value (bin) 
 _____________________________________________________________
 REPS             |      0       |     0x0      |     0b0     
 SH_EN            |      1       |     0x1      |     0b1     
 CONT_MODE        |      1       |     0x1      |     0b1     
 PD_MODE          |      0       |     0x0      |     0b0     
-TR_SED           |     213      |     0xd5     |  0b11010101 
-TR_SED_MUL       |      6       |     0x6      |    0b110    
+TR_SED           |     241      |     0xf1     |  0b11110001 
+TR_SED_MUL       |      0       |     0x0      |     0b0     
 _____________________________________________________________
 
 PLL2_7 (0x3f):
-Register Value:  0x362110
+Register Value:  0xb3910
 Register Symbol  | Value (dec)  | Value (hex)  | Value (bin) 
 _____________________________________________________________
 REPS             |      0       |     0x0      |     0b0     
 SH_EN            |      1       |     0x1      |     0b1     
 CONT_MODE        |      1       |     0x1      |     0b1     
 PD_MODE          |      0       |     0x0      |     0b0     
-TR_SED           |     196      |     0xc4     |  0b11000100 
-TR_SED_MUL       |      6       |     0x6      |    0b110    
+TR_SED           |     103      |     0x67     |  0b1100111  
+TR_SED_MUL       |      1       |     0x1      |     0b1     
 _____________________________________________________________
 
 PLL3_7 (0x47):

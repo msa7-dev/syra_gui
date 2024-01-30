@@ -56,7 +56,7 @@ class MIRA6024_CTRL_GUI:
 
     def get_frame(self) -> None:
         self.radar_param.sys.num_chirps_frame = self.radar_param.sys.shape_repetition * self.radar_param.sys.shape_set_repetition
-        print(self.radar_param.sys.num_chirps_frame)
+        print(f'{self.radar_param.sys.num_chirps_frame=}')
         self.radar_param.sys.frame_samples = self.radar_param.sys.frame_chirps * self.radar_param.sys.n_samples_per_chirp[0] 
         self.radar_param.sys.fifo_per_chirp = self.radar_param.sys.n_samples_per_chirp[0] / 1024
         

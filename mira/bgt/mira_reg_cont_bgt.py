@@ -1202,6 +1202,7 @@ class BGT_CSX_1:
             self.radar_param.sys.tx_power[index] = [np.uint8(self._TX1_DAC),
                                                     np.uint8(self._TX2_DAC)]
             print(self.radar_param.sys.tx_power)
+
     def convert_all_values(self):
         self.get_tx_power()
         
@@ -1445,8 +1446,9 @@ class BGT_CSCX:
         set_reg_val(self)
         
     def convert_all_values(self):
+        # self.get_shape_repetition_factor()
         pass
-        
+    
     @property
     def CONTENT(self):
         return build_content(self)
@@ -2212,7 +2214,7 @@ class BGT_PLLX_7:
             self.radar_param.sys.shape_repetition[2] = np.uint32(2**self._REPS)
         elif self.REG_ADR == BGT_REG.PLLX_7_REG.PLL4_7_ADR:
             self.radar_param.sys.shape_repetition[3] = np.uint32(2**self._REPS)
-        print(self.radar_param.sys.shape_repetition)
+        print(f"{self.radar_param.sys.shape_repetition=}")
     
     @property
     def SH_EN(self):

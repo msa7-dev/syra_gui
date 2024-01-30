@@ -73,7 +73,7 @@ class MIRA6024_RADAR_SYSTEM_PARAMETER():
         
         self.pulse_repetition_frequency = np.float32(0)
         self.pulse_repetition_interval = np.float32(0)
-        
+        self.coherent_pulse_interval = np.float32(0)
         self.n_fifo_overhead = np.uint8(0)
         self.frames_per_second = np.float32(0)
         self.frame_duration = np.float32(0)
