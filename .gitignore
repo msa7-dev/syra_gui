@@ -1,6 +1,6 @@
 .sykno_env
 poetry.lock
 .vscode
-mira/meas/hdf5/
-mira/meas/npy/
-mira/meas/mat/
+mira/meas/hdf5/*
+mira/meas/npy/*
+mira/meas/mat/*
