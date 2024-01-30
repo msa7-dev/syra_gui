@@ -1,93 +1,157 @@
-# MiRa Python UI
+# README
 
+## _Forschungspraktikum - Sykno - Paatsch_ 
+#### _Implementation and Optimization of a Real-Time Interface_
+---
 
+# General CLI for Sykno Projects
 
-## Getting started
-
-To make it easy for you to get started with GitLab, here's a list of recommended next steps.
-
-Already a pro? Just edit this README.md and make it your own. Want to make it easy? [Use the template at the bottom](#editing-this-readme)!
-
-## Add your files
-
-- [ ] [Create](https://docs.gitlab.com/ee/user/project/repository/web_editor.html#create-a-file) or [upload](https://docs.gitlab.com/ee/user/project/repository/web_editor.html#upload-a-file) files
-- [ ] [Add files using the command line](https://docs.gitlab.com/ee/gitlab-basics/add-file.html#add-a-file-using-the-command-line) or push an existing Git repository with the following command:
-
+## Project Files:
+### Main Functional Python Scripts:
 ```
-cd existing_repo
-git remote add origin https://gitlab.com/mira_ifx_60ghz_2x4/mira-python-ui.git
-git branch -M main
-git push -uf origin main
+$ ./cli_Sykno.py
+$ ./xRad_Qt/xRad_qt_Sykno.py
+$ ./xRad_GUI/xRad_gui_Sykno.py
+$ ./py_scripts_Sykno/filter_Sykno.py
+$ ./py_scripts_Sykno/xRad_serial_Sykno.py
+$ ./py_scripts_Sykno/frame_analyzer_Sykno.py
+$ ./py_scripts_Sykno/logic_analyzer_Sykno.py
+$ ./py_scripts_Sykno/xRad_rx_convert_Sykno.py
+```
+### Bash Scripts - Linux
+```
+$ ./bash_scripts_Sykno/esp_adc_capture.sh
+$ ./bash_scripts_Sykno/usb_adc_caputre.sh
+$ ./bash_scripts_Sykno/launch_automation_analyzer.sh
+```
+### Power Shell Scripts - Windows
+``` 
+$ ./shell_scripts_Sykno/esp_adc_capture.ps1
+$ ./shell_scripts_Sykno/usb_adc_capture.ps1
+$ ./launch_automation_analyzer.ps1
+```
+### Further Information
+```
+$ README.md
+$ python3 ./cli_Sykno --help
 ```
 
-## Integrate with your tools
+---
+## Dependencies:
+All python packages and modules are handled in the _pyproject.toml_ file, with _poetry_ a virtuel enviroment can be installed localy. For further information install have a look at:
 
-- [ ] [Set up project integrations](https://gitlab.com/mira_ifx_60ghz_2x4/mira-python-ui/-/settings/integrations)
+ - [github poetry](https://github.com/python-poetry/poetry/)
+- [pyproject.toml structure](https://github.com/python-poetry/poetry/blob/master/pyproject.toml)
 
-## Collaborate with your team
+First install _poetry_ to manage virtuel enviroment:
+```sh
+$ pip install poetry 
+```
+Then install and open the _poetry_ shell in root directory of the project:
+```sh
+$ poetry install
+$ poetry shell
+```
 
-- [ ] [Invite team members and collaborators](https://docs.gitlab.com/ee/user/project/members/)
-- [ ] [Create a new merge request](https://docs.gitlab.com/ee/user/project/merge_requests/creating_merge_requests.html)
-- [ ] [Automatically close issues from merge requests](https://docs.gitlab.com/ee/user/project/issues/managing_issues.html#closing-issues-automatically)
-- [ ] [Enable merge request approvals](https://docs.gitlab.com/ee/user/project/merge_requests/approvals/)
-- [ ] [Set auto-merge](https://docs.gitlab.com/ee/user/project/merge_requests/merge_when_pipeline_succeeds.html)
+---
+## Code Usage
+Start _poetry_ shell to get all necessary dependencies:
+- Hint: start this command from /projectRoot/
+```sh
+$ poetry shell
+```
 
-## Test and Deploy
+Plot USB xRad data in realtime: 
+```sh
+# Get serial data (Ch0 & Ch1) from XRad1.01 and plot real time
+$ python3 ./cli_Sykno plot-xrad rt
 
-Use the built-in continuous integration in GitLab.
+# Optional arguments for real time plot
+$ python3 ./cli_Sykno plot-xrad rt --com_port"/dev/ttyACM0" --rt_samples=100 --duration_time=5 --baud=115200 --debug=True
+```
+Plot USB xRad data with a number of n samples:
+```sh
+# Get serial data (Ch0 & Ch1 from xRad and plot n samples
+$ python3 ./cli_Sykno plot-xrad no_rt 
 
-- [ ] [Get started with GitLab CI/CD](https://docs.gitlab.com/ee/ci/quick_start/index.html)
-- [ ] [Analyze your code for known vulnerabilities with Static Application Security Testing (SAST)](https://docs.gitlab.com/ee/user/application_security/sast/)
-- [ ] [Deploy to Kubernetes, Amazon EC2, or Amazon ECS using Auto Deploy](https://docs.gitlab.com/ee/topics/autodevops/requirements.html)
-- [ ] [Use pull-based deployments for improved Kubernetes management](https://docs.gitlab.com/ee/user/clusters/agent/)
-- [ ] [Set up protected environments](https://docs.gitlab.com/ee/ci/environments/protected_environments.html)
+# Optional arguments for n samples plot
+$ python3 ./cli_Sykno plot-xrad no_rt --com_port="/dev/ttyACM0" --n_samples=10000 --baud=115200 --debug=True
+```
 
-***
+Get raw serial xRad data and save it to a CSV file:
+- Hint: start this command from /projectRoot/py_scripts/
+```sh
+# Capture serial input to a csv file
+$ python3 ../cli_Sykno xrad-csv
 
-# Editing this README
+# Optional arguments for serial to csv capturing
+$ python3 ../cli_Sykno xrad-csv --com_port="/dev/ttyACM0" --baud=115200 --n_samples=100000 --filename="Measurement_XY" --path="./Measurements" --duration=5[sec] --debug=False
+```
 
-When you're ready to make this README your own, just edit this file and use the handy template below (or feel free to structure it however you want - this is just a starting point!). Thanks to [makeareadme.com](https://www.makeareadme.com/) for this template.
+Start a measurement with the Saleae logic analyzer: 
+- Hint: start this command from /projectRoot/py_scripts/
+```sh
+# Starts a saleae logic analyzer session 
+$ python3 ../cli_Sykno logic-analyzer
 
-## Suggestions for a good README
+# Optional arguments for logic analyzer session
+$ python3 ../cli_Sykno logic-analyzer --path="./Measurements" --name="Measurement_XY" --duration=5[sec] --timestamp=True --duts=1-2 --debug=False
+```
 
-Every project is different, so consider which of these sections apply to yours. The sections used in the template are suggestions for most open source projects. Also keep in mind that while a README can be too long and detailed, too long is better than too short. If you think your README is too long, consider utilizing another form of documentation rather than cutting out information.
+Analyze the frames of the two measurements (Logic Analyzer & xRad Serial Capture):
+- Hint: start this command from /projectRoot/py_scripts/
+```sh
+# Starts frame analyzer which compares two captured files
+$ python3 ../cli_Sykno frame-analyzer 
 
-## Name
-Choose a self-explaining name for your project.
+# Optional arguments for frame analyzer
+$ python3 ../cli_Sykno frame-analyzer --path_frame1="../Measurements/Saleae_Capture_CSV_Files/" --path_frame2="../Measurements/xRad_ser_Capture_PKL_Files/" --filename1="Measurement_Logic_Analyzer" --filename2="Measurement_xRad_serial" --output_path="../Measurement"
+```
 
-## Description
-Let people know what your project can do specifically. Provide context and add a link to any reference visitors might be unfamiliar with. A list of Features or a Background subsection can also be added here. If there are alternatives to your project, this is a good place to list differentiating factors.
+Measure the serial output speed:
+```sh
+# Starts a measurement to get the sampling rate of the serial input
+$ python3 ./cli_Sykno serial-meas
 
-## Badges
-On some READMEs, you may see small images that convey metadata, such as whether or not all the tests are passing for the project. You can use Shields to add some to your README. Many services also have instructions for adding a badge.
+# Optional arguments for serial measurement 
+$ python3 ./cli_Sykno serial-meas --com_port="/dev/ttyACM0" --baud=115200 --debug=False
+```
 
-## Visuals
-Depending on what you are making, it can be a good idea to include screenshots or even a video (you'll frequently see GIFs rather than actual videos). Tools like ttygif can help, but check out Asciinema for a more sophisticated method.
+Start xRad Qt for video producing:
+- Hint: start this command from /projectRoot/xRad_Qt/
+```sh
+# Starts the Qt window to produce videos 
+$ python3 ../cli_Sykno xrad-qt
 
-## Installation
-Within a particular ecosystem, there may be a common way of installing things, such as using Yarn, NuGet, or Homebrew. However, consider the possibility that whoever is reading your README is a novice and would like more guidance. Listing specific steps helps remove ambiguity and gets people to using your project as quickly as possible. If it only runs in a specific context like a particular programming language version or operating system or has dependencies that have to be installed manually, also add a Requirements subsection.
+# Optional arguments for Qt window 
+$ python3 ../cli_Sykno xrad-qt --file1="./data/folder_XY/filename_XY" --file2="./data/folder_XY/filename_XY" --freq_ax=60
+```
 
-## Usage
-Use examples liberally, and show the expected output if you can. It's helpful to have inline the smallest example of usage that you can demonstrate, while providing links to more sophisticated examples if they are too long to reasonably include in the README.
+Start xRad GUI to visualize raw value plot, spectrum, elipse:
+- Hint: start this command from /projectRoot/xRad_GUI/
+- Start Plot with F12 and Close it with ESC
+```sh
+# Starts the xRad GUI
+$ python3 ../cli_Sykno xrad-gui
 
-## Support
-Tell people where they can go to for help. It can be any combination of an issue tracker, a chat room, an email address, etc.
+# Optional arguments for xRad GUI 
+# ! Hint: to use a CSV file as input use this argument: --input="file" 
+$ python3 ../cli_Sykno xrad-gui --input="serial" --file1="../Measurements/xRad_Data/Measurement_XY_CH0" --file2="../Measurements/xRad_Data/Measurement_XY_CH1" --freq_ax=60 --update=5 --filename="Measurement_GUI" --com_port="/dev/ttyACM0"
+```
 
-## Roadmap
-If you have ideas for releases in the future, it is a good idea to list them in the README.
+Start mira Rx Tx
+- Hint: start this command from /projectRoot/ 
+```sh
+# Start the mira Rx Tx
+$ python3 ./cli_sykno mira-rx-tx
+```
 
-## Contributing
-State if you are open to contributions and what your requirements are for accepting them.
+Get more information about the usage of the Sykno CLI:
+```sh
+# Get more information about optional arguments
+$ python3 cli_Sykno.py --help
+$ python3 cli_Sykno.py <command> --help
+```
 
-For people who want to make changes to your project, it's helpful to have some documentation on how to get started. Perhaps there is a script that they should run or some environment variables that they need to set. Make these steps explicit. These instructions could also be useful to your future self.
 
-You can also document commands to lint the code or run tests. These steps help to ensure high code quality and reduce the likelihood that the changes inadvertently break something. Having instructions for running tests is especially helpful if it requires external setup, such as starting a Selenium server for testing in a browser.
 
-## Authors and acknowledgment
-Show your appreciation to those who have contributed to the project.
-
-## License
-For open source projects, say how it is licensed.
-
-## Project status
-If you have run out of energy or time for your project, put a note at the top of the README saying that development has slowed down or stopped completely. Someone may choose to fork your project or volunteer to step in as a maintainer or owner, allowing your project to keep going. You can also make an explicit request for maintainers.

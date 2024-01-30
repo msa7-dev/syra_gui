@@ -1,0 +1,16 @@
+Forwarind GUI from remote via ssh
+
+sudo nano /etc/ssh/sshd_config
+
+X11Forwarding yes
+
+sudo systemctl restart ssh
+
+ssh -X pi@your_raspberry_pi_ip
+
+
+Prevent SSH freezing
+
+/etc/ssh/sshd_config
+
+IPQoS cs0 cs0

@@ -1,0 +1,12 @@
+# $ python3 -m venv ./sykno_py
+# $ source ./sykno_py/bin/activate
+
+# $ sudo docker build -f ./docker/Dockerfile -t sykno_docker . 
+#  sudo docker run -it --rm \
+#     -e DISPLAY=$DISPLAY \
+#     -v /tmp/.X11-unix:/tmp/.X11-unix \
+#     -v ./mira/meas/hdf5/:/home/sykno/mira/meas/hdf5/ \
+#     --hostname sykno-docker \
+#     sykno_docker
+    
+-r ./mira/setup/requirements.txt
