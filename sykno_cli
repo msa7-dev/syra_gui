@@ -27,7 +27,7 @@ import time
 import click
 import subprocess
 import configparser
-import setproctitle
+# import setproctitle
 from loguru import logger
 
 #import usb_hub # to switch usb hub ports on and off
