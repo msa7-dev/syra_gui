@@ -27,6 +27,7 @@ def prefix_header(np.uint8_t[:] raw_header) -> dict:
     temp_array = np.packbits(unpacked_header[60:70])
     header_dict['sadc_val'] = ((temp_array[0] << 2) | (temp_array[1] >> 6))
     header_dict['temperature'] = 0
+    header_dict['datarate'] = 0
     temp_array = np.packbits(unpacked_header[70:72])
     header_dict['cs'] = temp_array[0] >> 6
     
@@ -90,7 +91,7 @@ def extract_channels_cy(np.uint8_t[:] raw_data) -> np.ndarray:
 @cython.boundscheck(False)
 @cython.wraparound(False)
 def rx_mode_3_cy(np.uint8_t[:, :] data_block, int n_rows) -> np.ndarray:
-    cdef np.uint16_t[:, :] ch_data = np.zeros((n_rows, 4), dtype=np.uint16)
+    cdef np.uint16_t[:, :] ch_data = np.zeros((n_rows, 3), dtype=np.uint16)
     cdef int i, row = 0, ch_counter = 0
     cdef np.uint8_t ch_x1_first, ch_x1_second
 

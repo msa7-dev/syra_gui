@@ -36,12 +36,14 @@ class MIRA6024_RADAR_MONITORING_PARAMETER():
         self.duration_frame_counter = np.uint32(0)
         self.duration_time = np.float32(0)
         self.sadc_output_mode = np.uint8(0)
+        self.datarate = np.float32(0)
         self.sadc_gain = np.uint8(0)
         self.sadc_tx1_power_value = np.float32(0)
         self.sadc_tx2_power_value = np.float32(0)
         self.temperature = np.float32(0)
         self.chip_version_digital_id = str('')
         self.chip_version_rf_id = str('')
+        self.chip_id = str('')
         
 # ==============================================================================
 # Class Name: MIRA6024_RADAR_SYSTEM_PARAMETER
@@ -56,16 +58,16 @@ class MIRA6024_RADAR_SYSTEM_PARAMETER():
         self.fullscale_voltage = np.float32(0)
         self.waterfall_spectrogram_time = np.float32(0)
         self.plot_axis_max_value = np.float32(0)
-        self.curr_select_axis_unit = str('')
         self.plot_axis_min_dbfs = np.float32(0)
         self.plot_axis_max_dbfs = np.float32(0)
+        self.curr_select_axis_unit = str('')
         
         self.min_range = np.float32(0)
         self.max_range = np.float32(0)
         self.resolution_range = np.float32(0)
         
-        self.max_velocity = np.float32(0)
-        self.resolution_velocity = np.float32(0)
+        self.max_velocity = np.zeros((4,), dtype=np.float32)
+        self.resolution_velocity = np.zeros((4,), dtype=np.float32)
         
         self.min_angle = np.float32(0)
         self.max_angle = np.float32(0)
@@ -136,15 +138,6 @@ class MIRA6024_RADAR_SYSTEM_PARAMETER():
         self.rf_test_mode_en_channels = [False, False, 
                                          False, False]
 
-    def calc_system_parameters(self):
-        self.max_velocity = np.float32(self.lambda_freq / (4 * self.pulse_repetition_time))
-        self.resolution_range = np.float32(c / (2 * self.ramp_bandwidth[0]))
-        self.max_dsp_freq = np.float32(self.sampling_frequency / 2) 
-        self.min_range = np.float32(c * self.dsp.hp_filter_cutoff / (2 * self.ramp_slope[0]))
-        self.max_range = np.float32(c * self.max_dsp_freq / (2 * self.ramp_slope[0]))  
-        self.resolution_velocity = \
-            np.float32(self.lambda_freq / (2 * self.pulse_repetition_time * self.n_frames_range_doppler))
-            
 # ==============================================================================
 # Class Name: MIRA6024_RADAR_GUI_PARAMETER
 # ==============================================================================
@@ -169,6 +162,7 @@ class MIRA6024_RADAR_MEAS_PARAMETER():
         self.measurement_flag = False
         self.folder_path = Path()
         self.session_label = str('')
+        self.record_headless = False
         self.recording_duration = np.uint32(0)
         self.recording_n_frames = np.uint32(0)
 

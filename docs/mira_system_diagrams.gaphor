@@ -1,0 +1,2298 @@
+<?xml version="1.0" encoding="utf-8"?>
+<gaphor xmlns="http://gaphor.sourceforge.net/model" version="3.0" gaphor-version="2.23.2">
+<StyleSheet id="58d6989a-66f8-11ec-b4c8-0456e5e540ed">
+<styleSheet>
+<val>diagram {
+  background-color: transparent;
+  text-color: black
+}
+component {
+  background-color: #b6dec4;
+  text-color: black;
+}
+artifact {
+  background-color: #6abc82;
+  text-color: black;
+}
+node {
+  background-color: #dde9e4 ;
+  text-color: black;
+}
+package {
+  background-color: #c4c4c4;
+  text-color: black;
+}
+box {
+  background-color: rgba(196,196,196, 0.25
+);
+}
+comment {
+  background-color: rgba(106,188,130, 0.4);
+}
+class {
+  background-color: #b6dec4;
+  text-color: black;
+}</val>
+</styleSheet>
+</StyleSheet>
+<Package id="58d6c2e8-66f8-11ec-b4c8-0456e5e540ed">
+<name>
+<val>MiRa_System_Diagrams</val>
+</name>
+<nestedPackage>
+<reflist>
+<ref refid="454ef576-c453-11ee-864a-03cc5219e2f5"/>
+</reflist>
+</nestedPackage>
+</Package>
+<Diagram id="58d6c536-66f8-11ec-b4c8-0456e5e540ed">
+<element>
+<ref refid="454ef576-c453-11ee-864a-03cc5219e2f5"/>
+</element>
+<name>
+<val>MiRa_Meta_Diagram</val>
+</name>
+<ownedPresentation>
+<reflist>
+<ref refid="d99aee95-c454-11ee-9f89-03cc5219e2f5"/>
+<ref refid="c6cb967e-c462-11ee-882a-b98b3618f18e"/>
+<ref refid="8f453c29-c462-11ee-8b15-b98b3618f18e"/>
+<ref refid="d333f705-c43d-11ee-b75d-1143e21d8cd2"/>
+<ref refid="832e3242-c463-11ee-9a81-b98b3618f18e"/>
+<ref refid="1aeea1a6-c43f-11ee-a515-1143e21d8cd2"/>
+<ref refid="ac96f7a3-c464-11ee-a07a-b98b3618f18e"/>
+<ref refid="fc0bee81-c44d-11ee-9e43-03cc5219e2f5"/>
+<ref refid="761a1261-c438-11ee-8a78-1143e21d8cd2"/>
+<ref refid="c8860cfc-c465-11ee-9df4-b98b3618f18e"/>
+<ref refid="cb9ebae0-c44b-11ee-b250-03cc5219e2f5"/>
+<ref refid="e2bec404-c43c-11ee-bdf4-1143e21d8cd2"/>
+<ref refid="026c6d36-c44b-11ee-bd64-03cc5219e2f5"/>
+<ref refid="f6e05e66-c43c-11ee-b610-1143e21d8cd2"/>
+<ref refid="16431e69-c468-11ee-8f44-b98b3618f18e"/>
+<ref refid="53fa22c5-c468-11ee-8db2-b98b3618f18e"/>
+<ref refid="5d409f29-c468-11ee-bd32-b98b3618f18e"/>
+<ref refid="7266a8f9-c472-11ee-896f-b98b3618f18e"/>
+<ref refid="f68da505-c44c-11ee-9937-03cc5219e2f5"/>
+<ref refid="0c3f777a-c44d-11ee-9fe7-03cc5219e2f5"/>
+<ref refid="514ed18a-c44d-11ee-89a3-03cc5219e2f5"/>
+<ref refid="7d2caa4b-c44d-11ee-904a-03cc5219e2f5"/>
+<ref refid="ba69e700-c44d-11ee-83d0-03cc5219e2f5"/>
+<ref refid="c361f797-c44d-11ee-bf8d-03cc5219e2f5"/>
+<ref refid="d7f22ba8-c44f-11ee-ba91-03cc5219e2f5"/>
+<ref refid="e0bcbdbd-c44d-11ee-b506-03cc5219e2f5"/>
+<ref refid="15a1ce0f-c44a-11ee-b6bb-03cc5219e2f5"/>
+<ref refid="1f788cb6-c44a-11ee-a819-03cc5219e2f5"/>
+<ref refid="8411e1b7-c44e-11ee-bf68-03cc5219e2f5"/>
+<ref refid="b4509436-c465-11ee-a410-b98b3618f18e"/>
+<ref refid="9a1e59e9-c468-11ee-80a6-b98b3618f18e"/>
+<ref refid="a2deb9d3-c468-11ee-907a-b98b3618f18e"/>
+<ref refid="aa1c9f63-c468-11ee-b950-b98b3618f18e"/>
+</reflist>
+</ownedPresentation>
+</Diagram>
+<Component id="e2be63a8-c43c-11ee-9260-1143e21d8cd2">
+<generalization>
+<reflist>
+<ref refid="5313fff4-c44d-11ee-8e72-03cc5219e2f5"/>
+<ref refid="875a9249-c44d-11ee-bda1-03cc5219e2f5"/>
+</reflist>
+</generalization>
+<isIndirectlyInstantiated>
+<val>0</val>
+</isIndirectlyInstantiated>
+<name>
+<val>MiRa_Eval_GUI (User Interaction)</val>
+</name>
+<package>
+<ref refid="c885ac36-c465-11ee-9a16-b98b3618f18e"/>
+</package>
+<presentation>
+<reflist>
+<ref refid="e2bec404-c43c-11ee-bdf4-1143e21d8cd2"/>
+</reflist>
+</presentation>
+<specialization>
+<reflist>
+<ref refid="c8bbd569-c44d-11ee-b594-03cc5219e2f5"/>
+</reflist>
+</specialization>
+</Component>
+<ComponentItem id="e2bec404-c43c-11ee-bdf4-1143e21d8cd2">
+<matrix>
+<val>(1.0, 0.0, 0.0, 1.0, 78.4139929683567, 152.72287131007533)</val>
+</matrix>
+<top-left>
+<val>(-58.76336507123426, -11.936914987168393)</val>
+</top-left>
+<width>
+<val>301.8734329108064</val>
+</width>
+<height>
+<val>68.43545532226562</val>
+</height>
+<diagram>
+<ref refid="58d6c536-66f8-11ec-b4c8-0456e5e540ed"/>
+</diagram>
+<parent>
+<ref refid="c8860cfc-c465-11ee-9df4-b98b3618f18e"/>
+</parent>
+<subject>
+<ref refid="e2be63a8-c43c-11ee-9260-1143e21d8cd2"/>
+</subject>
+</ComponentItem>
+<Component id="f6dfdf42-c43c-11ee-98d0-1143e21d8cd2">
+<name>
+<val>MiRa_USB_DSP_CTRL</val>
+</name>
+<package>
+<ref refid="c885ac36-c465-11ee-9a16-b98b3618f18e"/>
+</package>
+<presentation>
+<reflist>
+<ref refid="f6e05e66-c43c-11ee-b610-1143e21d8cd2"/>
+</reflist>
+</presentation>
+<specialization>
+<reflist>
+<ref refid="875a9249-c44d-11ee-bda1-03cc5219e2f5"/>
+<ref refid="bebf811c-c44d-11ee-b19f-03cc5219e2f5"/>
+</reflist>
+</specialization>
+</Component>
+<ComponentItem id="f6e05e66-c43c-11ee-b610-1143e21d8cd2">
+<matrix>
+<val>(1.0, 0.0, 0.0, 1.0, 87.60921960216734, 345.33212775080165)</val>
+</matrix>
+<top-left>
+<val>(-67.06270050222588, -3.156800077864318)</val>
+</top-left>
+<width>
+<val>302.4651880745971</val>
+</width>
+<height>
+<val>65.27252197265625</val>
+</height>
+<diagram>
+<ref refid="58d6c536-66f8-11ec-b4c8-0456e5e540ed"/>
+</diagram>
+<parent>
+<ref refid="c8860cfc-c465-11ee-9df4-b98b3618f18e"/>
+</parent>
+<subject>
+<ref refid="f6dfdf42-c43c-11ee-98d0-1143e21d8cd2"/>
+</subject>
+</ComponentItem>
+<Component id="d3338d8e-c43d-11ee-934c-1143e21d8cd2">
+<name>
+<val>MiRa_USB_SPI_Bridge_Firmware</val>
+</name>
+<package>
+<ref refid="c6cb4776-c462-11ee-aeed-b98b3618f18e"/>
+</package>
+<presentation>
+<reflist>
+<ref refid="d333f705-c43d-11ee-b75d-1143e21d8cd2"/>
+</reflist>
+</presentation>
+</Component>
+<ComponentItem id="d333f705-c43d-11ee-b75d-1143e21d8cd2">
+<matrix>
+<val>(1.0, 0.0, 0.0, 1.0, 35.16922717010823, 107.82812665393726)</val>
+</matrix>
+<top-left>
+<val>(-11.659423828125, 0.0)</val>
+</top-left>
+<width>
+<val>316.8214111328125</val>
+</width>
+<height>
+<val>63.40149931647329</val>
+</height>
+<diagram>
+<ref refid="58d6c536-66f8-11ec-b4c8-0456e5e540ed"/>
+</diagram>
+<parent>
+<ref refid="c6cb967e-c462-11ee-882a-b98b3618f18e"/>
+</parent>
+<subject>
+<ref refid="d3338d8e-c43d-11ee-934c-1143e21d8cd2"/>
+</subject>
+</ComponentItem>
+<Artifact id="026bfe77-c44b-11ee-8f58-03cc5219e2f5">
+<generalization>
+<reflist>
+<ref refid="bebf811c-c44d-11ee-b19f-03cc5219e2f5"/>
+<ref refid="c8bbd569-c44d-11ee-b594-03cc5219e2f5"/>
+</reflist>
+</generalization>
+<name>
+<val>MiRa_Config  Sensor_Registers</val>
+</name>
+<package>
+<ref refid="c885ac36-c465-11ee-9a16-b98b3618f18e"/>
+</package>
+<presentation>
+<reflist>
+<ref refid="026c6d36-c44b-11ee-bd64-03cc5219e2f5"/>
+</reflist>
+</presentation>
+</Artifact>
+<ArtifactItem id="026c6d36-c44b-11ee-bd64-03cc5219e2f5">
+<matrix>
+<val>(1.0, 0.0, 0.0, 1.0, 93.08132588207354, 250.52340681822784)</val>
+</matrix>
+<top-left>
+<val>(-72.53480678213202, -6.4208016984830465)</val>
+</top-left>
+<width>
+<val>172.0</val>
+</width>
+<height>
+<val>61.85786930017673</val>
+</height>
+<diagram>
+<ref refid="58d6c536-66f8-11ec-b4c8-0456e5e540ed"/>
+</diagram>
+<parent>
+<ref refid="c8860cfc-c465-11ee-9df4-b98b3618f18e"/>
+</parent>
+<subject>
+<ref refid="026bfe77-c44b-11ee-8f58-03cc5219e2f5"/>
+</subject>
+</ArtifactItem>
+<Artifact id="cb9e7021-c44b-11ee-8121-03cc5219e2f5">
+<name>
+<val>MiRa_Data_Analysis (Plots)</val>
+</name>
+<package>
+<ref refid="c885ac36-c465-11ee-9a16-b98b3618f18e"/>
+</package>
+<presentation>
+<reflist>
+<ref refid="cb9ebae0-c44b-11ee-b250-03cc5219e2f5"/>
+</reflist>
+</presentation>
+<specialization>
+<reflist>
+<ref refid="5313fff4-c44d-11ee-8e72-03cc5219e2f5"/>
+</reflist>
+</specialization>
+</Artifact>
+<ArtifactItem id="cb9ebae0-c44b-11ee-b250-03cc5219e2f5">
+<matrix>
+<val>(1.0, 0.0, 0.0, 1.0, 17.789954264988523, 38.63920173766326)</val>
+</matrix>
+<top-left>
+<val>(1.8606736321339667, 10.307872420552599)</val>
+</top-left>
+<width>
+<val>303.361079277416</val>
+</width>
+<height>
+<val>55.65416688169296</val>
+</height>
+<diagram>
+<ref refid="58d6c536-66f8-11ec-b4c8-0456e5e540ed"/>
+</diagram>
+<parent>
+<ref refid="c8860cfc-c465-11ee-9df4-b98b3618f18e"/>
+</parent>
+<subject>
+<ref refid="cb9e7021-c44b-11ee-8121-03cc5219e2f5"/>
+</subject>
+</ArtifactItem>
+<MessageItem id="f68da505-c44c-11ee-9937-03cc5219e2f5">
+<diagram>
+<ref refid="58d6c536-66f8-11ec-b4c8-0456e5e540ed"/>
+</diagram>
+<horizontal>
+<val>1</val>
+</horizontal>
+<orthogonal>
+<val>1</val>
+</orthogonal>
+<matrix>
+<val>(1.0, 0.0, 0.0, 1.0, 273.3384031300905, 864.017222964694)</val>
+</matrix>
+<points>
+<val>[(-23.57645566244196, 0.49527459086471026), (40.0, 0.49527459086471026), (40.0, -285.9011682589844), (-23.576455662442186, -285.9011682589844)]</val>
+</points>
+</MessageItem>
+<MessageItem id="0c3f777a-c44d-11ee-9fe7-03cc5219e2f5">
+<diagram>
+<ref refid="58d6c536-66f8-11ec-b4c8-0456e5e540ed"/>
+</diagram>
+<horizontal>
+<val>1</val>
+</horizontal>
+<orthogonal>
+<val>1</val>
+</orthogonal>
+<matrix>
+<val>(1.0, 0.0, 0.0, 1.0, 313.3384031300905, 566.5216738405665)</val>
+</matrix>
+<points>
+<val>[(0.0, 11.594380865143194), (0.0, 11.594380865143194), (0.0, -120.26489282035038), (-63.57645566244196, -120.26489282035038)]</val>
+</points>
+</MessageItem>
+<GeneralizationItem id="514ed18a-c44d-11ee-89a3-03cc5219e2f5">
+<diagram>
+<ref refid="58d6c536-66f8-11ec-b4c8-0456e5e540ed"/>
+</diagram>
+<horizontal>
+<val>0</val>
+</horizontal>
+<orthogonal>
+<val>0</val>
+</orthogonal>
+<subject>
+<ref refid="5313fff4-c44d-11ee-8e72-03cc5219e2f5"/>
+</subject>
+<matrix>
+<val>(1.0, 0.0, 0.0, 1.0, 81.73245362959105, 602.9659474526827)</val>
+</matrix>
+<points>
+<val>[(16.796899800757757, 35.00276077025558), (16.79689980075773, -1.1819545127424362)]</val>
+</points>
+<head-connection>
+<ref refid="e2bec404-c43c-11ee-bdf4-1143e21d8cd2"/>
+</head-connection>
+<tail-connection>
+<ref refid="cb9ebae0-c44b-11ee-b250-03cc5219e2f5"/>
+</tail-connection>
+</GeneralizationItem>
+<Generalization id="5313fff4-c44d-11ee-8e72-03cc5219e2f5">
+<general>
+<ref refid="cb9e7021-c44b-11ee-8121-03cc5219e2f5"/>
+</general>
+<presentation>
+<reflist>
+<ref refid="514ed18a-c44d-11ee-89a3-03cc5219e2f5"/>
+</reflist>
+</presentation>
+<specific>
+<ref refid="e2be63a8-c43c-11ee-9260-1143e21d8cd2"/>
+</specific>
+</Generalization>
+<GeneralizationItem id="7d2caa4b-c44d-11ee-904a-03cc5219e2f5">
+<diagram>
+<ref refid="58d6c536-66f8-11ec-b4c8-0456e5e540ed"/>
+</diagram>
+<horizontal>
+<val>0</val>
+</horizontal>
+<orthogonal>
+<val>0</val>
+</orthogonal>
+<subject>
+<ref refid="875a9249-c44d-11ee-bda1-03cc5219e2f5"/>
+</subject>
+<matrix>
+<val>(1.0, 0.0, 0.0, 1.0, 184.23418965527898, 695.2483710745307)</val>
+</matrix>
+<points>
+<val>[(-6.798286983382013, 11.155792470673191), (-6.79828698338153, 144.10970849843807)]</val>
+</points>
+<head-connection>
+<ref refid="e2bec404-c43c-11ee-bdf4-1143e21d8cd2"/>
+</head-connection>
+<tail-connection>
+<ref refid="f6e05e66-c43c-11ee-b610-1143e21d8cd2"/>
+</tail-connection>
+</GeneralizationItem>
+<Generalization id="875a9249-c44d-11ee-bda1-03cc5219e2f5">
+<general>
+<ref refid="f6dfdf42-c43c-11ee-98d0-1143e21d8cd2"/>
+</general>
+<presentation>
+<reflist>
+<ref refid="7d2caa4b-c44d-11ee-904a-03cc5219e2f5"/>
+</reflist>
+</presentation>
+<specific>
+<ref refid="e2be63a8-c43c-11ee-9260-1143e21d8cd2"/>
+</specific>
+</Generalization>
+<GeneralizationItem id="ba69e700-c44d-11ee-83d0-03cc5219e2f5">
+<diagram>
+<ref refid="58d6c536-66f8-11ec-b4c8-0456e5e540ed"/>
+</diagram>
+<horizontal>
+<val>0</val>
+</horizontal>
+<orthogonal>
+<val>0</val>
+</orthogonal>
+<subject>
+<ref refid="bebf811c-c44d-11ee-b19f-03cc5219e2f5"/>
+</subject>
+<matrix>
+<val>(1.0, 0.0, 0.0, 1.0, 25.503369763274552, 737.0335788230236)</val>
+</matrix>
+<points>
+<val>[(5.506706202140776e-13, 66.10964749692937), (9.485745522397337e-13, 102.32450074994517)]</val>
+</points>
+<head-connection>
+<ref refid="026c6d36-c44b-11ee-bd64-03cc5219e2f5"/>
+</head-connection>
+<tail-connection>
+<ref refid="f6e05e66-c43c-11ee-b610-1143e21d8cd2"/>
+</tail-connection>
+</GeneralizationItem>
+<Generalization id="bebf811c-c44d-11ee-b19f-03cc5219e2f5">
+<general>
+<ref refid="f6dfdf42-c43c-11ee-98d0-1143e21d8cd2"/>
+</general>
+<presentation>
+<reflist>
+<ref refid="ba69e700-c44d-11ee-83d0-03cc5219e2f5"/>
+</reflist>
+</presentation>
+<specific>
+<ref refid="026bfe77-c44b-11ee-8f58-03cc5219e2f5"/>
+</specific>
+</Generalization>
+<GeneralizationItem id="c361f797-c44d-11ee-bf8d-03cc5219e2f5">
+<diagram>
+<ref refid="58d6c536-66f8-11ec-b4c8-0456e5e540ed"/>
+</diagram>
+<horizontal>
+<val>0</val>
+</horizontal>
+<orthogonal>
+<val>0</val>
+</orthogonal>
+<subject>
+<ref refid="c8bbd569-c44d-11ee-b594-03cc5219e2f5"/>
+</subject>
+<matrix>
+<val>(1.0, 0.0, 0.0, 1.0, -572.1395831948815, 1037.76960416987)</val>
+</matrix>
+<points>
+<val>[(597.6429529581566, -296.4842471500938), (597.6429529581562, -331.3654406246661)]</val>
+</points>
+<head-connection>
+<ref refid="026c6d36-c44b-11ee-bd64-03cc5219e2f5"/>
+</head-connection>
+<tail-connection>
+<ref refid="e2bec404-c43c-11ee-bdf4-1143e21d8cd2"/>
+</tail-connection>
+</GeneralizationItem>
+<Generalization id="c8bbd569-c44d-11ee-b594-03cc5219e2f5">
+<general>
+<ref refid="e2be63a8-c43c-11ee-9260-1143e21d8cd2"/>
+</general>
+<presentation>
+<reflist>
+<ref refid="c361f797-c44d-11ee-bf8d-03cc5219e2f5"/>
+</reflist>
+</presentation>
+<specific>
+<ref refid="026bfe77-c44b-11ee-8f58-03cc5219e2f5"/>
+</specific>
+</Generalization>
+<MessageItem id="d7f22ba8-c44f-11ee-ba91-03cc5219e2f5">
+<diagram>
+<ref refid="58d6c536-66f8-11ec-b4c8-0456e5e540ed"/>
+</diagram>
+<horizontal>
+<val>1</val>
+</horizontal>
+<orthogonal>
+<val>1</val>
+</orthogonal>
+<matrix>
+<val>(1.0, 0.0, 0.0, 1.0, -716.1583028255922, 1109.3716767531034)</val>
+</matrix>
+<points>
+<val>[(172.10208328598048, -498.0030039504362), (172.1020832859806, -498.0030039504362), (172.1020832859806, -431.3679389570998)]</val>
+</points>
+</MessageItem>
+<Package id="454ef576-c453-11ee-864a-03cc5219e2f5">
+<name>
+<val>MiRa_Meta_Package</val>
+</name>
+<nestedPackage>
+<reflist>
+<ref refid="c6cb4776-c462-11ee-aeed-b98b3618f18e"/>
+<ref refid="832dda62-c463-11ee-84b9-b98b3618f18e"/>
+<ref refid="c885ac36-c465-11ee-9a16-b98b3618f18e"/>
+</reflist>
+</nestedPackage>
+<ownedDiagram>
+<reflist>
+<ref refid="58d6c536-66f8-11ec-b4c8-0456e5e540ed"/>
+</reflist>
+</ownedDiagram>
+<ownedType>
+<reflist>
+<ref refid="7618e635-c438-11ee-97d4-1143e21d8cd2"/>
+<ref refid="fc0b4efe-c44d-11ee-8260-03cc5219e2f5"/>
+<ref refid="d4dc87ac-c472-11ee-bca3-b98b3618f18e"/>
+</reflist>
+</ownedType>
+<package>
+<ref refid="58d6c2e8-66f8-11ec-b4c8-0456e5e540ed"/>
+</package>
+</Package>
+<ArtifactItem id="1aeea1a6-c43f-11ee-a515-1143e21d8cd2">
+<matrix>
+<val>(1.0, 0.0, 0.0, 1.0, 19.085891030368543, 60.91571946175941)</val>
+</matrix>
+<top-left>
+<val>(5.9444539404516945, 0.0)</val>
+</top-left>
+<width>
+<val>315.44616266651303</val>
+</width>
+<height>
+<val>60.81457701726214</val>
+</height>
+<diagram>
+<ref refid="58d6c536-66f8-11ec-b4c8-0456e5e540ed"/>
+</diagram>
+<parent>
+<ref refid="832e3242-c463-11ee-9a81-b98b3618f18e"/>
+</parent>
+<subject>
+<ref refid="1aee2e20-c43f-11ee-b14a-1143e21d8cd2"/>
+</subject>
+</ArtifactItem>
+<Artifact id="1aee2e20-c43f-11ee-b14a-1143e21d8cd2">
+<clientDependency>
+<reflist>
+<ref refid="cce9a6ec-c464-11ee-b8bf-b98b3618f18e"/>
+</reflist>
+</clientDependency>
+<name>
+<val>MiRa_{Device_ID}_RF_Frontend_Aperture</val>
+</name>
+<package>
+<ref refid="832dda62-c463-11ee-84b9-b98b3618f18e"/>
+</package>
+<presentation>
+<reflist>
+<ref refid="1aeea1a6-c43f-11ee-a515-1143e21d8cd2"/>
+</reflist>
+</presentation>
+<supplierDependency>
+<reflist>
+<ref refid="c972d2d9-c464-11ee-80b2-b98b3618f18e"/>
+</reflist>
+</supplierDependency>
+</Artifact>
+<GeneralizationItem id="e0bcbdbd-c44d-11ee-b506-03cc5219e2f5">
+<diagram>
+<ref refid="58d6c536-66f8-11ec-b4c8-0456e5e540ed"/>
+</diagram>
+<horizontal>
+<val>0</val>
+</horizontal>
+<orthogonal>
+<val>0</val>
+</orthogonal>
+<matrix>
+<val>(1.0, 0.0, 0.0, 1.0, -345.029808760968, 585.6919344589259)</val>
+</matrix>
+<points>
+<val>[(7.643016449845618, 92.31180333707789), (7.643016449845618, 25.676738343741476)]</val>
+</points>
+</GeneralizationItem>
+<DependencyItem id="15a1ce0f-c44a-11ee-b6bb-03cc5219e2f5">
+<diagram>
+<ref refid="58d6c536-66f8-11ec-b4c8-0456e5e540ed"/>
+</diagram>
+<horizontal>
+<val>0</val>
+</horizontal>
+<orthogonal>
+<val>0</val>
+</orthogonal>
+<subject>
+<ref refid="cce9a6ec-c464-11ee-b8bf-b98b3618f18e"/>
+</subject>
+<matrix>
+<val>(1.0, 0.0, 0.0, 1.0, -539.654270408743, 459.4265413345725)</val>
+</matrix>
+<points>
+<val>[(-3.5488514024273172, 66.88727057089028), (-3.548851402427431, 3.7633410269838805)]</val>
+</points>
+<head-connection>
+<ref refid="ac96f7a3-c464-11ee-a07a-b98b3618f18e"/>
+</head-connection>
+<tail-connection>
+<ref refid="1aeea1a6-c43f-11ee-a515-1143e21d8cd2"/>
+</tail-connection>
+</DependencyItem>
+<DependencyItem id="1f788cb6-c44a-11ee-a819-03cc5219e2f5">
+<diagram>
+<ref refid="58d6c536-66f8-11ec-b4c8-0456e5e540ed"/>
+</diagram>
+<horizontal>
+<val>0</val>
+</horizontal>
+<orthogonal>
+<val>0</val>
+</orthogonal>
+<subject>
+<ref refid="c972d2d9-c464-11ee-80b2-b98b3618f18e"/>
+</subject>
+<matrix>
+<val>(1.0, 0.0, 0.0, 1.0, -338.6217247348242, 510.7970596372318)</val>
+</matrix>
+<points>
+<val>[(2.0880301521431193, -47.60717727567544), (2.0880301521431193, 15.51675226823096)]</val>
+</points>
+<head-connection>
+<ref refid="1aeea1a6-c43f-11ee-a515-1143e21d8cd2"/>
+</head-connection>
+<tail-connection>
+<ref refid="ac96f7a3-c464-11ee-a07a-b98b3618f18e"/>
+</tail-connection>
+</DependencyItem>
+<Comment id="d99ae102-c454-11ee-8003-03cc5219e2f5">
+<body>
+<val>Host Evaluation Device</val>
+</body>
+<presentation>
+<reflist>
+<ref refid="d99aee95-c454-11ee-9f89-03cc5219e2f5"/>
+</reflist>
+</presentation>
+</Comment>
+<CommentItem id="d99aee95-c454-11ee-9f89-03cc5219e2f5">
+<matrix>
+<val>(1.0, 0.0, 0.0, 1.0, -118.03036063058033, 239.60628913630637)</val>
+</matrix>
+<top-left>
+<val>(0.0, 1.5444845964518095)</val>
+</top-left>
+<width>
+<val>184.0</val>
+</width>
+<height>
+<val>50.0</val>
+</height>
+<diagram>
+<ref refid="58d6c536-66f8-11ec-b4c8-0456e5e540ed"/>
+</diagram>
+<subject>
+<ref refid="d99ae102-c454-11ee-8003-03cc5219e2f5"/>
+</subject>
+</CommentItem>
+<Node id="8f44e2fa-c462-11ee-903a-b98b3618f18e">
+<name>
+<val>MiRa_{Device_ID}_USB_Device</val>
+</name>
+<package>
+<ref refid="c6cb4776-c462-11ee-aeed-b98b3618f18e"/>
+</package>
+<presentation>
+<reflist>
+<ref refid="8f453c29-c462-11ee-8b15-b98b3618f18e"/>
+</reflist>
+</presentation>
+</Node>
+<NodeItem id="8f453c29-c462-11ee-8b15-b98b3618f18e">
+<matrix>
+<val>(1.0, 0.0, 0.0, 1.0, 22.757934140323187, 219.0545868649848)</val>
+</matrix>
+<top-left>
+<val>(0.7518692016601562, 0.0)</val>
+</top-left>
+<width>
+<val>315.44616266651303</val>
+</width>
+<height>
+<val>66.84268067013261</val>
+</height>
+<diagram>
+<ref refid="58d6c536-66f8-11ec-b4c8-0456e5e540ed"/>
+</diagram>
+<parent>
+<ref refid="c6cb967e-c462-11ee-882a-b98b3618f18e"/>
+</parent>
+<subject>
+<ref refid="8f44e2fa-c462-11ee-903a-b98b3618f18e"/>
+</subject>
+</NodeItem>
+<Package id="c6cb4776-c462-11ee-aeed-b98b3618f18e">
+<name>
+<val>Microcontroller</val>
+</name>
+<ownedType>
+<reflist>
+<ref refid="d3338d8e-c43d-11ee-934c-1143e21d8cd2"/>
+<ref refid="8f44e2fa-c462-11ee-903a-b98b3618f18e"/>
+</reflist>
+</ownedType>
+<package>
+<ref refid="454ef576-c453-11ee-864a-03cc5219e2f5"/>
+</package>
+<presentation>
+<reflist>
+<ref refid="c6cb967e-c462-11ee-882a-b98b3618f18e"/>
+</reflist>
+</presentation>
+</Package>
+<PackageItem id="c6cb967e-c462-11ee-882a-b98b3618f18e">
+<matrix>
+<val>(1.0, 0.0, 0.0, 1.0, -621.1153238157098, 618.7333340105075)</val>
+</matrix>
+<top-left>
+<val>(-0.4320870225536737, 37.94866943359375)</val>
+</top-left>
+<width>
+<val>381.8146491489056</val>
+</width>
+<height>
+<val>282.14668891576594</val>
+</height>
+<children>
+<reflist>
+<ref refid="d333f705-c43d-11ee-b75d-1143e21d8cd2"/>
+<ref refid="8f453c29-c462-11ee-8b15-b98b3618f18e"/>
+</reflist>
+</children>
+<diagram>
+<ref refid="58d6c536-66f8-11ec-b4c8-0456e5e540ed"/>
+</diagram>
+<subject>
+<ref refid="c6cb4776-c462-11ee-aeed-b98b3618f18e"/>
+</subject>
+</PackageItem>
+<Package id="832dda62-c463-11ee-84b9-b98b3618f18e">
+<name>
+<val>MiRa_{Device_ID}_Radar_System</val>
+</name>
+<ownedType>
+<reflist>
+<ref refid="1aee2e20-c43f-11ee-b14a-1143e21d8cd2"/>
+<ref refid="ac9682d9-c464-11ee-8100-b98b3618f18e"/>
+</reflist>
+</ownedType>
+<package>
+<ref refid="454ef576-c453-11ee-864a-03cc5219e2f5"/>
+</package>
+<presentation>
+<reflist>
+<ref refid="832e3242-c463-11ee-9a81-b98b3618f18e"/>
+</reflist>
+</presentation>
+</Package>
+<PackageItem id="832e3242-c463-11ee-9a81-b98b3618f18e">
+<matrix>
+<val>(1.0, 0.0, 0.0, 1.0, -621.7827677161054, 341.45958588253484)</val>
+</matrix>
+<top-left>
+<val>(0.23535687784192305, -12.23760199563344)</val>
+</top-left>
+<width>
+<val>382.6677468773469</val>
+</width>
+<height>
+<val>282.14668891576594</val>
+</height>
+<children>
+<reflist>
+<ref refid="1aeea1a6-c43f-11ee-a515-1143e21d8cd2"/>
+<ref refid="ac96f7a3-c464-11ee-a07a-b98b3618f18e"/>
+</reflist>
+</children>
+<diagram>
+<ref refid="58d6c536-66f8-11ec-b4c8-0456e5e540ed"/>
+</diagram>
+<subject>
+<ref refid="832dda62-c463-11ee-84b9-b98b3618f18e"/>
+</subject>
+</PackageItem>
+<Node id="ac9682d9-c464-11ee-8100-b98b3618f18e">
+<clientDependency>
+<reflist>
+<ref refid="c972d2d9-c464-11ee-80b2-b98b3618f18e"/>
+</reflist>
+</clientDependency>
+<name>
+<val>MiRa_{Device_ID}_Radar_Sensor</val>
+</name>
+<package>
+<ref refid="832dda62-c463-11ee-84b9-b98b3618f18e"/>
+</package>
+<presentation>
+<reflist>
+<ref refid="ac96f7a3-c464-11ee-a07a-b98b3618f18e"/>
+</reflist>
+</presentation>
+<supplierDependency>
+<reflist>
+<ref refid="cce9a6ec-c464-11ee-b8bf-b98b3618f18e"/>
+</reflist>
+</supplierDependency>
+</Node>
+<NodeItem id="ac96f7a3-c464-11ee-a07a-b98b3618f18e">
+<matrix>
+<val>(1.0, 0.0, 0.0, 1.0, 25.030344970820124, 190.76719845448304)</val>
+</matrix>
+<top-left>
+<val>(0.0, -5.91297243155509)</val>
+</top-left>
+<width>
+<val>320.200859069824</val>
+</width>
+<height>
+<val>61.03070924796134</val>
+</height>
+<diagram>
+<ref refid="58d6c536-66f8-11ec-b4c8-0456e5e540ed"/>
+</diagram>
+<parent>
+<ref refid="832e3242-c463-11ee-9a81-b98b3618f18e"/>
+</parent>
+<subject>
+<ref refid="ac9682d9-c464-11ee-8100-b98b3618f18e"/>
+</subject>
+</NodeItem>
+<Dependency id="c972d2d9-c464-11ee-80b2-b98b3618f18e">
+<client>
+<ref refid="ac9682d9-c464-11ee-8100-b98b3618f18e"/>
+</client>
+<name>
+<val>n*Tx</val>
+</name>
+<presentation>
+<reflist>
+<ref refid="1f788cb6-c44a-11ee-a819-03cc5219e2f5"/>
+</reflist>
+</presentation>
+<supplier>
+<ref refid="1aee2e20-c43f-11ee-b14a-1143e21d8cd2"/>
+</supplier>
+</Dependency>
+<Dependency id="cce9a6ec-c464-11ee-b8bf-b98b3618f18e">
+<client>
+<ref refid="1aee2e20-c43f-11ee-b14a-1143e21d8cd2"/>
+</client>
+<name>
+<val>n*Rx</val>
+</name>
+<presentation>
+<reflist>
+<ref refid="15a1ce0f-c44a-11ee-b6bb-03cc5219e2f5"/>
+</reflist>
+</presentation>
+<supplier>
+<ref refid="ac9682d9-c464-11ee-8100-b98b3618f18e"/>
+</supplier>
+</Dependency>
+<ArtifactItem id="fc0bee81-c44d-11ee-9e43-03cc5219e2f5">
+<matrix>
+<val>(1.0, 0.0, 0.0, 1.0, -82.412849608322, 320.62934430343154)</val>
+</matrix>
+<top-left>
+<val>(-1.3271317274861758, -1.7080003153457426)</val>
+</top-left>
+<width>
+<val>333.50192880345685</val>
+</width>
+<height>
+<val>63.29300783676442</val>
+</height>
+<diagram>
+<ref refid="58d6c536-66f8-11ec-b4c8-0456e5e540ed"/>
+</diagram>
+<subject>
+<ref refid="fc0b4efe-c44d-11ee-8260-03cc5219e2f5"/>
+</subject>
+</ArtifactItem>
+<Artifact id="fc0b4efe-c44d-11ee-8260-03cc5219e2f5">
+<name>
+<val>            Data Postprocessing             (MiRa_Jupyter_Notebook)</val>
+</name>
+<package>
+<ref refid="454ef576-c453-11ee-864a-03cc5219e2f5"/>
+</package>
+<presentation>
+<reflist>
+<ref refid="fc0bee81-c44d-11ee-9e43-03cc5219e2f5"/>
+</reflist>
+</presentation>
+<specialization>
+<reflist>
+<ref refid="85d4bc62-c44e-11ee-bbfd-03cc5219e2f5"/>
+</reflist>
+</specialization>
+</Artifact>
+<ArtifactItem id="761a1261-c438-11ee-8a78-1143e21d8cd2">
+<matrix>
+<val>(1.0, 0.0, 0.0, 1.0, -78.24258261420101, 414.5190989126618)</val>
+</matrix>
+<top-left>
+<val>(-5.497398721607283, 0.0)</val>
+</top-left>
+<width>
+<val>333.50192880345674</val>
+</width>
+<height>
+<val>63.47536421510847</val>
+</height>
+<diagram>
+<ref refid="58d6c536-66f8-11ec-b4c8-0456e5e540ed"/>
+</diagram>
+<subject>
+<ref refid="7618e635-c438-11ee-97d4-1143e21d8cd2"/>
+</subject>
+</ArtifactItem>
+<Artifact id="7618e635-c438-11ee-97d4-1143e21d8cd2">
+<generalization>
+<reflist>
+<ref refid="85d4bc62-c44e-11ee-bbfd-03cc5219e2f5"/>
+</reflist>
+</generalization>
+<name>
+<val>    MiRa_{Device_ID}_Measurement HDF5 File</val>
+</name>
+<note>
+<val>Extracted ADC Radar Data in Radar Data Cube Format 
+</val>
+</note>
+<package>
+<ref refid="454ef576-c453-11ee-864a-03cc5219e2f5"/>
+</package>
+<presentation>
+<reflist>
+<ref refid="761a1261-c438-11ee-8a78-1143e21d8cd2"/>
+</reflist>
+</presentation>
+</Artifact>
+<GeneralizationItem id="8411e1b7-c44e-11ee-bf68-03cc5219e2f5">
+<diagram>
+<ref refid="58d6c536-66f8-11ec-b4c8-0456e5e540ed"/>
+</diagram>
+<horizontal>
+<val>0</val>
+</horizontal>
+<orthogonal>
+<val>0</val>
+</orthogonal>
+<subject>
+<ref refid="85d4bc62-c44e-11ee-bbfd-03cc5219e2f5"/>
+</subject>
+<matrix>
+<val>(1.0, 0.0, 0.0, 1.0, 94.50822100604577, 383.2924043866287)</val>
+</matrix>
+<points>
+<val>[(-2.206381341235101, 31.2266945260331), (-2.2063813412348736, -1.0780525617784633)]</val>
+</points>
+<head-connection>
+<ref refid="761a1261-c438-11ee-8a78-1143e21d8cd2"/>
+</head-connection>
+<tail-connection>
+<ref refid="fc0bee81-c44d-11ee-9e43-03cc5219e2f5"/>
+</tail-connection>
+</GeneralizationItem>
+<Generalization id="85d4bc62-c44e-11ee-bbfd-03cc5219e2f5">
+<general>
+<ref refid="fc0b4efe-c44d-11ee-8260-03cc5219e2f5"/>
+</general>
+<presentation>
+<reflist>
+<ref refid="8411e1b7-c44e-11ee-bf68-03cc5219e2f5"/>
+</reflist>
+</presentation>
+<specific>
+<ref refid="7618e635-c438-11ee-97d4-1143e21d8cd2"/>
+</specific>
+</Generalization>
+<MessageItem id="b4509436-c465-11ee-a410-b98b3618f18e">
+<diagram>
+<ref refid="58d6c536-66f8-11ec-b4c8-0456e5e540ed"/>
+</diagram>
+<horizontal>
+<val>1</val>
+</horizontal>
+<orthogonal>
+<val>1</val>
+</orthogonal>
+<matrix>
+<val>(1.0, 0.0, 0.0, 1.0, -203.29055371466484, 902.970822766046)</val>
+</matrix>
+<points>
+<val>[(5.257305883433219, 1.6597787795789145), (40.0, 1.6597787795789145), (40.0, 1.6597787795789145), (85.26019308408445, 1.6597787795788008)]</val>
+</points>
+</MessageItem>
+<Package id="c885ac36-c465-11ee-9a16-b98b3618f18e">
+<name>
+<val>MiRa_Python_Module</val>
+</name>
+<nestedPackage>
+<reflist>
+<ref refid="91d5ffc0-c474-11ee-b01b-b98b3618f18e"/>
+<ref refid="d732981a-c475-11ee-88b9-b98b3618f18e"/>
+<ref refid="00ba16f1-c478-11ee-a5c0-b98b3618f18e"/>
+</reflist>
+</nestedPackage>
+<ownedDiagram>
+<reflist>
+<ref refid="de644d21-c477-11ee-b566-b98b3618f18e"/>
+</reflist>
+</ownedDiagram>
+<ownedType>
+<reflist>
+<ref refid="f6dfdf42-c43c-11ee-98d0-1143e21d8cd2"/>
+<ref refid="026bfe77-c44b-11ee-8f58-03cc5219e2f5"/>
+<ref refid="e2be63a8-c43c-11ee-9260-1143e21d8cd2"/>
+<ref refid="cb9e7021-c44b-11ee-8121-03cc5219e2f5"/>
+</reflist>
+</ownedType>
+<package>
+<ref refid="454ef576-c453-11ee-864a-03cc5219e2f5"/>
+</package>
+<presentation>
+<reflist>
+<ref refid="c8860cfc-c465-11ee-9df4-b98b3618f18e"/>
+</reflist>
+</presentation>
+</Package>
+<PackageItem id="c8860cfc-c465-11ee-9df4-b98b3618f18e">
+<matrix>
+<val>(1.0, 0.0, 0.0, 1.0, -73.24975970689002, 497.18275190003146)</val>
+</matrix>
+<top-left>
+<val>(-10.49022162891805, -8.59806465801256)</val>
+</top-left>
+<width>
+<val>371.6255140469247</val>
+</width>
+<height>
+<val>450.2440051178482</val>
+</height>
+<children>
+<reflist>
+<ref refid="f6e05e66-c43c-11ee-b610-1143e21d8cd2"/>
+<ref refid="026c6d36-c44b-11ee-bd64-03cc5219e2f5"/>
+<ref refid="e2bec404-c43c-11ee-bdf4-1143e21d8cd2"/>
+<ref refid="cb9ebae0-c44b-11ee-b250-03cc5219e2f5"/>
+</reflist>
+</children>
+<diagram>
+<ref refid="58d6c536-66f8-11ec-b4c8-0456e5e540ed"/>
+</diagram>
+<subject>
+<ref refid="c885ac36-c465-11ee-9a16-b98b3618f18e"/>
+</subject>
+</PackageItem>
+<Box id="16431e69-c468-11ee-8f44-b98b3618f18e">
+<matrix>
+<val>(1.0, 0.0, 0.0, 1.0, -651.0951374796691, 245.3467271018988)</val>
+</matrix>
+<top-left>
+<val>(0.0, 45.804046630859375)</val>
+</top-left>
+<width>
+<val>453.0618896484375</val>
+</width>
+<height>
+<val>681.2013731940376</val>
+</height>
+<diagram>
+<ref refid="58d6c536-66f8-11ec-b4c8-0456e5e540ed"/>
+</diagram>
+</Box>
+<Comment id="53fa0ddc-c468-11ee-8fdc-b98b3618f18e">
+<body>
+<val>Sykno MiRa Evaluation Device</val>
+</body>
+<presentation>
+<reflist>
+<ref refid="53fa22c5-c468-11ee-8db2-b98b3618f18e"/>
+</reflist>
+</presentation>
+</Comment>
+<CommentItem id="53fa22c5-c468-11ee-8db2-b98b3618f18e">
+<matrix>
+<val>(1.0, 0.0, 0.0, 1.0, -651.0951374796691, 219.96411296615662)</val>
+</matrix>
+<top-left>
+<val>(0.0, 21.186660766601562)</val>
+</top-left>
+<width>
+<val>233.0</val>
+</width>
+<height>
+<val>50.0</val>
+</height>
+<diagram>
+<ref refid="58d6c536-66f8-11ec-b4c8-0456e5e540ed"/>
+</diagram>
+<subject>
+<ref refid="53fa0ddc-c468-11ee-8fdc-b98b3618f18e"/>
+</subject>
+</CommentItem>
+<Box id="5d409f29-c468-11ee-bd32-b98b3618f18e">
+<matrix>
+<val>(1.0, 0.0, 0.0, 1.0, -282.7940325055804, 198.96602031478943)</val>
+</matrix>
+<top-left>
+<val>(164.763671875, 92.18475341796875)</val>
+</top-left>
+<width>
+<val>453.0618896484375</val>
+</width>
+<height>
+<val>681.2013731940376</val>
+</height>
+<diagram>
+<ref refid="58d6c536-66f8-11ec-b4c8-0456e5e540ed"/>
+</diagram>
+</Box>
+<GeneralizationItem id="9a1e59e9-c468-11ee-80a6-b98b3618f18e">
+<diagram>
+<ref refid="58d6c536-66f8-11ec-b4c8-0456e5e540ed"/>
+</diagram>
+<horizontal>
+<val>0</val>
+</horizontal>
+<orthogonal>
+<val>0</val>
+</orthogonal>
+<matrix>
+<val>(1.0, 0.0, 0.0, 1.0, -117.79964773995539, 849.0587021995552)</val>
+</matrix>
+<points>
+<val>[(-0.230712890625, -9.700622626586437), (-80.23360009127623, -9.700622626586437)]</val>
+</points>
+</GeneralizationItem>
+<AssociationItem id="a2deb9d3-c468-11ee-907a-b98b3618f18e">
+<diagram>
+<ref refid="58d6c536-66f8-11ec-b4c8-0456e5e540ed"/>
+</diagram>
+<horizontal>
+<val>0</val>
+</horizontal>
+<orthogonal>
+<val>0</val>
+</orthogonal>
+<matrix>
+<val>(1.0, 0.0, 0.0, 1.0, -272.72719900948664, 865.6351182151802)</val>
+</matrix>
+<points>
+<val>[(-9.432158797726743, 6.359222344116688), (74.69395117825502, 6.359222344116688)]</val>
+</points>
+<head-connection>
+<ref refid="8f453c29-c462-11ee-8b15-b98b3618f18e"/>
+</head-connection>
+</AssociationItem>
+<AssociationItem id="aa1c9f63-c468-11ee-b950-b98b3618f18e">
+<diagram>
+<ref refid="58d6c536-66f8-11ec-b4c8-0456e5e540ed"/>
+</diagram>
+<horizontal>
+<val>0</val>
+</horizontal>
+<orthogonal>
+<val>0</val>
+</orthogonal>
+<matrix>
+<val>(1.0, 0.0, 0.0, 1.0, -117.94161551339289, 869.1461045433052)</val>
+</matrix>
+<points>
+<val>[(-0.0887451171875, 2.848236015991688), (65.23837490644411, 2.848236015991688)]</val>
+</points>
+<tail-connection>
+<ref refid="f6e05e66-c43c-11ee-b610-1143e21d8cd2"/>
+</tail-connection>
+</AssociationItem>
+<MetadataItem id="7266a8f9-c472-11ee-896f-b98b3618f18e">
+<matrix>
+<val>(1.0, 0.0, 0.0, 1.0, 172.0315290178571, 707.9988678130263)</val>
+</matrix>
+<top-left>
+<val>(0.0, 285.74732208251953)</val>
+</top-left>
+<width>
+<val>163.0</val>
+</width>
+<height>
+<val>120.0</val>
+</height>
+<createdBy>
+<val>Sykno GmbH</val>
+</createdBy>
+<createdOn>
+<val>2024-02-05</val>
+</createdOn>
+<description>
+<val>MiRa_Meta_Diagram</val>
+</description>
+<diagram>
+<ref refid="58d6c536-66f8-11ec-b4c8-0456e5e540ed"/>
+</diagram>
+<revision>
+<val>1.0</val>
+</revision>
+</MetadataItem>
+<Activity id="d4dc87ac-c472-11ee-bca3-b98b3618f18e">
+<name>
+<val>Activity</val>
+</name>
+<package>
+<ref refid="454ef576-c453-11ee-864a-03cc5219e2f5"/>
+</package>
+</Activity>
+<Diagram id="7aa83fbe-c474-11ee-a5ec-b98b3618f18e">
+<diagramType>
+<val>pkg</val>
+</diagramType>
+<element>
+<ref refid="91d5ffc0-c474-11ee-b01b-b98b3618f18e"/>
+</element>
+<name>
+<val>MiRa_CTRL</val>
+</name>
+<ownedPresentation>
+<reflist>
+<ref refid="91d66ee3-c474-11ee-8a1f-b98b3618f18e"/>
+<ref refid="514edba3-c475-11ee-aba6-b98b3618f18e"/>
+<ref refid="d6a5c960-c474-11ee-b652-b98b3618f18e"/>
+<ref refid="34e9b049-c475-11ee-b40d-b98b3618f18e"/>
+<ref refid="6b4f6d8b-c475-11ee-b0f3-b98b3618f18e"/>
+<ref refid="859377dd-c474-11ee-ad62-b98b3618f18e"/>
+</reflist>
+</ownedPresentation>
+</Diagram>
+<Class id="859301c2-c474-11ee-9169-b98b3618f18e">
+<name>
+<val>MIRA_MULTIPROCESSOR</val>
+</name>
+<package>
+<ref refid="6b4f023e-c475-11ee-9e98-b98b3618f18e"/>
+</package>
+<presentation>
+<reflist>
+<ref refid="859377dd-c474-11ee-ad62-b98b3618f18e"/>
+</reflist>
+</presentation>
+</Class>
+<ClassItem id="859377dd-c474-11ee-ad62-b98b3618f18e">
+<matrix>
+<val>(1.0, 0.0, 0.0, 1.0, 35.78691101074219, 86.41514587402344)</val>
+</matrix>
+<top-left>
+<val>(0.0, 0.0)</val>
+</top-left>
+<width>
+<val>221.7605743408203</val>
+</width>
+<height>
+<val>389.5824890136719</val>
+</height>
+<diagram>
+<ref refid="7aa83fbe-c474-11ee-a5ec-b98b3618f18e"/>
+</diagram>
+<parent>
+<ref refid="6b4f6d8b-c475-11ee-b0f3-b98b3618f18e"/>
+</parent>
+<subject>
+<ref refid="859301c2-c474-11ee-9169-b98b3618f18e"/>
+</subject>
+</ClassItem>
+<Package id="91d5ffc0-c474-11ee-b01b-b98b3618f18e">
+<name>
+<val>MiRa_Control_Module</val>
+</name>
+<nestedPackage>
+<reflist>
+<ref refid="514e8d41-c475-11ee-83a3-b98b3618f18e"/>
+<ref refid="6b4f023e-c475-11ee-9e98-b98b3618f18e"/>
+</reflist>
+</nestedPackage>
+<ownedDiagram>
+<reflist>
+<ref refid="7aa83fbe-c474-11ee-a5ec-b98b3618f18e"/>
+</reflist>
+</ownedDiagram>
+<package>
+<ref refid="c885ac36-c465-11ee-9a16-b98b3618f18e"/>
+</package>
+<presentation>
+<reflist>
+<ref refid="91d66ee3-c474-11ee-8a1f-b98b3618f18e"/>
+</reflist>
+</presentation>
+</Package>
+<PackageItem id="91d66ee3-c474-11ee-8a1f-b98b3618f18e">
+<matrix>
+<val>(1.0, 0.0, 0.0, 1.0, 873.2785034179688, 25.9193115234375)</val>
+</matrix>
+<top-left>
+<val>(-649.703125, 365.7398787163246)</val>
+</top-left>
+<width>
+<val>1341.9572143554688</val>
+</width>
+<height>
+<val>684.0830958478138</val>
+</height>
+<children>
+<reflist>
+<ref refid="514edba3-c475-11ee-aba6-b98b3618f18e"/>
+<ref refid="6b4f6d8b-c475-11ee-b0f3-b98b3618f18e"/>
+</reflist>
+</children>
+<diagram>
+<ref refid="7aa83fbe-c474-11ee-a5ec-b98b3618f18e"/>
+</diagram>
+<subject>
+<ref refid="91d5ffc0-c474-11ee-b01b-b98b3618f18e"/>
+</subject>
+</PackageItem>
+<Class id="d6a57a87-c474-11ee-9c12-b98b3618f18e">
+<name>
+<val>MIRA_CTRL_GUI</val>
+</name>
+<package>
+<ref refid="514e8d41-c475-11ee-83a3-b98b3618f18e"/>
+</package>
+<presentation>
+<reflist>
+<ref refid="d6a5c960-c474-11ee-b652-b98b3618f18e"/>
+</reflist>
+</presentation>
+</Class>
+<ClassItem id="d6a5c960-c474-11ee-b652-b98b3618f18e">
+<matrix>
+<val>(1.0, 0.0, 0.0, 1.0, 303.2489547729492, 138.53366088867188)</val>
+</matrix>
+<top-left>
+<val>(65.94854736328125, 7.259246826171875)</val>
+</top-left>
+<width>
+<val>182.88104248046875</val>
+</width>
+<height>
+<val>405.5521240234375</val>
+</height>
+<diagram>
+<ref refid="7aa83fbe-c474-11ee-a5ec-b98b3618f18e"/>
+</diagram>
+<parent>
+<ref refid="514edba3-c475-11ee-aba6-b98b3618f18e"/>
+</parent>
+<subject>
+<ref refid="d6a57a87-c474-11ee-9c12-b98b3618f18e"/>
+</subject>
+</ClassItem>
+<Class id="34e9339f-c475-11ee-894f-b98b3618f18e">
+<name>
+<val>MIRA_CTRL_CLI</val>
+</name>
+<package>
+<ref refid="514e8d41-c475-11ee-83a3-b98b3618f18e"/>
+</package>
+<presentation>
+<reflist>
+<ref refid="34e9b049-c475-11ee-b40d-b98b3618f18e"/>
+</reflist>
+</presentation>
+</Class>
+<ClassItem id="34e9b049-c475-11ee-b40d-b98b3618f18e">
+<matrix>
+<val>(1.0, 0.0, 0.0, 1.0, 46.6734619140625, 183.104248046875)</val>
+</matrix>
+<top-left>
+<val>(0.0, 0.0)</val>
+</top-left>
+<width>
+<val>196.83387756347656</val>
+</width>
+<height>
+<val>368.24078369140625</val>
+</height>
+<diagram>
+<ref refid="7aa83fbe-c474-11ee-a5ec-b98b3618f18e"/>
+</diagram>
+<parent>
+<ref refid="514edba3-c475-11ee-aba6-b98b3618f18e"/>
+</parent>
+<subject>
+<ref refid="34e9339f-c475-11ee-894f-b98b3618f18e"/>
+</subject>
+</ClassItem>
+<Package id="514e8d41-c475-11ee-83a3-b98b3618f18e">
+<name>
+<val>mira_ctrl.py</val>
+</name>
+<ownedType>
+<reflist>
+<ref refid="34e9339f-c475-11ee-894f-b98b3618f18e"/>
+<ref refid="d6a57a87-c474-11ee-9c12-b98b3618f18e"/>
+</reflist>
+</ownedType>
+<package>
+<ref refid="91d5ffc0-c474-11ee-b01b-b98b3618f18e"/>
+</package>
+<presentation>
+<reflist>
+<ref refid="514edba3-c475-11ee-aba6-b98b3618f18e"/>
+</reflist>
+</presentation>
+</Package>
+<PackageItem id="514edba3-c475-11ee-aba6-b98b3618f18e">
+<matrix>
+<val>(1.0, 0.0, 0.0, 1.0, 30.565650939941406, 424.6215538669353)</val>
+</matrix>
+<top-left>
+<val>(-9.290168762207031, 67.27636248097303)</val>
+</top-left>
+<width>
+<val>601.9364624023438</val>
+</width>
+<height>
+<val>512.4538316108238</val>
+</height>
+<children>
+<reflist>
+<ref refid="34e9b049-c475-11ee-b40d-b98b3618f18e"/>
+<ref refid="d6a5c960-c474-11ee-b652-b98b3618f18e"/>
+</reflist>
+</children>
+<diagram>
+<ref refid="7aa83fbe-c474-11ee-a5ec-b98b3618f18e"/>
+</diagram>
+<parent>
+<ref refid="91d66ee3-c474-11ee-8a1f-b98b3618f18e"/>
+</parent>
+<subject>
+<ref refid="514e8d41-c475-11ee-83a3-b98b3618f18e"/>
+</subject>
+</PackageItem>
+<Package id="6b4f023e-c475-11ee-9e98-b98b3618f18e">
+<name>
+<val>mira_multiprocessing.py</val>
+</name>
+<ownedType>
+<reflist>
+<ref refid="859301c2-c474-11ee-9169-b98b3618f18e"/>
+</reflist>
+</ownedType>
+<package>
+<ref refid="91d5ffc0-c474-11ee-b01b-b98b3618f18e"/>
+</package>
+<presentation>
+<reflist>
+<ref refid="6b4f6d8b-c475-11ee-b0f3-b98b3618f18e"/>
+</reflist>
+</presentation>
+</Package>
+<PackageItem id="6b4f6d8b-c475-11ee-b0f3-b98b3618f18e">
+<matrix>
+<val>(1.0, 0.0, 0.0, 1.0, -573.9384765625, 498.67625427246094)</val>
+</matrix>
+<top-left>
+<val>(0.0, 0.0)</val>
+</top-left>
+<width>
+<val>515.094970703125</val>
+</width>
+<height>
+<val>498.89715576171875</val>
+</height>
+<children>
+<reflist>
+<ref refid="859377dd-c474-11ee-ad62-b98b3618f18e"/>
+</reflist>
+</children>
+<diagram>
+<ref refid="7aa83fbe-c474-11ee-a5ec-b98b3618f18e"/>
+</diagram>
+<parent>
+<ref refid="91d66ee3-c474-11ee-8a1f-b98b3618f18e"/>
+</parent>
+<subject>
+<ref refid="6b4f023e-c475-11ee-9e98-b98b3618f18e"/>
+</subject>
+</PackageItem>
+<Diagram id="b7bce06a-c475-11ee-8867-b98b3618f18e">
+<diagramType>
+<val></val>
+</diagramType>
+<element>
+<ref refid="d732981a-c475-11ee-88b9-b98b3618f18e"/>
+</element>
+<name>
+<val>MiRa_Sensor</val>
+</name>
+<ownedPresentation>
+<reflist>
+<ref refid="d7330f1b-c475-11ee-bc7b-b98b3618f18e"/>
+<ref refid="2303ae6e-c476-11ee-9e24-b98b3618f18e"/>
+<ref refid="1b30c81f-c476-11ee-9477-b98b3618f18e"/>
+<ref refid="4d00fa9e-c476-11ee-96cc-b98b3618f18e"/>
+<ref refid="3f25c654-c476-11ee-b321-b98b3618f18e"/>
+<ref refid="61aeaf88-c476-11ee-b3f0-b98b3618f18e"/>
+<ref refid="6b52aae6-c476-11ee-b080-b98b3618f18e"/>
+<ref refid="a9a08785-c476-11ee-a101-b98b3618f18e"/>
+</reflist>
+</ownedPresentation>
+</Diagram>
+<Package id="d732981a-c475-11ee-88b9-b98b3618f18e">
+<name>
+<val>MiRa_Sensor_Module</val>
+</name>
+<nestedPackage>
+<reflist>
+<ref refid="23034fe0-c476-11ee-a458-b98b3618f18e"/>
+<ref refid="4d006d3b-c476-11ee-b7bb-b98b3618f18e"/>
+<ref refid="61ae49c8-c476-11ee-a12b-b98b3618f18e"/>
+<ref refid="6b524dfb-c476-11ee-b5f0-b98b3618f18e"/>
+</reflist>
+</nestedPackage>
+<ownedDiagram>
+<reflist>
+<ref refid="b7bce06a-c475-11ee-8867-b98b3618f18e"/>
+</reflist>
+</ownedDiagram>
+<package>
+<ref refid="c885ac36-c465-11ee-9a16-b98b3618f18e"/>
+</package>
+<presentation>
+<reflist>
+<ref refid="d7330f1b-c475-11ee-bc7b-b98b3618f18e"/>
+</reflist>
+</presentation>
+</Package>
+<PackageItem id="d7330f1b-c475-11ee-bc7b-b98b3618f18e">
+<matrix>
+<val>(1.0, 0.0, 0.0, 1.0, 207.7010498046875, 88.6634521484375)</val>
+</matrix>
+<top-left>
+<val>(0.0, 0.0)</val>
+</top-left>
+<width>
+<val>793.3019556252352</val>
+</width>
+<height>
+<val>2233.6592407226562</val>
+</height>
+<children>
+<reflist>
+<ref refid="2303ae6e-c476-11ee-9e24-b98b3618f18e"/>
+<ref refid="4d00fa9e-c476-11ee-96cc-b98b3618f18e"/>
+<ref refid="61aeaf88-c476-11ee-b3f0-b98b3618f18e"/>
+<ref refid="6b52aae6-c476-11ee-b080-b98b3618f18e"/>
+</reflist>
+</children>
+<diagram>
+<ref refid="b7bce06a-c475-11ee-8867-b98b3618f18e"/>
+</diagram>
+<subject>
+<ref refid="d732981a-c475-11ee-88b9-b98b3618f18e"/>
+</subject>
+</PackageItem>
+<Class id="1b306f4f-c476-11ee-8244-b98b3618f18e">
+<name>
+<val>MIRA_DEVICE</val>
+</name>
+<package>
+<ref refid="23034fe0-c476-11ee-a458-b98b3618f18e"/>
+</package>
+<presentation>
+<reflist>
+<ref refid="1b30c81f-c476-11ee-9477-b98b3618f18e"/>
+</reflist>
+</presentation>
+</Class>
+<ClassItem id="1b30c81f-c476-11ee-9477-b98b3618f18e">
+<matrix>
+<val>(1.0, 0.0, 0.0, 1.0, 84.3199462890625, 115.71771240234375)</val>
+</matrix>
+<top-left>
+<val>(0.0, 0.0)</val>
+</top-left>
+<width>
+<val>159.9798583984375</val>
+</width>
+<height>
+<val>227.45306396484375</val>
+</height>
+<diagram>
+<ref refid="b7bce06a-c475-11ee-8867-b98b3618f18e"/>
+</diagram>
+<parent>
+<ref refid="2303ae6e-c476-11ee-9e24-b98b3618f18e"/>
+</parent>
+<subject>
+<ref refid="1b306f4f-c476-11ee-8244-b98b3618f18e"/>
+</subject>
+</ClassItem>
+<Package id="23034fe0-c476-11ee-a458-b98b3618f18e">
+<name>
+<val>mira_device_bgt.py</val>
+</name>
+<ownedType>
+<reflist>
+<ref refid="1b306f4f-c476-11ee-8244-b98b3618f18e"/>
+</reflist>
+</ownedType>
+<package>
+<ref refid="d732981a-c475-11ee-88b9-b98b3618f18e"/>
+</package>
+<presentation>
+<reflist>
+<ref refid="2303ae6e-c476-11ee-9e24-b98b3618f18e"/>
+</reflist>
+</presentation>
+</Package>
+<PackageItem id="2303ae6e-c476-11ee-9e24-b98b3618f18e">
+<matrix>
+<val>(1.0, 0.0, 0.0, 1.0, 211.46047973632812, 101.52645874023449)</val>
+</matrix>
+<top-left>
+<val>(0.0, -22.52655029296875)</val>
+</top-left>
+<width>
+<val>328.6197509765625</val>
+</width>
+<height>
+<val>443.8018798828125</val>
+</height>
+<children>
+<reflist>
+<ref refid="1b30c81f-c476-11ee-9477-b98b3618f18e"/>
+</reflist>
+</children>
+<diagram>
+<ref refid="b7bce06a-c475-11ee-8867-b98b3618f18e"/>
+</diagram>
+<parent>
+<ref refid="d7330f1b-c475-11ee-bc7b-b98b3618f18e"/>
+</parent>
+<subject>
+<ref refid="23034fe0-c476-11ee-a458-b98b3618f18e"/>
+</subject>
+</PackageItem>
+<Class id="3f253478-c476-11ee-8114-b98b3618f18e">
+<name>
+<val>BGT_MAIN</val>
+</name>
+<package>
+<ref refid="4d006d3b-c476-11ee-b7bb-b98b3618f18e"/>
+</package>
+<presentation>
+<reflist>
+<ref refid="3f25c654-c476-11ee-b321-b98b3618f18e"/>
+</reflist>
+</presentation>
+</Class>
+<ClassItem id="3f25c654-c476-11ee-b321-b98b3618f18e">
+<matrix>
+<val>(1.0, 0.0, 0.0, 1.0, 89.83177947998047, 71.43838500976562)</val>
+</matrix>
+<top-left>
+<val>(0.0, 0.0)</val>
+</top-left>
+<width>
+<val>250.6385040283203</val>
+</width>
+<height>
+<val>352.44354248046875</val>
+</height>
+<diagram>
+<ref refid="b7bce06a-c475-11ee-8867-b98b3618f18e"/>
+</diagram>
+<parent>
+<ref refid="4d00fa9e-c476-11ee-96cc-b98b3618f18e"/>
+</parent>
+<subject>
+<ref refid="3f253478-c476-11ee-8114-b98b3618f18e"/>
+</subject>
+</ClassItem>
+<Package id="4d006d3b-c476-11ee-b7bb-b98b3618f18e">
+<name>
+<val>mira_reg_cont_bgt.py</val>
+</name>
+<ownedType>
+<reflist>
+<ref refid="3f253478-c476-11ee-8114-b98b3618f18e"/>
+</reflist>
+</ownedType>
+<package>
+<ref refid="d732981a-c475-11ee-88b9-b98b3618f18e"/>
+</package>
+<presentation>
+<reflist>
+<ref refid="4d00fa9e-c476-11ee-96cc-b98b3618f18e"/>
+</reflist>
+</presentation>
+</Package>
+<PackageItem id="4d00fa9e-c476-11ee-96cc-b98b3618f18e">
+<matrix>
+<val>(1.0, 0.0, 0.0, 1.0, 178.0322949512895, 1056.1872288592176)</val>
+</matrix>
+<top-left>
+<val>(0.0, 0.0)</val>
+</top-left>
+<width>
+<val>412.45318603515625</val>
+</width>
+<height>
+<val>456.68292236328125</val>
+</height>
+<children>
+<reflist>
+<ref refid="3f25c654-c476-11ee-b321-b98b3618f18e"/>
+</reflist>
+</children>
+<diagram>
+<ref refid="b7bce06a-c475-11ee-8867-b98b3618f18e"/>
+</diagram>
+<parent>
+<ref refid="d7330f1b-c475-11ee-bc7b-b98b3618f18e"/>
+</parent>
+<subject>
+<ref refid="4d006d3b-c476-11ee-b7bb-b98b3618f18e"/>
+</subject>
+</PackageItem>
+<Package id="61ae49c8-c476-11ee-a12b-b98b3618f18e">
+<name>
+<val>mira_reg_cont_helper.py</val>
+</name>
+<package>
+<ref refid="d732981a-c475-11ee-88b9-b98b3618f18e"/>
+</package>
+<presentation>
+<reflist>
+<ref refid="61aeaf88-c476-11ee-b3f0-b98b3618f18e"/>
+</reflist>
+</presentation>
+</Package>
+<PackageItem id="61aeaf88-c476-11ee-b3f0-b98b3618f18e">
+<matrix>
+<val>(1.0, 0.0, 0.0, 1.0, 211.46047973632812, 569.3373107910156)</val>
+</matrix>
+<top-left>
+<val>(0.0, -26.161651611328125)</val>
+</top-left>
+<width>
+<val>335.56280517578125</val>
+</width>
+<height>
+<val>468.2134094238281</val>
+</height>
+<diagram>
+<ref refid="b7bce06a-c475-11ee-8867-b98b3618f18e"/>
+</diagram>
+<parent>
+<ref refid="d7330f1b-c475-11ee-bc7b-b98b3618f18e"/>
+</parent>
+<subject>
+<ref refid="61ae49c8-c476-11ee-a12b-b98b3618f18e"/>
+</subject>
+</PackageItem>
+<Package id="6b524dfb-c476-11ee-b5f0-b98b3618f18e">
+<name>
+<val>mira6024_reg_def.py</val>
+</name>
+<ownedType>
+<reflist>
+<ref refid="a9a01a24-c476-11ee-8453-b98b3618f18e"/>
+</reflist>
+</ownedType>
+<package>
+<ref refid="d732981a-c475-11ee-88b9-b98b3618f18e"/>
+</package>
+<presentation>
+<reflist>
+<ref refid="6b52aae6-c476-11ee-b080-b98b3618f18e"/>
+</reflist>
+</presentation>
+</Package>
+<PackageItem id="6b52aae6-c476-11ee-b080-b98b3618f18e">
+<matrix>
+<val>(1.0, 0.0, 0.0, 1.0, 478.79712649425824, 1715.4191284179688)</val>
+</matrix>
+<top-left>
+<val>(-4.511474609375, -98.80380249023438)</val>
+</top-left>
+<width>
+<val>305.94403076171875</val>
+</width>
+<height>
+<val>462.78680419921875</val>
+</height>
+<children>
+<reflist>
+<ref refid="a9a08785-c476-11ee-a101-b98b3618f18e"/>
+</reflist>
+</children>
+<diagram>
+<ref refid="b7bce06a-c475-11ee-8867-b98b3618f18e"/>
+</diagram>
+<parent>
+<ref refid="d7330f1b-c475-11ee-bc7b-b98b3618f18e"/>
+</parent>
+<subject>
+<ref refid="6b524dfb-c476-11ee-b5f0-b98b3618f18e"/>
+</subject>
+</PackageItem>
+<Class id="a9a01a24-c476-11ee-8453-b98b3618f18e">
+<name>
+<val>MAIN_REG</val>
+</name>
+<package>
+<ref refid="6b524dfb-c476-11ee-b5f0-b98b3618f18e"/>
+</package>
+<presentation>
+<reflist>
+<ref refid="a9a08785-c476-11ee-a101-b98b3618f18e"/>
+</reflist>
+</presentation>
+</Class>
+<ClassItem id="a9a08785-c476-11ee-a101-b98b3618f18e">
+<matrix>
+<val>(1.0, 0.0, 0.0, 1.0, 26.371307373046875, -2.479736328125)</val>
+</matrix>
+<top-left>
+<val>(0.0, 0.0)</val>
+</top-left>
+<width>
+<val>244.178466796875</val>
+</width>
+<height>
+<val>285.79547119140625</val>
+</height>
+<diagram>
+<ref refid="b7bce06a-c475-11ee-8867-b98b3618f18e"/>
+</diagram>
+<parent>
+<ref refid="6b52aae6-c476-11ee-b080-b98b3618f18e"/>
+</parent>
+<subject>
+<ref refid="a9a01a24-c476-11ee-8453-b98b3618f18e"/>
+</subject>
+</ClassItem>
+<Diagram id="de644d21-c477-11ee-b566-b98b3618f18e">
+<diagramType>
+<val></val>
+</diagramType>
+<element>
+<ref refid="c885ac36-c465-11ee-9a16-b98b3618f18e"/>
+</element>
+<name>
+<val>MiRa_RSYS</val>
+</name>
+<ownedPresentation>
+<reflist>
+<ref refid="00ba7992-c478-11ee-a148-b98b3618f18e"/>
+<ref refid="0a9f2b11-c478-11ee-a8e9-b98b3618f18e"/>
+<ref refid="380d9039-c478-11ee-8de7-b98b3618f18e"/>
+<ref refid="1fc020ab-c478-11ee-ac1b-b98b3618f18e"/>
+<ref refid="5bbd561d-c478-11ee-b1ed-b98b3618f18e"/>
+<ref refid="a9bb142e-c478-11ee-970c-b98b3618f18e"/>
+<ref refid="ae615e74-c478-11ee-b518-b98b3618f18e"/>
+<ref refid="d25af0a0-c478-11ee-9f2c-b98b3618f18e"/>
+<ref refid="d80d3faf-c478-11ee-a9e9-b98b3618f18e"/>
+<ref refid="ecc197a0-c478-11ee-bde7-b98b3618f18e"/>
+</reflist>
+</ownedPresentation>
+</Diagram>
+<Package id="00ba16f1-c478-11ee-a5c0-b98b3618f18e">
+<name>
+<val>MiRa Radar System</val>
+</name>
+<nestedPackage>
+<reflist>
+<ref refid="0a9ed3ed-c478-11ee-a309-b98b3618f18e"/>
+</reflist>
+</nestedPackage>
+<package>
+<ref refid="c885ac36-c465-11ee-9a16-b98b3618f18e"/>
+</package>
+<presentation>
+<reflist>
+<ref refid="00ba7992-c478-11ee-a148-b98b3618f18e"/>
+</reflist>
+</presentation>
+</Package>
+<PackageItem id="00ba7992-c478-11ee-a148-b98b3618f18e">
+<matrix>
+<val>(1.0, 0.0, 0.0, 1.0, 318.1021728515625, -310.50238037109375)</val>
+</matrix>
+<top-left>
+<val>(0.0, 4.820293426513672)</val>
+</top-left>
+<width>
+<val>905.542236328125</val>
+</width>
+<height>
+<val>1834.480152130127</val>
+</height>
+<children>
+<reflist>
+<ref refid="0a9f2b11-c478-11ee-a8e9-b98b3618f18e"/>
+</reflist>
+</children>
+<diagram>
+<ref refid="de644d21-c477-11ee-b566-b98b3618f18e"/>
+</diagram>
+<subject>
+<ref refid="00ba16f1-c478-11ee-a5c0-b98b3618f18e"/>
+</subject>
+</PackageItem>
+<Package id="0a9ed3ed-c478-11ee-a309-b98b3618f18e">
+<name>
+<val>mira_radar_sys.py</val>
+</name>
+<ownedType>
+<reflist>
+<ref refid="380d3248-c478-11ee-a48c-b98b3618f18e"/>
+</reflist>
+</ownedType>
+<package>
+<ref refid="00ba16f1-c478-11ee-a5c0-b98b3618f18e"/>
+</package>
+<presentation>
+<reflist>
+<ref refid="0a9f2b11-c478-11ee-a8e9-b98b3618f18e"/>
+</reflist>
+</presentation>
+</Package>
+<PackageItem id="0a9f2b11-c478-11ee-a8e9-b98b3618f18e">
+<matrix>
+<val>(1.0, 0.0, 0.0, 1.0, 108.76815795898438, 100.52334594726562)</val>
+</matrix>
+<top-left>
+<val>(-65.28594970703125, -57.39518737792969)</val>
+</top-left>
+<width>
+<val>818.5778198242188</val>
+</width>
+<height>
+<val>1640.287094116211</val>
+</height>
+<children>
+<reflist>
+<ref refid="380d9039-c478-11ee-8de7-b98b3618f18e"/>
+</reflist>
+</children>
+<diagram>
+<ref refid="de644d21-c477-11ee-b566-b98b3618f18e"/>
+</diagram>
+<parent>
+<ref refid="00ba7992-c478-11ee-a148-b98b3618f18e"/>
+</parent>
+<subject>
+<ref refid="0a9ed3ed-c478-11ee-a309-b98b3618f18e"/>
+</subject>
+</PackageItem>
+<Class id="1fbf96f8-c478-11ee-a9af-b98b3618f18e">
+<name>
+<val>MIRA_RADAR_DSP_PARAMETER</val>
+</name>
+<nestingClass>
+<ref refid="380d3248-c478-11ee-a48c-b98b3618f18e"/>
+</nestingClass>
+<presentation>
+<reflist>
+<ref refid="1fc020ab-c478-11ee-ac1b-b98b3618f18e"/>
+</reflist>
+</presentation>
+</Class>
+<ClassItem id="1fc020ab-c478-11ee-ac1b-b98b3618f18e">
+<matrix>
+<val>(1.0, 0.0, 0.0, 1.0, -46.173004150390625, -66.76937866210938)</val>
+</matrix>
+<top-left>
+<val>(0.0, 0.0)</val>
+</top-left>
+<width>
+<val>296.0</val>
+</width>
+<height>
+<val>278.33697509765625</val>
+</height>
+<diagram>
+<ref refid="de644d21-c477-11ee-b566-b98b3618f18e"/>
+</diagram>
+<parent>
+<ref refid="380d9039-c478-11ee-8de7-b98b3618f18e"/>
+</parent>
+<subject>
+<ref refid="1fbf96f8-c478-11ee-a9af-b98b3618f18e"/>
+</subject>
+</ClassItem>
+<Class id="380d3248-c478-11ee-a48c-b98b3618f18e">
+<name>
+<val>MIRA_RADAR_PARAMETER</val>
+</name>
+<nestedClassifier>
+<reflist>
+<ref refid="1fbf96f8-c478-11ee-a9af-b98b3618f18e"/>
+<ref refid="5bbc84c4-c478-11ee-b1d3-b98b3618f18e"/>
+<ref refid="a9ba59f7-c478-11ee-9f05-b98b3618f18e"/>
+<ref refid="ae61228c-c478-11ee-8cb9-b98b3618f18e"/>
+<ref refid="d25aa929-c478-11ee-9981-b98b3618f18e"/>
+<ref refid="d80c8120-c478-11ee-acb2-b98b3618f18e"/>
+<ref refid="ecc131e1-c478-11ee-ae5b-b98b3618f18e"/>
+</reflist>
+</nestedClassifier>
+<package>
+<ref refid="0a9ed3ed-c478-11ee-a309-b98b3618f18e"/>
+</package>
+<presentation>
+<reflist>
+<ref refid="380d9039-c478-11ee-8de7-b98b3618f18e"/>
+</reflist>
+</presentation>
+</Class>
+<ClassItem id="380d9039-c478-11ee-8de7-b98b3618f18e">
+<matrix>
+<val>(1.0, 0.0, 0.0, 1.0, 45.758026123046875, 161.96969604492188)</val>
+</matrix>
+<top-left>
+<val>(-62.604034423828125, -130.54592895507812)</val>
+</top-left>
+<width>
+<val>731.6795043945312</val>
+</width>
+<height>
+<val>1478.4935302734375</val>
+</height>
+<children>
+<reflist>
+<ref refid="1fc020ab-c478-11ee-ac1b-b98b3618f18e"/>
+<ref refid="5bbd561d-c478-11ee-b1ed-b98b3618f18e"/>
+<ref refid="a9bb142e-c478-11ee-970c-b98b3618f18e"/>
+<ref refid="ae615e74-c478-11ee-b518-b98b3618f18e"/>
+<ref refid="d25af0a0-c478-11ee-9f2c-b98b3618f18e"/>
+<ref refid="d80d3faf-c478-11ee-a9e9-b98b3618f18e"/>
+<ref refid="ecc197a0-c478-11ee-bde7-b98b3618f18e"/>
+</reflist>
+</children>
+<diagram>
+<ref refid="de644d21-c477-11ee-b566-b98b3618f18e"/>
+</diagram>
+<parent>
+<ref refid="0a9f2b11-c478-11ee-a8e9-b98b3618f18e"/>
+</parent>
+<subject>
+<ref refid="380d3248-c478-11ee-a48c-b98b3618f18e"/>
+</subject>
+</ClassItem>
+<Class id="5bbc84c4-c478-11ee-b1d3-b98b3618f18e">
+<name>
+<val>MIRA_RADAR_MONITORING_PARAMETER</val>
+</name>
+<nestingClass>
+<ref refid="380d3248-c478-11ee-a48c-b98b3618f18e"/>
+</nestingClass>
+<presentation>
+<reflist>
+<ref refid="5bbd561d-c478-11ee-b1ed-b98b3618f18e"/>
+</reflist>
+</presentation>
+</Class>
+<ClassItem id="5bbd561d-c478-11ee-b1ed-b98b3618f18e">
+<matrix>
+<val>(1.0, 0.0, 0.0, 1.0, 330.3125915527344, -72.44097900390625)</val>
+</matrix>
+<top-left>
+<val>(0.0, 13.523323653635202)</val>
+</top-left>
+<width>
+<val>327.0</val>
+</width>
+<height>
+<val>270.4852517858179</val>
+</height>
+<diagram>
+<ref refid="de644d21-c477-11ee-b566-b98b3618f18e"/>
+</diagram>
+<parent>
+<ref refid="380d9039-c478-11ee-8de7-b98b3618f18e"/>
+</parent>
+<subject>
+<ref refid="5bbc84c4-c478-11ee-b1d3-b98b3618f18e"/>
+</subject>
+</ClassItem>
+<Class id="a9ba59f7-c478-11ee-9f05-b98b3618f18e">
+<name>
+<val>MIRA_RADAR_GUI_PARAMETER</val>
+</name>
+<nestingClass>
+<ref refid="380d3248-c478-11ee-a48c-b98b3618f18e"/>
+</nestingClass>
+<presentation>
+<reflist>
+<ref refid="a9bb142e-c478-11ee-970c-b98b3618f18e"/>
+</reflist>
+</presentation>
+</Class>
+<ClassItem id="a9bb142e-c478-11ee-970c-b98b3618f18e">
+<matrix>
+<val>(1.0, 0.0, 0.0, 1.0, -10.645172119140625, 270.37921142578125)</val>
+</matrix>
+<top-left>
+<val>(0.0, 0.0)</val>
+</top-left>
+<width>
+<val>251.0</val>
+</width>
+<height>
+<val>252.65524291992188</val>
+</height>
+<diagram>
+<ref refid="de644d21-c477-11ee-b566-b98b3618f18e"/>
+</diagram>
+<parent>
+<ref refid="380d9039-c478-11ee-8de7-b98b3618f18e"/>
+</parent>
+<subject>
+<ref refid="a9ba59f7-c478-11ee-9f05-b98b3618f18e"/>
+</subject>
+</ClassItem>
+<Class id="ae61228c-c478-11ee-8cb9-b98b3618f18e">
+<name>
+<val>MIRA_RADAR_SYSTEM_PARAMETER</val>
+</name>
+<nestingClass>
+<ref refid="380d3248-c478-11ee-a48c-b98b3618f18e"/>
+</nestingClass>
+<presentation>
+<reflist>
+<ref refid="ae615e74-c478-11ee-b518-b98b3618f18e"/>
+</reflist>
+</presentation>
+</Class>
+<ClassItem id="ae615e74-c478-11ee-b518-b98b3618f18e">
+<matrix>
+<val>(1.0, 0.0, 0.0, 1.0, 327.8375549316406, 259.3097229003906)</val>
+</matrix>
+<top-left>
+<val>(0.0, 0.0)</val>
+</top-left>
+<width>
+<val>288.0</val>
+</width>
+<height>
+<val>274.7942199707031</val>
+</height>
+<diagram>
+<ref refid="de644d21-c477-11ee-b566-b98b3618f18e"/>
+</diagram>
+<parent>
+<ref refid="380d9039-c478-11ee-8de7-b98b3618f18e"/>
+</parent>
+<subject>
+<ref refid="ae61228c-c478-11ee-8cb9-b98b3618f18e"/>
+</subject>
+</ClassItem>
+<Class id="d25aa929-c478-11ee-9981-b98b3618f18e">
+<name>
+<val>MIRA_RADAR_MEAS_PARAMETER</val>
+</name>
+<nestingClass>
+<ref refid="380d3248-c478-11ee-a48c-b98b3618f18e"/>
+</nestingClass>
+<presentation>
+<reflist>
+<ref refid="d25af0a0-c478-11ee-9f2c-b98b3618f18e"/>
+</reflist>
+</presentation>
+</Class>
+<ClassItem id="d25af0a0-c478-11ee-9f2c-b98b3618f18e">
+<matrix>
+<val>(1.0, 0.0, 0.0, 1.0, 0.347137451171875, 613.8268632270347)</val>
+</matrix>
+<top-left>
+<val>(0.0, 0.0)</val>
+</top-left>
+<width>
+<val>269.0</val>
+</width>
+<height>
+<val>264.9658508300781</val>
+</height>
+<diagram>
+<ref refid="de644d21-c477-11ee-b566-b98b3618f18e"/>
+</diagram>
+<parent>
+<ref refid="380d9039-c478-11ee-8de7-b98b3618f18e"/>
+</parent>
+<subject>
+<ref refid="d25aa929-c478-11ee-9981-b98b3618f18e"/>
+</subject>
+</ClassItem>
+<Class id="d80c8120-c478-11ee-acb2-b98b3618f18e">
+<name>
+<val>MIRA_RADAR_RPLY_PARAMETER</val>
+</name>
+<nestingClass>
+<ref refid="380d3248-c478-11ee-a48c-b98b3618f18e"/>
+</nestingClass>
+<presentation>
+<reflist>
+<ref refid="d80d3faf-c478-11ee-a9e9-b98b3618f18e"/>
+</reflist>
+</presentation>
+</Class>
+<ClassItem id="d80d3faf-c478-11ee-a9e9-b98b3618f18e">
+<matrix>
+<val>(1.0, 0.0, 0.0, 1.0, 330.3125915527344, 606.9199418403159)</val>
+</matrix>
+<top-left>
+<val>(0.0, 0.0)</val>
+</top-left>
+<width>
+<val>262.0</val>
+</width>
+<height>
+<val>278.7796936035156</val>
+</height>
+<diagram>
+<ref refid="de644d21-c477-11ee-b566-b98b3618f18e"/>
+</diagram>
+<parent>
+<ref refid="380d9039-c478-11ee-8de7-b98b3618f18e"/>
+</parent>
+<subject>
+<ref refid="d80c8120-c478-11ee-acb2-b98b3618f18e"/>
+</subject>
+</ClassItem>
+<Class id="ecc131e1-c478-11ee-ae5b-b98b3618f18e">
+<name>
+<val>MIRA_RADAR_REMT_PARAMETER</val>
+</name>
+<nestingClass>
+<ref refid="380d3248-c478-11ee-a48c-b98b3618f18e"/>
+</nestingClass>
+<presentation>
+<reflist>
+<ref refid="ecc197a0-c478-11ee-bde7-b98b3618f18e"/>
+</reflist>
+</presentation>
+</Class>
+<ClassItem id="ecc197a0-c478-11ee-bde7-b98b3618f18e">
+<matrix>
+<val>(1.0, 0.0, 0.0, 1.0, 196.95465087890625, 961.1016845703125)</val>
+</matrix>
+<top-left>
+<val>(0.0, 0.0)</val>
+</top-left>
+<width>
+<val>269.0</val>
+</width>
+<height>
+<val>274.0948486328125</val>
+</height>
+<diagram>
+<ref refid="de644d21-c477-11ee-b566-b98b3618f18e"/>
+</diagram>
+<parent>
+<ref refid="380d9039-c478-11ee-8de7-b98b3618f18e"/>
+</parent>
+<subject>
+<ref refid="ecc131e1-c478-11ee-ae5b-b98b3618f18e"/>
+</subject>
+</ClassItem>
+</gaphor>

@@ -120,37 +120,46 @@ class MIRA6024_GUI_CTRL():
         
 
     def set_value_labels(self):
-        self.qt_self.label_duration_time.setText(f'{self.qt_self.radar_param.mon.duration_time}')
-        self.qt_self.label_temperature.setText(f'{round(float(self.qt_self.radar_param.mon.temperature), 2)} °C')
-        self.qt_self.label_frame_counter.setText(f'{int(self.qt_self.radar_param.mon.duration_frame_counter)}')
-        self.qt_self.label_shape_repetition.setText(f'{int(self.qt_self.radar_param.sys.shape_set_repetition)}')
-        self.qt_self.label_rx_tx_mode.setText(f'{int(self.qt_self.radar_param.sys.rx_active_antennas[0])} / ' +
-                                              f'{int(sum(self.qt_self.radar_param.sys.tx_active_antennas))}')
-        self.qt_self.label_tx1_power.setText(f'{int(self.qt_self.radar_param.sys.tx_power[0][0])} / {int(self.qt_self.radar_param.sys.tx_power[1][1])} dBm')
-        self.qt_self.label_tx2_power.setText(f' {self.radar_param.sys.resolution_velocity}')
-        self.qt_self.label_sampling_frequency.setText(f'{round(float(self.qt_self.radar_param.sys.sampling_frequency*1e-6), 2)} MHz')
-        self.qt_self.label_chrip_sample.setText(str(int(self.qt_self.radar_param.sys.n_samples_per_chirp[0])))
-        self.qt_self.label_frequency.setText(f'{round(float(self.qt_self.radar_param.sys.start_frequency[0] * 1e-9), 2)} - '+
-                                             f'{round(float(self.qt_self.radar_param.sys.end_frequency[0] * 1e-9), 2)} GHz')
-        self.qt_self.label_ramp_time.setText(f'{round(float(self.qt_self.radar_param.sys.ramp_time[0] * 1e6), 2)} µs')
-        self.qt_self.label_bandwidth.setText(f'{round(float(self.qt_self.radar_param.sys.ramp_bandwidth[0] * 1e-9), 2)} GHz')
-        self.qt_self.label_ramp_slope.setText(f'{round(float(self.qt_self.radar_param.sys.ramp_slope[0] * 1e-12), 2)} MHz/µs')
-        self.qt_self.label_chirp_time.setText(f'{round(float(self.qt_self.radar_param.sys.chirp_time[0]), 2)} ms')
-        self.qt_self.label_frame_duration.setText(f'{round(float(self.qt_self.radar_param.sys.frame_duration), 2)} ms')
-        self.qt_self.label_frames_per_second.setText(f'{round(float(self.qt_self.radar_param.sys.frames_per_second), 2)} fps')
-        self.qt_self.label_range_resolution.setText(f'{round(float(self.qt_self.radar_param.sys.resolution_range*100), 2)} cm')
-        self.qt_self.label_min_range.setText(f'{round(float(self.qt_self.radar_param.sys.min_range), 2)} m')
-        self.qt_self.label_max_range.setText(f'{round(float(self.qt_self.radar_param.sys.max_range), 2)} m')
-        self.qt_self.label_min_velocity.setText(f'{round(float(-self.qt_self.radar_param.sys.max_velocity), 2)} m/s')
-        self.qt_self.label_max_velocity.setText(f'{round(float(self.qt_self.radar_param.sys.max_velocity), 2)} m/s')
+        self.qt_self.label_duration_time.setText(f'{self.radar_param.mon.duration_time}')
+        self.qt_self.label_temperature.setText(f'{round(float(self.radar_param.mon.temperature), 2)} °C')
+        self.qt_self.label_datarate.setText(f'{round(float(self.radar_param.mon.datarate)*1e-6, 2)}')
+        self.qt_self.label_frame_counter.setText(f'{int(self.radar_param.mon.duration_frame_counter)}')
+        self.qt_self.label_shape_repetition.setText(f'{int(self.radar_param.sys.shape_set_repetition)}')
+        self.qt_self.label_rx_tx_mode.setText(f'{int(self.radar_param.sys.rx_active_antennas[0])} / ' +
+                                              f'{int(sum(self.radar_param.sys.tx_active_antennas))}')
+        self.qt_self.label_tx_power.setText(f'{int(self.radar_param.sys.tx_power[0][0])} / {int(self.radar_param.sys.tx_power[1][1])} dBm')
+        self.qt_self.label_sampling_frequency.setText(f'{round(float(self.radar_param.sys.sampling_frequency*1e-6), 5)} MHz')
+        self.qt_self.label_chrip_sample.setText(str(int(self.radar_param.sys.n_samples_per_chirp[0])))
+        self.qt_self.label_frequency.setText(f'{round(float(self.radar_param.sys.start_frequency[0] * 1e-9), 2)} - '+
+                                             f'{round(float(self.radar_param.sys.end_frequency[0] * 1e-9), 2)} GHz')
+        self.qt_self.label_ramp_time.setText(f'{round(float(self.radar_param.sys.ramp_time[0] * 1e6), 2)} µs')
+        self.qt_self.label_bandwidth.setText(f'{round(float(self.radar_param.sys.ramp_bandwidth[0] * 1e-9), 2)} GHz')
+        self.qt_self.label_ramp_slope.setText(f'{round(float(self.radar_param.sys.ramp_slope[0] * 1e-12), 2)} MHz/µs')
+        self.qt_self.label_chirp_time.setText(f'{round(float(self.radar_param.sys.chirp_time[0]), 2)} ms')
+        self.qt_self.label_frame_duration.setText(f'{round(float(self.radar_param.sys.frame_duration)*1e3, 2)} ms')
+        self.qt_self.label_frames_per_second.setText(f'{round(float(self.radar_param.sys.frames_per_second), 2)} fps')
+        
+        # Range Labels
+        self.qt_self.label_range_resolution.setText(f'{round(float(self.radar_param.sys.resolution_range*1e3), 2)} mm')
+        self.qt_self.label_min_range.setText(f'{round(float(self.radar_param.sys.min_range), 2)} m')
+        self.qt_self.label_max_range.setText(f'{round(float(self.radar_param.sys.max_range), 2)} m')
+        
+        # Velocity Labels
+        self.qt_self.label_velocity_resolution.setText(f' {self.radar_param.sys.resolution_velocity[0]}')
+        self.qt_self.label_min_velocity.setText(f'{round(float(-self.radar_param.sys.max_velocity[0]), 2)} m/s')
+        self.qt_self.label_max_velocity.setText(f'{round(float(self.radar_param.sys.max_velocity[0]), 2)} m/s')
+        self.qt_self.sensor_id_plainTextEdit.setPlainText(f'{self.radar_param.mon.chip_id}')
+        # self.qt_self.sensor_id_plainTextEdit.setDisabled(True)
+        
     
     def rst_value_labels(self):
         self.qt_self.label_duration_time.setText(f'1')
         self.qt_self.label_temperature.setText(f'')
+        self.qt_self.label_datarate.setText(f'')
         self.qt_self.label_frame_counter.setText(f'')
         self.qt_self.label_shape_repetition.setText(f'')
         self.qt_self.label_rx_tx_mode.setText(f'')
-        self.qt_self.label_tx1_power.setText(f'')
+        self.qt_self.label_tx_power.setText(f'')
         self.qt_self.label_tx2_power.setText(f'')
         self.qt_self.label_sampling_frequency.setText(f'')
         self.qt_self.label_chrip_sample.setText(f'')
@@ -164,8 +173,11 @@ class MIRA6024_GUI_CTRL():
         self.qt_self.label_range_resolution.setText(f'')
         self.qt_self.label_min_range.setText(f'')
         self.qt_self.label_max_range.setText(f'')
+        
+        self.qt_self.label_velocity_resolution.setText(f'')
         self.qt_self.label_max_velocity.setText(f'')
         self.qt_self.label_min_velocity.setText(f'')
+        self.qt_self.sensor_id_plainTextEdit.setPlainText(f'')
 
     def init_value_check_box(self):
         self.qt_self.check_box_replay.setChecked(False)
@@ -178,7 +190,6 @@ class MIRA6024_GUI_CTRL():
         self.qt_self.tcp_remote_control_checkBox.setDisabled(True)
         self.qt_self.load_default_tcp_settings_button.setDisabled(True)
         self.qt_self.remote_tcp_connect_button.setDisabled(True)
-        self.qt_self.sensor_id_load_button.setDisabled(True)
         
         self.qt_self.browse_register_path_button.setDisabled(True)
         self.qt_self.browse_meas_out_path_button.setDisabled(True)
@@ -202,6 +213,12 @@ class MIRA6024_GUI_CTRL():
         self.qt_self.check_box_spectrum_rx2.setChecked(True)
         self.qt_self.check_box_spectrum_rx3.setChecked(True)
         self.qt_self.check_box_spectrum_rx4.setChecked(True)
+        
+        self.qt_self.check_box_rf_test_en.setChecked(False)
+        self.qt_self.check_box_rf_test_en_rx1.setChecked(False)
+        self.qt_self.check_box_rf_test_en_rx2.setChecked(False)
+        self.qt_self.check_box_rf_test_en_rx3.setChecked(False)
+        self.qt_self.check_box_rf_test_en_rx4.setChecked(False)
 
     def handle_replay_state(self) -> None:
         if self.qt_self.check_box_replay.isChecked():
@@ -228,6 +245,8 @@ class MIRA6024_GUI_CTRL():
             self.qt_self.headless_recording_check_box.setDisabled(False)
             self.radar_param.meas.measurement_flag = 1
             self.radar_param.rply.replay_flag = 0
+            self.qt_self.disconnect_device()
+            self.qt_self.start_auto_connect()
         else:
             self.qt_self.check_box_replay.setDisabled(False)
             self.qt_self.browse_register_path_button.setDisabled(True)
@@ -290,7 +309,7 @@ class MIRA6024_GUI_CTRL():
         self.qt_self.usb_auto_connect_checkBox.stateChanged.connect(self.handle_usb_auto_connect_state)
         self.qt_self.usb_connection_checkBox.stateChanged.connect(self.handle_usb_connection_state)
         self.qt_self.tcp_remote_control_checkBox.stateChanged.connect(self.handle_tcp_connection_state)
-
+        self.qt_self.headless_recording_check_box.stateChanged.connect(self.get_headless_recording_state)
         self.qt_self.check_box_hp_rx1.stateChanged.connect(self.get_hp_rx)
         self.qt_self.check_box_hp_rx2.stateChanged.connect(self.get_hp_rx)
         self.qt_self.check_box_hp_rx3.stateChanged.connect(self.get_hp_rx)
@@ -357,8 +376,8 @@ class MIRA6024_GUI_CTRL():
         if self.tab_name_main_instance_window == 'Range Doppler' or \
            self.tab_name_main_instance_window == 'Range Doppler Azimuth':
             self.mira_plotter.range_doppler.set_transform((0, plot_axis_max_value),
-                                                          (-self.radar_param.sys.max_velocity,
-                                                           self.radar_param.sys.max_velocity),
+                                                          (-self.radar_param.sys.max_velocity[0],
+                                                           self.radar_param.sys.max_velocity[0]),
                                                           (self.radar_param.sys.plot_axis_min_dbfs,
                                                            self.radar_param.sys.plot_axis_max_dbfs),
                                                           self.qt_self.processed_radar_data['Channel 1'].shape \
@@ -595,6 +614,14 @@ class MIRA6024_GUI_CTRL():
             measurement_duration_value *= 3600
         self.radar_param.meas.recording_duration = int(measurement_duration_value)
     
+    def get_headless_recording_state(self) -> None:
+        if self.qt_self.headless_recording_check_box.isChecked():
+            self.radar_param.meas.record_headless = True
+        else:
+            self.radar_param.meas.record_headless = False
+        self.get_gui_fps()
+        print(self.radar_param.meas.record_headless)
+            
     def get_recording_n_frames(self) -> None:
         recording_n_frames_text = self.qt_self.combo_box_measurement_duration.currentText()
         if recording_n_frames_text == 'Inf.':
@@ -806,14 +833,26 @@ def init_gui_window(app_instance, main_instance) -> QtWidgets.QApplication:
     width = rect.width()
     height = rect.height()
 
-    font = app.font()
-
+    print(width, height)
     if width >= 1400:
-        font_offset = 2
+        font_offset = 0
     if width >= 2000:
-        font_offset = 4
-    font.setPointSize(font.pointSize() + font_offset)
-    app.setFont(font)
+        font_offset = 2
+    # Create a temporary widget to get the current font settings
+    temp_widget = QtWidgets.QLabel()
+    current_font = temp_widget.font()
+    
+    # Check if the font size is set in points or pixels
+    if current_font.pointSize() > 0:
+        current_font_size = current_font.pointSize()
+    else:
+        current_font_size = current_font.pixelSize()
+    
+    # Adjust the font size by the offset
+    new_font_size = current_font_size + font_offset
+    
+    # Apply the new font size globally
+    app.setStyleSheet(f"QWidget {{ font-size: {new_font_size}pt; }}")
 
     MIRA_GUI_COLOR_PALETTE_PATH = config.get("MIRA_6024_EVAL_GUI", 
                                              "MIRA_GUI_COLOR_PALETTE_PATH")
@@ -833,8 +872,8 @@ def init_gui_window(app_instance, main_instance) -> QtWidgets.QApplication:
                                             "MIRA_GUI_START_MAXIMIZED")) 
     
     main_instance.setMinimumSize(QtCore.QSize(*MIRA_GUI_SCREEN_SIZE_MIN))  # Minimum size
-    # main_instance.setMaximumSize(QSize(3840, 2160))  # Maximum size (4k resolution)
-    main_instance.setMaximumSize(QtCore.QSize(width, height))  
+    main_instance.setMaximumSize(QSize(3840, 2160))  # Maximum size (4k resolution)
+    # main_instance.setMaximumSize(QtCore.QSize(width, height))  
     if MIRA_GUI_FULL_SCREEN == 'True':
         main_instance.showFullScreen()
     elif MIRA_GUI_START_MAXIMIZED == 'True':

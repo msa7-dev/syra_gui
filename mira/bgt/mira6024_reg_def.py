@@ -1044,7 +1044,7 @@ class RFT0_REG(IntEnum):
     RFTSIGCLK_DIV_ID = 0xf11
     RFTSIGCLK_DIV_POS = 0
     RFTSIGCLK_DIV_MSK = 0x001fff
-    RFTSIGCLK_DIV_SET = 0x001fff
+    RFTSIGCLK_DIV_SET = 0x0000
     RFTSIGCLK_DIV_RST = 0x001f40
 
     RFTSIGCLK_DIV_EN_ID = 0xf12
@@ -1264,7 +1264,7 @@ class CHIP_ID_1_REG(IntEnum):
 
     CHIP_ID_1_ID = 0xf90
     CHIP_ID_1_POS = 0
-    CHIP_ID_1_MSK = 0x000000
+    CHIP_ID_1_MSK = 0xffffff
     CHIP_ID_1_SET = 0x00
     CHIP_ID_1_RST = 0x00
 
@@ -1276,7 +1276,7 @@ class CHIP_ID_2_REG(IntEnum):
 
     CHIP_ID_2_ID = 0xf91
     CHIP_ID_2_POS = 0
-    CHIP_ID_2_MSK = 0x000000
+    CHIP_ID_2_MSK = 0xffffff
     CHIP_ID_2_SET = 0x00
     CHIP_ID_2_RST = 0x00
 

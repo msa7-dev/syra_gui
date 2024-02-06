@@ -25,7 +25,9 @@ More Information: README.md
 import __init__
 import time
 import click
+import subprocess
 import configparser
+import setproctitle
 from loguru import logger
 
 #import usb_hub # to switch usb hub ports on and off
@@ -284,7 +286,7 @@ def mira_gui():
 def mira_cli():
     import mira.ctrl.mira_cli as mira_eval_cli
     mira_cli_controller = mira_eval_cli.MIRA_MAIN_CLI()
-    mira_cli_controller.mira_cli_main()   
+    mira_cli_controller.mira_cli_main()
     
 
 # Call the cli as main to start click access

@@ -14,7 +14,7 @@ class MIRA_DEVICE:
         self.radar_param: MIRA6024_RADAR_PARAMETER = radar_param
         clear_log_file()
         self.init = True
-        self.mira_bridge = MIRA_USB_SPI_BRIDGE(self.radar_param)
+        self.mira_bridge = MIRA_USB_SPI_BRIDGE(self)
 
         if self.mira_bridge.device is None:
             self.init = False
@@ -26,12 +26,14 @@ class MIRA_DEVICE:
             register_instance = self.CONTENT.get(f"{attr}", 0)
             set_bgt_dev_register(register_instance)
             register_instance.CONVERT
-            
+        self.set_spi_high_speed()
+        self.set_header_prefix()
+        self.mira_bridge.init_fifo_overhead()
+
         generate_register_to_txt(self, save_to_file=True)
         generate_register_to_readable_txt(self, save_to_file=True)
         for reg in self.pll_1_shape_regs:
             reg.CONVERT
-        # reg_content_helper.status_overview(self)
         bgt_register_checker = check_sensor_register(self)
         logger.debug(f"BGT6024 register check: {'Pass' if bgt_register_checker else 'Fail'}")
         
@@ -161,11 +163,28 @@ class MIRA_DEVICE:
         self._chip_id_1_reg = MIRA6024_CONTENT.BGT_CHIP_ID_1(self)
         self._chip_id_2_reg = MIRA6024_CONTENT.BGT_CHIP_ID_2(self)
 
+    def set_spi_high_speed(self) -> None:
+        self._sfctl_reg.MISO_HS_RD = 1
+        
+    def set_header_prefix(self) -> None:
+        self._sfctl_reg.PREFIX_EN = 1
+        
     def init_mira_frame_generation(self) -> None:
         self.mira_bridge.spi_bgt_finished_init()
+        if self.radar_param.sys.rf_test_mode_en:
+            self._main_reg.FSM_RESET = 1
+            self._adc0_reg.TRIG_MADC = 1
+        
         self._main_reg.FRAME_START = 1 # BGT start frame generation
         
     def activate_rf_test_mode(self) -> None:
+        if self.radar_param.sys.rf_test_mode_en:
+            self._rft0_reg.RFTSIGCLK_DIV = int((80*1e6)/self.radar_param.sys.rf_test_ton)
+            self._rft0_reg.RFTSIGCLK_DIV_EN = 1
+            self._sfctl_reg.LFSR_EN = 1
+        else:
+            return
+        
         if self.radar_param.sys.rf_test_mode_en_channels[0]:
             self._rft0_reg.TEST_SIG_IF1_EN = 1
         if self.radar_param.sys.rf_test_mode_en_channels[1]:
@@ -175,12 +194,6 @@ class MIRA_DEVICE:
         if self.radar_param.sys.rf_test_mode_en_channels[3]:
             self._rft0_reg.TEST_SIG_IF4_EN = 1
 
-        if self.radar_param.sys.rf_test_mode_en:
-            self._rft0_reg.RFTSIGCLK_DIV_EN = 1
-            self._rft0_reg.RFTSIGCLK_DIV = int((80*1e6)/self.radar_param.sys.rf_test_ton)
-            self._adc0_reg.TRIG_MADC = 1
-
-
     def init_radar_system_parameters(self) -> None:
         self.radar_param.sys.n_frames_range_doppler = 1
         self.radar_param.sys.sampling_interval_time = 1/self.radar_param.sys.sampling_frequency
@@ -188,7 +201,6 @@ class MIRA_DEVICE:
                                              + (self.radar_param.sys.ramp_bandwidth / 2)
         self.radar_param.sys.lambda_freq = c / self.radar_param.sys.mid_frequency
 
-                                                   
         self.delta_range = np.float32(c / (2 * self.radar_param.sys.ramp_bandwidth[0]))
         self.radar_param.sys.max_dsp_freq = self.radar_param.sys.sampling_frequency / 2  # Nyquist Frequency 
         self.radar_param.sys.min_range = (c * (self.radar_param.sys.bgt_hp_fc[0]
@@ -200,19 +212,18 @@ class MIRA_DEVICE:
                                           / (self.radar_param.sys.ramp_slope[0] * 2)
 
         timing_once_each_frame = self.radar_param.sys.t_wkup + self.radar_param.sys.t_fed + self.radar_param.sys.t_init0 + self.radar_param.sys.t_init1
-        const_timings_each_chirp = self.radar_param.sys.t_start + self.radar_param.sys.t_end + self.radar_param.sys.t_sstart + self.radar_param.sys.t_paen
-        chirp_timings = [(self.radar_param.sys.t_ed[0] + self.radar_param.sys.ramp_time[0] + self.radar_param.sys.t_ed[4]),
-                        (self.radar_param.sys.t_ed[1] + self.radar_param.sys.ramp_time[1] + self.radar_param.sys.t_ed[5])]
-        shape_timing = self.radar_param.sys.t_sed[0] + self.radar_param.sys.t_sed[1]
-        print(f"{timing_once_each_frame=}", f"{const_timings_each_chirp=}", f"{chirp_timings=}", f"{self.radar_param.sys.t_sed=}")
-        print(f'{self.radar_param.sys.t_ed=}')
-
-        self.radar_param.sys.frame_duration = timing_once_each_frame + shape_timing * (self.radar_param.sys.shape_set_repetition-1) +\
-                                           (((const_timings_each_chirp + chirp_timings[0]) * self.radar_param.sys.shape_repetition[0]) + \
-                                             (const_timings_each_chirp + chirp_timings[1]) * self.radar_param.sys.shape_repetition[1]) * (self.radar_param.sys.shape_set_repetition) 
+        const_timings_each_chirp = self.radar_param.sys.t_start + self.radar_param.sys.t_end
+        chirp_timings = [(self.radar_param.sys.t_ed[0] + self.radar_param.sys.ramp_time[0]),
+                         (self.radar_param.sys.t_ed[1] + self.radar_param.sys.ramp_time[1])]
+        shape_timings = self.radar_param.sys.t_sed[0] * self.radar_param.sys.shape_set_repetition \
+                      + self.radar_param.sys.t_sed[1] * (self.radar_param.sys.shape_set_repetition-1)
+        
+        self.radar_param.sys.frame_duration = timing_once_each_frame + shape_timings +\
+                                          ((((const_timings_each_chirp + chirp_timings[0]) * self.radar_param.sys.shape_repetition[0])) + \
+                                            ((const_timings_each_chirp + chirp_timings[1]) * self.radar_param.sys.shape_repetition[1])) * self.radar_param.sys.shape_set_repetition
         print(f'{self.radar_param.sys.frame_duration=}')
-
-
+        self.radar_param.sys.frames_per_second = (1/self.radar_param.sys.frame_duration)
+ 
         print(self.radar_param.sys.pulse_repetition_time) 
         self.radar_param.sys.pulse_repetition_time = chirp_timings[0] + const_timings_each_chirp + self.radar_param.sys.t_sed[0]
         print(self.radar_param.sys.pulse_repetition_time) 
@@ -225,7 +236,17 @@ class MIRA_DEVICE:
         self.radar_param.sys.resolution_velocity = \
             np.float32(self.radar_param.sys.lambda_freq[0] \
                         / (4 * self.radar_param.sys.coherent_pulse_interval * 2))
+        self.calc_system_parameters()
         
+    def calc_system_parameters(self):
+        self.radar_param.sys.max_velocity = np.float32(self.radar_param.sys.lambda_freq / (4 * self.radar_param.sys.pulse_repetition_time))
+        self.radar_param.sys.resolution_range = np.float32(c / (2 * self.radar_param.sys.ramp_bandwidth[0]))
+        self.radar_param.sys.max_dsp_freq = np.float32(self.radar_param.sys.sampling_frequency / 2) 
+        self.radar_param.sys.min_range = np.float32(c * self.radar_param.dsp.hp_filter_cutoff / (2 * self.radar_param.sys.ramp_slope[0]))
+        self.radar_param.sys.max_range = np.float32(c * self.radar_param.sys.max_dsp_freq / (2 * self.radar_param.sys.ramp_slope[0]))  
+        self.radar_param.sys.resolution_velocity = \
+            np.float32(self.radar_param.sys.lambda_freq / (4 * self.radar_param.sys.coherent_pulse_interval *2))
+            
     @property
     def CONTENT(self):
         return build_content(self)

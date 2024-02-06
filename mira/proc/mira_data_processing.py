@@ -1,10 +1,10 @@
 import __init__
 import os 
 import time
-import queue
 import psutil
 import numpy as np
 import configparser
+import setproctitle
 import multiprocessing
 from pathlib import Path
 from typing import Any, Callable, Dict, List, Optional
@@ -94,13 +94,14 @@ class MIRA6024_DATA_PROCESSOR():
         current_process = psutil.Process(os.getpid())
         current_process.cpu_affinity([MIRA_PROCESSING_CPU_CORE])
         current_process.nice(MIRA_PROCESS_PRIO)
+        setproctitle.setproctitle("Sykno - MiRa Eval GUI - Processing Process")
 
-        radar_data_cube = np.zeros((np.uint16(self.radar_param.sys.n_samples_per_chirp[0]),       # Dim. 1
-                                    np.uint8(4*2), #self.radar_param.sys.rx_active_antennas * # Dim. 2
-                                              #self.radar_param.sys.tx_active_antennas), # Dim. 2 
-                                    self.radar_param.sys.shape_set_repetition),   # Dim. 3
+        radar_data_cube = np.zeros((np.uint16(self.radar_param.sys.n_samples_per_chirp[0]), # Dim. 1
+                                    int(self.radar_param.sys.rx_active_antennas[0] *        # Dim. 2
+                                        sum(self.radar_param.sys.tx_active_antennas)),
+                                    self.radar_param.sys.shape_set_repetition),             # Dim. 3
                                    dtype=np.uint16) 
-        self.max_value_type = 'freq'
+
         self.counter = 0
         while not stop_event.is_set():
             if not radar_data_extraced_queue.empty():
@@ -183,8 +184,6 @@ class MIRA6024_DATA_PROCESSOR():
         elif self.spectrogram_tab_index == 'TX2':
             ch_fft = self._calc_rfft_channels(np.mean(ch_data[:,4:8,:], axis=2, dtype=np.float32))
             
-        self.radar_param.sys.frame_duration = 103*1e-3
-        self.radar_param.sys.shape_set_repetition = 16
         self.n_frames_spectrogram = np.uint32(np.divide(np.abs(self.waterfall_spectrogram_time), 
                                                         self.radar_param.sys.frame_duration))
 
@@ -216,27 +215,26 @@ class MIRA6024_DATA_PROCESSOR():
             ch_data = ch_data[:,:,4:8]
         
         n_samples = ch_data.shape[1]
-        ch_fft_range = np.fft.rfft(ch_data, 
-                        n=n_samples+self.padding_len-1, 
-                        axis=1)
+        ch_fft_range = np.fft.rfft(ch_data, n=n_samples+self.padding_len-1, axis=1)
         
-        # hanning_window = np.hanning(ch_data.shape[0])
+        hanning_window = np.hanning(ch_data.shape[0])
 
-        # self.fft_window = hanning_window[:, np.newaxis, np.newaxis]
+        self.fft_window = hanning_window[:, np.newaxis, np.newaxis]
         
-        # ch_fft_range_win = ch_fft_range * self.fft_window
+        ch_fft_range_win = ch_fft_range * self.fft_window
 
-        ch_fft_distance = (np.fft.fft(ch_fft_range, n=ch_data.shape[0]+self.padding_len, axis=0))
-        # ch_fft_distance = (np.abs(ch_fft_distance) + np.finfo(float).eps).astype(np.float32)
+        ch_fft_distance = (np.fft.fft(ch_fft_range_win, n=ch_data.shape[0]+self.padding_len, axis=0))
 
         range_doppler =  (20*np.log10(np.abs(np.fft.fftshift(ch_fft_distance, axes=0)) \
                         + np.finfo(float).eps)).astype(np.float32)
+        
         if self.max_value_type == 'range':
             self.range_doppler_map = (range_doppler[0:range_doppler.shape[0],
                                                     0:int(self.max_value/(self.radar_param.sys.max_range
                                                                         / range_doppler.shape[1])),:])
         elif self.max_value_type == 'freq':
             self.range_doppler_map = (range_doppler[0:range_doppler.shape[0],:,:])
+            
         return np.array(self.range_doppler_map, dtype=np.float32)
     
     def _prepare_range_doppler_output_format(self, ch_data: np.ndarray) -> dict:

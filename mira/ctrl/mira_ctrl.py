@@ -34,20 +34,15 @@ class MIRA6024_CTRL_GUI:
             # self.mira_device = self.data_simulator.mira_device
             # if self.mira_device is None:
                 # return 
+
         self.data_processor = MIRA6024_DATA_PROCESSOR(self.radar_param)
         
 # TODO remove and clean up
     def init_CTRL(self) -> None:
+        self.set_spi_high_speed()
         self.set_header_prefix()
-        self.get_frame()
-        self.set_n_fifo_overhead()
+        # self.get_frame()
         
-    def set_n_fifo_overhead(self) -> None:
-        USB_SPI_BRIDGE_DATA_ALLOCATION = int(self.config.get("MIRA_USB_SPI_BRIDGE", 
-                                                             "USB_SPI_BRIDGE_DATA_ALLOCATION")) 
-        self.radar_param.sys.n_fifo_overhead = np.uint8(USB_SPI_BRIDGE_DATA_ALLOCATION/(self.radar_param.sys.n_samples_per_chirp[0]*3*(4/2))) # TODO 4
-        self.mira_device.mira_bridge.spi_set_n_fifo_overhead(self.radar_param.sys.n_fifo_overhead)
-      
     def set_spi_high_speed(self) -> None:
         self.mira_device._sfctl_reg.MISO_HS_RD = 1
         

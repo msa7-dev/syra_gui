@@ -81,7 +81,6 @@ class BGT_MAIN:
     def TR_WKUP_MUL(self, value):
         self._TR_WKUP_MUL = value
         set_reg_val(self)
-        self.calculate_wakeup_time()
 
     @property
     def TR_WKUP(self):
@@ -317,15 +316,8 @@ class BGT_CHIP_VERSION:
     def RF_ID(self, value):
         self._RF_ID = value
     
-    def get_chip_version(self) -> None:
-        if self._DIGITAL_ID == 5:
-            self.radar_param.mon.chip_version_digital_id = str("BGT60ATR24C")
-        
-        if self._RF_ID == 4:
-            self.radar_param.mon.chip_version_rf_id = str("2ch Tx, 4ch Rx")
-
     def convert_all_values(self):
-        self.get_chip_version()
+        pass
         
     @property
     def CONTENT(self):
@@ -2410,6 +2402,7 @@ class BGT_DFT0:
     @EFUSE_SENSE.setter
     def EFUSE_SENSE(self, value):
         self._EFUSE_SENSE = value
+        set_reg_val(self)
 
     @property
     def EFUSE_EN(self):
@@ -2418,6 +2411,7 @@ class BGT_DFT0:
     @EFUSE_EN.setter
     def EFUSE_EN(self, value):
         self._EFUSE_EN = value
+        set_reg_val(self)
         
     def convert_all_values(self):
         pass

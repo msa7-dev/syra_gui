@@ -3,6 +3,7 @@ import sys
 import time
 import numpy as np
 import configparser
+import setproctitle
 from loguru import logger
 from threading import Thread
 from typing import List, Optional
@@ -24,9 +25,10 @@ class MIRA_MAIN_GUI(QtWidgets.QMainWindow):
         
         MIRA_UI_PYQT_FILE_PATH = self.config.get("MIRA_6024_EVAL_GUI",
                                                  "MIRA_UI_PYQT_FILE_PATH")
-        
+
+        setproctitle.setproctitle('Sykno - MiRa Eval GUI - GUI Process')
         uic.loadUi(f"{MIRA_UI_PYQT_FILE_PATH}", self)
-        
+
         logger.debug(f"Start Sykno {str(self.config.get('DEFAULT', 'SYKNO_PRODUCT'))} Evaluation GUI")
 
         self.running = False
@@ -34,6 +36,7 @@ class MIRA_MAIN_GUI(QtWidgets.QMainWindow):
         self.mira_controller = None
         self.graph_update_flag = False
         
+        self.ups = 2
         self.fps_timer = None
         self.connect_timer = None
         self.update_gui_timer = None
@@ -45,8 +48,6 @@ class MIRA_MAIN_GUI(QtWidgets.QMainWindow):
         
         self.plot_channel_order_list = ['RX1 TX1', 'RX2 TX1', 'RX3 TX1', 'RX4 TX1',
                                         'RX1 TX2', 'RX2 TX2', 'RX3 TX2', 'RX4 TX2']
-        self.ups = 2
-        
 
     def set_updates_per_sec(self, timer: QtCore.QTimer, fps: int) -> None:
         timer.start(int(1000 / fps))  # Interval in milliseconds
@@ -55,10 +56,7 @@ class MIRA_MAIN_GUI(QtWidgets.QMainWindow):
         self.radar_param = MIRA6024_RADAR_PARAMETER()
         self.gui_controller = MIRA6024_GUI_CTRL(self, self.radar_param)
         self.gui_controller.update_radar_params()
-        if self.radar_param.gui.auto_connect_device:
-            self.connect_timer = QtCore.QTimer()
-            self.connect_timer.timeout.connect(self.auto_connect_device)
-            self.set_updates_per_sec(self.connect_timer, 1)
+        self.start_auto_connect()
             
     def mira_gui_main() -> None:
         init_gui_qtwidgets()
@@ -85,15 +83,14 @@ class MIRA_MAIN_GUI(QtWidgets.QMainWindow):
             else:
                 self.button_startstop.setText("Stop")
             
-            
             self.prev_time = 0
             self.start_time = time.time() 
             self.mira_processor = MIRA_MULTIPROCESSOR(self.mira_controller)
             
             self.gui_controller.get_axis_x()
             self.gui_controller.update_bgt_hp_filter()
-            self.mira_controller.mira_device.activate_rf_test_mode()
             self.gui_controller.update_radar_params()
+            self.mira_controller.mira_device.activate_rf_test_mode()
             self.mira_controller.mira_device.init_mira_frame_generation()
             self.mira_processor.start_processes()
 
@@ -111,12 +108,23 @@ class MIRA_MAIN_GUI(QtWidgets.QMainWindow):
             self.mira_processor.stop_processes()
 
             self.mira_controller.mira_device.mira_bridge.deinit_stm_usb_device()
-            
             self.mira_controller = None
+            
             self.button_startstop.clicked.connect(self.start_stop)
+            self.start_auto_connect()
         else:
             return
-    
+        
+    def start_auto_connect(self) -> None:
+        if self.radar_param.gui.auto_connect_device:
+            self.connect_timer = QtCore.QTimer()
+            self.connect_timer.timeout.connect(self.auto_connect_device)
+            self.set_updates_per_sec(self.connect_timer, 1)
+            
+    def disconnect_device(self) -> None:
+        self.mira_controller.mira_device.mira_bridge.deinit_stm_usb_device()
+        self.mira_controller = None
+            
     def auto_connect_device(self) -> None:
         if self.mira_controller is None:
             self.mira_controller = MIRA6024_CTRL_GUI(self.radar_param)
@@ -127,23 +135,25 @@ class MIRA_MAIN_GUI(QtWidgets.QMainWindow):
         self.connect_timer.timeout.disconnect()
         self.gui_controller.set_device_connected()
         self.gui_controller.update_radar_params()
-
-
         
     def start_gui_event_timer(self) -> None:
-        if self.fps_timer is not None and \
-           self.update_gui_timer is not None:
-            self.fps_timer.stop() 
-            self.update_gui_timer.stop()
+        if self.fps_timer is not None:
+            self.fps_timer.stop()
             self.fps_timer.timeout.disconnect()
+        if self.update_gui_timer is not None:
+            self.update_gui_timer.stop()
             self.update_gui_timer.timeout.disconnect()
 
-        self.fps_timer = QtCore.QTimer()
         self.update_gui_timer = QtCore.QTimer()
-        self.fps_timer.timeout.connect(self.update_plot)
         self.update_gui_timer.timeout.connect(self.update_gui)
-        self.set_updates_per_sec(self.fps_timer, self.radar_param.gui.fps)
         self.set_updates_per_sec(self.update_gui_timer, self.ups)
+        
+        if not self.radar_param.meas.record_headless:
+            self.fps_timer = QtCore.QTimer()
+            self.fps_timer.timeout.connect(self.update_plot)
+            self.set_updates_per_sec(self.fps_timer, self.radar_param.gui.fps)
+        else: 
+            self.fps_timer = None
         
     def connect_tcp_client(self) -> None:
         if not self.tcp_remote_control_checkBox.isChecked():
@@ -168,14 +178,16 @@ class MIRA_MAIN_GUI(QtWidgets.QMainWindow):
                 update_info_dict = self.mira_processor.update_gui_info_queue.get(block=False)
                 self.radar_param.mon.temperature = float(update_info_dict['temperature'])
                 self.radar_param.mon.duration_frame_counter = str(update_info_dict['frame_cnt'])
+                self.radar_param.mon.datarate = float(update_info_dict['datarate'])
             else:
                 return
+            self.updata_datarate()
             self.update_frame_cnt()
             self.update_temperature()
             self.update_duration_time()
         else:
             return
-                
+            
     def update_frame_cnt(self) -> None:
         self.label_frame_counter.setText(self.radar_param.mon.duration_frame_counter)
     
@@ -197,6 +209,9 @@ class MIRA_MAIN_GUI(QtWidgets.QMainWindow):
             self.mira_processor.set_header_queue_event.set()
         else:
             self.mira_processor.set_header_queue_event.set()
+    
+    def updata_datarate(self) -> None:
+        self.label_datarate.setText(f'{round(self.radar_param.mon.datarate*1e-6, 2)} Mbps')
 
     def update_plot(self) -> None:
         if self.running and \
@@ -375,6 +390,3 @@ class MIRA_MAIN_GUI(QtWidgets.QMainWindow):
         self.mira_controller = None
 
         self.close()
-
-if __name__ == '__main__':
-    MIRA_MAIN_GUI.mira_gui_main()
