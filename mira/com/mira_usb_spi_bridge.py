@@ -5,7 +5,7 @@ import psutil
 import usb.core
 import usb.util
 import numpy as np
-import setproctitle
+# import setproctitle
 import configparser
 import multiprocessing
 
@@ -145,7 +145,7 @@ class MIRA_USB_SPI_BRIDGE():
                                                        "MIRA_AQUISITION_CPU_CORE"))
         current_process = psutil.Process(os.getpid())
         current_process.cpu_affinity([MIRA_AQUISITION_CPU_CORE])
-        setproctitle.setproctitle("Sykno - MiRa Eval GUI - Data Acquisition Process")
+        # setproctitle.setproctitle("Sykno - MiRa Eval GUI - Data Acquisition Process")
         
         MIRA_PROCESS_PRIO = np.int8(self.config.get("MIRA_HOST_SYS_PARAMETER", 
                                                     "MIRA_PROCESS_PRIO"))

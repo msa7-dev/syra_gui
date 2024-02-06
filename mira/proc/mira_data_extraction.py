@@ -5,7 +5,7 @@ import os
 import time
 import psutil
 import numpy as np
-import setproctitle
+# import setproctitle
 import configparser
 import multiprocessing
 from mira.meas.mira_save_meas import MIRA6024_SAVE_MEAS
@@ -40,7 +40,7 @@ class MIRA6024_DATA_EXTRACTOR():
         current_process = psutil.Process(os.getpid())
         current_process.cpu_affinity([MIRA_EXTRACTING_CPU_CORE])
         current_process.nice(MIRA_PROCESS_PRIO)
-        setproctitle.setproctitle("Sykno - MiRa Eval GUI - Extraction Process")
+        # setproctitle.setproctitle("Sykno - MiRa Eval GUI - Extraction Process")
         self.prev_frame_cnt = np.uint16(0)
         print(f"{self.radar_param.sys.rx_active_antennas=}, {self.radar_param.sys.tx_active_antennas=}")
         radar_data_cube_build_buffer = np.zeros((self.radar_param.sys.n_samples_per_chirp[0], # Dim 1 - Samples

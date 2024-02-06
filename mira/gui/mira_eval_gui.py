@@ -3,7 +3,7 @@ import sys
 import time
 import numpy as np
 import configparser
-import setproctitle
+# import setproctitle
 from loguru import logger
 from threading import Thread
 from typing import List, Optional
@@ -26,7 +26,7 @@ class MIRA_MAIN_GUI(QtWidgets.QMainWindow):
         MIRA_UI_PYQT_FILE_PATH = self.config.get("MIRA_6024_EVAL_GUI",
                                                  "MIRA_UI_PYQT_FILE_PATH")
 
-        setproctitle.setproctitle('Sykno - MiRa Eval GUI - GUI Process')
+        # setproctitle.setproctitle('Sykno - MiRa Eval GUI - GUI Process')
         uic.loadUi(f"{MIRA_UI_PYQT_FILE_PATH}", self)
 
         logger.debug(f"Start Sykno {str(self.config.get('DEFAULT', 'SYKNO_PRODUCT'))} Evaluation GUI")

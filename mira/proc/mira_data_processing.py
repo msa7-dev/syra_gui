@@ -4,7 +4,7 @@ import time
 import psutil
 import numpy as np
 import configparser
-import setproctitle
+# import setproctitle
 import multiprocessing
 from pathlib import Path
 from typing import Any, Callable, Dict, List, Optional
@@ -94,7 +94,7 @@ class MIRA6024_DATA_PROCESSOR():
         current_process = psutil.Process(os.getpid())
         current_process.cpu_affinity([MIRA_PROCESSING_CPU_CORE])
         current_process.nice(MIRA_PROCESS_PRIO)
-        setproctitle.setproctitle("Sykno - MiRa Eval GUI - Processing Process")
+        # setproctitle.setproctitle("Sykno - MiRa Eval GUI - Processing Process")
 
         radar_data_cube = np.zeros((np.uint16(self.radar_param.sys.n_samples_per_chirp[0]), # Dim. 1
                                     int(self.radar_param.sys.rx_active_antennas[0] *        # Dim. 2
