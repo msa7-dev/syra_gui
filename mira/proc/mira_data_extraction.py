@@ -46,7 +46,7 @@ class MIRA_DATA_EXTRACTOR():
         radar_data_cube_build_buffer = np.zeros((self.radar_param.sys.n_samples_per_chirp[0], # Dim 1 - Samples
                                                 int(self.radar_param.sys.rx_active_antennas[0]), # Dim. 2 - Number RX Antennas
                                                 int(sum(self.radar_param.sys.tx_active_antennas)), # Dim. 3 - Number Chirps per Shape
-                                                self.radar_param.sys.shape_set_repetition, # Dim. 4 - Shape Set Repetition
+                                                int(self.radar_param.sys.shape_set_repetition), # Dim. 4 - Shape Set Repetition
                                                  self.radar_param.sys.max_frame_cnt), # Dim. 5
                                                 dtype=np.uint16)
         
