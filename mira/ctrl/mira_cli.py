@@ -7,10 +7,10 @@ from loguru import logger
 from typing import List, Optional
 from PyQt5 import uic, QtCore, QtWidgets
 
-from mira.ctrl.mira_ctrl import MIRA6024_CTRL_CLI
-from mira.rsys.mira_radar_sys import MIRA6024_RADAR_PARAMETER
+from mira.ctrl.mira_ctrl import MIRA_CTRL_CLI
+from mira.rsys.mira_radar_sys import MIRA_RADAR_PARAMETER
 from mira.ctrl.mira_multiprocessing import MIRA_MULTIPROCESSOR
-from mira.gui.mira_gui_ctrl import MIRA6024_GUI_CTRL, init_gui_window, init_gui_qtwidgets
+from mira.gui.mira_gui_ctrl import MIRA_GUI_CTRL, init_gui_window, init_gui_qtwidgets
 
 # ==============================================================================
 # Class Name: MiRa60241AMainWindow
@@ -28,7 +28,7 @@ class MIRA_MAIN_CLI():
         self.mira_processor = MIRA_MULTIPROCESSOR(self.mira_controller)
 
     def mira_cli_main(self):
-        self.mira_controller = MIRA6024_CTRL_CLI(self.radar_param)
+        self.mira_controller = MIRA_CTRL_CLI(self.radar_param)
 
         if self.mira_controller is None:
             self.mira_controller = None

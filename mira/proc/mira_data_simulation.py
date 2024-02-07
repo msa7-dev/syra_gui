@@ -1,22 +1,21 @@
 import __init__
-from pathlib import Path
 
 import os 
 import time
+import queue
 import psutil
 import numpy as np
 import configparser
 import multiprocessing
-import queue
-from mira.rsys.mira_radar_sys import MIRA6024_RADAR_PARAMETER
+from mira.rsys.mira_radar_sys import MIRA_RADAR_PARAMETER
 
 # ==============================================================================
-# Class Name: MIRA6024_DATA_PLAYER
+# Class Name: MIRA_DATA_PLAYER
 # ==============================================================================
-class MIRA6024_DATA_SIMULATOR():
-    def __init__(self, radar_param):
+class MIRA_DATA_SIMULATOR():
+    def __init__(self, radar_param: MIRA_RADAR_PARAMETER):
         self.mira_device = None
-        pass
+
     def data_simulating_process(self, prefix_header_queue: multiprocessing.Queue, 
                                 radar_data_extraced_queue: multiprocessing.Queue,
                                 stop_event: multiprocessing.Event,
@@ -30,14 +29,8 @@ class MIRA6024_DATA_SIMULATOR():
 
         current_process = psutil.Process(os.getpid())
         current_process.cpu_affinity([MIRA_EXTRACTING_CPU_CORE])
+        current_process.nice(MIRA_PROCESS_PRIO)
         
-        if os.name == 'nt':  # Windows
-            # current_process.nice(psutil.HIGH_PRIORITY_CLASS)
-            pass
-        else:  # Assume Unix/Linux
-            current_process.nice(MIRA_PROCESS_PRIO)
-        
-
         while not stop_event.is_set():
             # check multiprocessing queue if there is new data available 
             try:

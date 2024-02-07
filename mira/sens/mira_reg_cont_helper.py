@@ -6,7 +6,7 @@ from enum import IntEnum
 from pathlib import Path
 from loguru import logger
 
-import mira.bgt.mira6024_reg_def as BGT_REG
+import mira.sens.mira6024_reg_def as BGT_REG
 
 def check_sensor_register(instance) -> bool:
     checker = False

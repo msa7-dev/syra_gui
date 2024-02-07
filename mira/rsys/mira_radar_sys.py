@@ -1,37 +1,38 @@
 import numpy as np
 from pathlib import Path
-from scipy.constants import c
 
 # ==============================================================================
-# Class Name: MIRA6024_RADAR_PARAMETER
+# Class Name: MIRA_RADAR_PARAMETER
 # ==============================================================================
-class MIRA6024_RADAR_PARAMETER():
+class MIRA_RADAR_PARAMETER():
     def __init__(self) -> None:
-        self.gui = MIRA6024_RADAR_GUI_PARAMETER()
-        self.dsp = MIRA6024_RADAR_DSP_PARAMETER()
-        self.sys = MIRA6024_RADAR_SYSTEM_PARAMETER(self.dsp)
-        self.mon = MIRA6024_RADAR_MONITORING_PARAMETER()
-        self.meas = MIRA6024_RADAR_MEAS_PARAMETER()
-        self.rply = MIRA6024_RADAR_RPLY_PARAMETER()
-        self.remt = MIRA6024_RADAR_REMT_PARAMETER()
+        self.gui  = MIRA_RADAR_GUI_PARAMETER()
+        self.dsp  = MIRA_RADAR_DSP_PARAMETER()
+        self.sys  = MIRA_RADAR_SYS_PARAMETER()
+        self.mon  = MIRA_RADAR_MON_PARAMETER()
+        self.meas = MIRA_RADAR_MEAS_PARAMETER()
+        self.rply = MIRA_RADAR_RPLY_PARAMETER()
+        self.remt = MIRA_RADAR_REMT_PARAMETER()
 
 # ==============================================================================
-# Class Name: MIRA6024_RADAR_DSP_PARAMETER
+# Class Name: MIRA_RADAR_DSP_PARAMETER
 # ==============================================================================
-class MIRA6024_RADAR_DSP_PARAMETER():
+class MIRA_RADAR_DSP_PARAMETER():
     def __init__(self) -> None:
-        self.axis_unit = str('')
         self.axis_max_value = np.uint32(0)
         self.padding_len = np.uint16(0)
         self.window_func = str('')
-        self.hp_filter_cutoff = np.uint32(0)
-        self.hp_filter_order = np.uint8(0)
+        self.axis_unit = str('')
+        
+        # DSP HP Filter Parameters
         self.hp_filter_type = str('')
+        self.hp_filter_order = np.uint8(0)
+        self.hp_filter_cutoff = np.uint32(0)
 
 # ==============================================================================
-# Class Name: MIRA6024_RADAR_MONITORING_PARAMETER
+# Class Name: MIRA_RADAR_MON_PARAMETER
 # ==============================================================================
-class MIRA6024_RADAR_MONITORING_PARAMETER():
+class MIRA_RADAR_MON_PARAMETER():
     def __init__(self) -> None:
         self.duration_frame_counter = np.uint32(0)
         self.duration_time = np.float32(0)
@@ -46,11 +47,10 @@ class MIRA6024_RADAR_MONITORING_PARAMETER():
         self.chip_id = str('')
         
 # ==============================================================================
-# Class Name: MIRA6024_RADAR_SYSTEM_PARAMETER
+# Class Name: MIRA_RADAR_SYS_PARAMETER
 # ==============================================================================
-class MIRA6024_RADAR_SYSTEM_PARAMETER():
-    def __init__(self, dsp: MIRA6024_RADAR_DSP_PARAMETER) -> None:
-        self.dsp = dsp
+class MIRA_RADAR_SYS_PARAMETER():
+    def __init__(self) -> None:
         self.rx_active_antennas = np.zeros((8), dtype=np.uint8)
         self.tx_active_antennas = np.zeros((8), dtype=np.uint8)
         self.tx_power = np.zeros((8,2), dtype=np.uint8)
@@ -112,24 +112,27 @@ class MIRA6024_RADAR_SYSTEM_PARAMETER():
         self.bgt_hp_fc = np.zeros((8), dtype=np.uint8)
         self.bgt_hp_gain = np.zeros((8), dtype=np.uint8)
 
-        # Chrip Timing
-        self.t_fed = np.float32(0)
+        # Chirp Timing - timings 
         self.t_start = np.float32(0)
         self.t_end = np.float32(0)
         self.t_paen = np.float32(0)
         self.t_sstart = np.float32(0)
 
-        # Startup Timing
+        # Frame Timing - timings once each frame
+        # Wake Up Time
         self.t_wkup = np.uint32(0)
+        # Sensor Init Time 0
         self.t_init0 = np.float32(0)
+        # Sensor Init Time 1
         self.t_init1 = np.float32(0)
+        # Frame End Delay
+        self.t_fed = np.float32(0) 
         
-        # Shape End Delay
+        # Shape End Delay - 4 elements one for each shape
         self.t_sed = np.zeros((4,), dtype=np.float32)
         
-        # Chirp End Delay - Up-Chirp
+        # Chirp End Delay - Up-Chirp first 4 elements, Down-Chirp last 4
         self.t_ed = np.zeros((8,), dtype=np.float32)
-        # Chirp End Delay - Down-Chirp
         
         self.pulse_repetition_time = np.float32(0)
         
@@ -139,15 +142,15 @@ class MIRA6024_RADAR_SYSTEM_PARAMETER():
                                          False, False]
 
 # ==============================================================================
-# Class Name: MIRA6024_RADAR_GUI_PARAMETER
+# Class Name: MIRA_RADAR_GUI_PARAMETER
 # ==============================================================================
-class MIRA6024_RADAR_GUI_PARAMETER():
+class MIRA_RADAR_GUI_PARAMETER():
     def __init__(self) -> None:
+        self.fps = np.uint8(0)
         self.project_name = str('')
         self.root_sys_path = Path()
         self.bgt_register_file_path = Path()
         self.auto_connect_device = False
-        self.fps = np.uint8(0)
         self.active_tx = [False, False]
         self.active_rx = [False, False, 
                           False, False]
@@ -155,32 +158,32 @@ class MIRA6024_RADAR_GUI_PARAMETER():
                          False, False]
         
 # ==============================================================================
-# Class Name: MIRA6024_RADAR_MEAS_PARAMETER
+# Class Name: MIRA_RADAR_MEAS_PARAMETER
 # ==============================================================================
-class MIRA6024_RADAR_MEAS_PARAMETER():
+class MIRA_RADAR_MEAS_PARAMETER():
     def __init__(self) -> None:
-        self.measurement_flag = False
         self.folder_path = Path()
         self.session_label = str('')
         self.record_headless = False
+        self.measurement_flag = False
         self.recording_duration = np.uint32(0)
         self.recording_n_frames = np.uint32(0)
 
 # ==============================================================================
-# Class Name: MIRA6024_RADAR_RPLY_PARAMETER
+# Class Name: MIRA_RADAR_RPLY_PARAMETER
 # ==============================================================================
-class MIRA6024_RADAR_RPLY_PARAMETER():
+class MIRA_RADAR_RPLY_PARAMETER():
     def __init__(self) -> None:
         self.replay_flag = False
         self.load_path_hdf5 = Path()
         
 # ==============================================================================
-# Class Name: MIRA6024_RADAR_REMT_PARAMETER
+# Class Name: MIRA_RADAR_REMT_PARAMETER
 # ==============================================================================
-class MIRA6024_RADAR_REMT_PARAMETER():
+class MIRA_RADAR_REMT_PARAMETER():
     def __init__(self) -> None:
         self.remote_flag = False
         self.client_flag = False
+        self.client_ssh_pwd = ''
         self.client_ip_port = []
         self.client_ssh_name = ''
-        self.client_ssh_pwd = ''

@@ -1,6 +1,5 @@
 import __init__
 import json
-import numpy as np
 import configparser
 import pyqtgraph as pg
 from pathlib import Path
@@ -9,28 +8,28 @@ from PyQt5 import QtWidgets, QtCore
 from PyQt5.QtCore import Qt, QSize
 from PyQt5.QtGui import QPalette, QColor
 
-from mira.rsys.mira_radar_sys import MIRA6024_RADAR_PARAMETER
-from mira.gui.mira_browser import MIRA6024_BROWSER
-from mira.gui.mira_plot_gui import MIRA6024_PLOTTER
-from mira.gui.mira_gui_cfg import MIRA6024_WIDGET_VALUES, MIRA6024_FUNC_PIPELINE
-# from mira.gui.mira_eval_gui import MIRA_MAIN_GUI
+from mira.gui.mira_browser import MIRA_BROWSER
+from mira.gui.mira_plot_gui import MIRA_PLOTTER
+from mira.rsys.mira_radar_sys import MIRA_RADAR_PARAMETER
+from mira.gui.mira_gui_cfg import MIRA_WIDGET_VALUES, MIRA_FUNC_PIPELINE
+
 # ==============================================================================
-# Class Name: MIRA6024_GUI_CTRL
+# Class Name: MIRA_GUI_CTRL
 # ==============================================================================
-class MIRA6024_GUI_CTRL():
-    def __init__(self, qt_self, radar_param: MIRA6024_RADAR_PARAMETER) -> None:
+class MIRA_GUI_CTRL():
+    def __init__(self, qt_self, radar_param: MIRA_RADAR_PARAMETER) -> None:
         self.config = configparser.ConfigParser()
         self.config.read(__init__.MIRA_SYS_CONFIG_PATH)
 
         self.qt_self = qt_self
-        self.radar_param: MIRA6024_RADAR_PARAMETER = radar_param
+        self.radar_param: MIRA_RADAR_PARAMETER = radar_param
         self.prev_select_axis_x = ''
-        self.widget_values = MIRA6024_WIDGET_VALUES()
-        self.bgt_reg_browser = MIRA6024_BROWSER(self.qt_self, "bgt_reg_browser")
-        self.meas_in_path_browser = MIRA6024_BROWSER(self.qt_self, "mira_meas_in_browser")
-        self.meas_out_path_browser = MIRA6024_BROWSER(self.qt_self, "mira_meas_out_browser")
-        self.mira_plotter = MIRA6024_PLOTTER(self.qt_self)
-        self.update_pipeline = MIRA6024_FUNC_PIPELINE(self.qt_self)
+        self.widget_values = MIRA_WIDGET_VALUES()
+        self.bgt_reg_browser = MIRA_BROWSER(self.qt_self, "bgt_reg_browser")
+        self.meas_in_path_browser = MIRA_BROWSER(self.qt_self, "mira_meas_in_browser")
+        self.meas_out_path_browser = MIRA_BROWSER(self.qt_self, "mira_meas_out_browser")
+        self.mira_plotter = MIRA_PLOTTER(self.qt_self)
+        self.update_pipeline = MIRA_FUNC_PIPELINE(self.qt_self)
         self.init_gui_widgets()
         
     def init_gui_widgets(self):

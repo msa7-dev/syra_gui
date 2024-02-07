@@ -4,25 +4,27 @@ import time
 import psutil
 import numpy as np
 import configparser
-# import setproctitle
+import setproctitle
 import multiprocessing
 from pathlib import Path
 from typing import Any, Callable, Dict, List, Optional
+from scipy.interpolate import griddata
 
-from mira.rsys.mira_radar_sys import MIRA6024_RADAR_PARAMETER
-from mira.proc.mira_data_preprocessing import MIRA6024_DATA_PREPROCESSOR
+from mira.rsys.mira_radar_sys import MIRA_RADAR_PARAMETER
+from mira.proc.mira_data_preprocessing import MIRA_DATA_PREPROCESSOR
+from mira.ctrl.mira_multiprocessing import distribute_cores_to_process
 
 Function = Callable[[Any], Any]
 # ==============================================================================
-# Class Name: MIRA6024_DATA_PROCESSOR
+# Class Name: MIRA_DATA_PROCESSOR
 # ==============================================================================
-class MIRA6024_DATA_PROCESSOR():
-    def __init__(self, radar_param: MIRA6024_RADAR_PARAMETER) -> None:
+class MIRA_DATA_PROCESSOR():
+    def __init__(self, radar_param: MIRA_RADAR_PARAMETER) -> None:
         self.config = configparser.ConfigParser()
         self.config.read(Path(__init__.MIRA_SYS_CONFIG_PATH).resolve())
         
         self.radar_param = radar_param
-        self.data_preprocessor = MIRA6024_DATA_PREPROCESSOR(self.radar_param)
+        self.data_preprocessor = MIRA_DATA_PREPROCESSOR(self.radar_param)
         
         self._init_buffers()
         self.prev_main_index = ''
@@ -80,21 +82,22 @@ class MIRA6024_DATA_PROCESSOR():
             raise ValueError(f"Pipeline '{pipeline_name}' not found")
 
     def data_processing_process(self, 
-                                radar_data_extraced_queue: multiprocessing.Queue,
-                                processed_radar_data_queue: multiprocessing.Queue,
+                                extracted_processing_data_queue: multiprocessing.Queue,
+                                processed_gui_data_queue: multiprocessing.Queue,
                                 gui_parameter_queue: multiprocessing.Queue,
-                                stop_event: multiprocessing.Event) -> None:
+                                process_stop_event: multiprocessing.Event) -> None:
         self.gui_parameter_queue = gui_parameter_queue
-        self.processed_radar_data_queue = processed_radar_data_queue
+        self.processed_gui_data_queue = processed_gui_data_queue
         MIRA_PROCESSING_CPU_CORE = int(self.config.get("MIRA_HOST_SYS_PARAMETER",
                                                        "MIRA_PROCESSING_CPU_CORE"))
         MIRA_PROCESS_PRIO = np.int8(self.config.get("MIRA_HOST_SYS_PARAMETER", 
                                                     "MIRA_PROCESS_PRIO"))
         
-        current_process = psutil.Process(os.getpid())
-        current_process.cpu_affinity([MIRA_PROCESSING_CPU_CORE])
-        current_process.nice(MIRA_PROCESS_PRIO)
-        # setproctitle.setproctitle("Sykno - MiRa Eval GUI - Processing Process")
+        mira_data_processing_process = psutil.Process(os.getpid())
+        mira_data_processing_process.cpu_affinity([MIRA_PROCESSING_CPU_CORE])
+        mira_data_processing_process.nice(MIRA_PROCESS_PRIO)
+        distribute_cores_to_process(mira_data_processing_process, 2)
+        setproctitle.setproctitle("Sykno - MiRa Eval GUI - Processing Process")
 
         radar_data_cube = np.zeros((np.uint16(self.radar_param.sys.n_samples_per_chirp[0]), # Dim. 1
                                     int(self.radar_param.sys.rx_active_antennas[0] *        # Dim. 2
@@ -103,11 +106,11 @@ class MIRA6024_DATA_PROCESSOR():
                                    dtype=np.uint16) 
 
         self.counter = 0
-        while not stop_event.is_set():
-            if not radar_data_extraced_queue.empty():
-                radar_data = radar_data_extraced_queue.get(block=False)
+        while not process_stop_event.is_set():
+            if not extracted_processing_data_queue.empty():
+                radar_data = np.array(extracted_processing_data_queue.get_nowait(), dtype=np.uint16)
             else:
-                time.sleep(250e-6) # wait 250us << processing time of data_extracting()
+                time.sleep(1e-3) # wait 250us << processing time of data_extracting()
                 continue
             
             # radar_data.shape = (samples, rx, tx, shape_set), dtype(np.uint16)
@@ -121,7 +124,7 @@ class MIRA6024_DATA_PROCESSOR():
                 self._call_dsp_pipeline(self.main_tab_index, radar_data_cube)
     
     def _update_gui_parameter(self) -> None:
-        gui_parameters = self.gui_parameter_queue.get(block=False)
+        gui_parameters = self.gui_parameter_queue.get_nowait()
         self.main_tab_index = gui_parameters['main_tab_index']
         self.time_tab_index = gui_parameters['time_tab_index']
         self.spectrogram_tab_index = gui_parameters['spectrogram_tab_index']
@@ -142,9 +145,9 @@ class MIRA6024_DATA_PROCESSOR():
             self._init_buffers()
     
     def _move_data_to_gui_queue(self, processed_radar_data: np.ndarray) -> None:
-        if self.processed_radar_data_queue.empty():
-            self.processed_radar_data_queue.put({'Process Info': {'Process Name': self.main_tab_index,},
-                                                 'Processed Data': processed_radar_data})
+        if self.processed_gui_data_queue.empty():
+            self.processed_gui_data_queue.put_nowait({'Process Info': {'Process Name': self.main_tab_index,},
+                                                      'Processed Data': processed_radar_data})
         return None
     
     def _scale_raw_data(self, raw_radar_data_cube: np.ndarray) -> np.ndarray:
@@ -234,14 +237,47 @@ class MIRA6024_DATA_PROCESSOR():
                                                                         / range_doppler.shape[1])),:])
         elif self.max_value_type == 'freq':
             self.range_doppler_map = (range_doppler[0:range_doppler.shape[0],:,:])
-            
+                
         return np.array(self.range_doppler_map, dtype=np.float32)
     
     def _prepare_range_doppler_output_format(self, ch_data: np.ndarray) -> dict:
         if self.main_tab_index == 'Range Doppler':
             return {'Channel 1': ch_data, 'Channel 2': np.zeros((1,1,1), dtype=np.float32)}
 
-        
+    def transform_range_azimuth_to_half_circle(self, range_azimuth_map):
+        output_shape = range_azimuth_map.shape
+        # Define the range (radius) and azimuth angles based on the input map dimensions
+        num_ranges, num_azimuths = range_azimuth_map.shape
+        ranges = np.linspace(0, 1, num_ranges)  # Normalize range to [0, 1] for simplicity
+        azimuths = np.linspace(-90, 90, num_azimuths)  # Azimuth angles from -90 to 90 degrees
+
+        # Create a grid in polar coordinates
+        r, az = np.meshgrid(ranges, np.radians(azimuths))
+
+        # Adjust the conversion to orient the half-circle upwards
+        # Swap x and y roles, and adjust azimuth angles for upward orientation
+        x = r * np.sin(az)
+        y = r * np.cos(az)  # This will orient the half-circle with the flat side up
+
+        # Ensure the half-circle is facing upwards by adjusting y
+        # y = -y  # This makes the top of the circle the maximum y-value
+
+        # Flatten the arrays for interpolation
+        points = np.vstack((x.flatten(), y.flatten())).T
+        values = range_azimuth_map.flatten()
+
+        # Create the Cartesian output grid
+        grid_x, grid_y = np.mgrid[
+            np.min(x):np.max(x):complex(output_shape[0]), 
+            np.min(y):np.max(y):complex(output_shape[1])
+        ]
+
+        # Interpolate the data onto the Cartesian grid
+        cartesian_map = griddata(points, values, (grid_x, grid_y), method='cubic', fill_value=0)
+
+        return cartesian_map
+
+    
     def _calc_range_azimuth(self, processed_data_cube: np.ndarray) -> np.ndarray:
         data_cube = np.array(processed_data_cube[:,:,0], dtype=np.complex64)
         az = np.deg2rad(np.linspace(-90,90,int(18*4+1)))
@@ -264,7 +300,9 @@ class MIRA6024_DATA_PROCESSOR():
             self.range_azimuth_map = self.range_azimuth_map[0:self.range_azimuth_map.shape[0],
                                                             0:int(self.max_value/(self.radar_param.sys.max_dsp_freq * 1e-3
                                                                                 /self.range_azimuth_map.shape[1]))]
-            
+        # print(self.range_azimuth_map.shape)
+        # self.range_azimuth_map = self.transform_range_azimuth_to_half_circle(self.range_azimuth_map.transpose((1,0)))
+
         return np.array(self.range_azimuth_map, dtype=np.float32)
 
     def _prepare_range_azimuth_output_format(self, ch_data: np.ndarray) -> dict:

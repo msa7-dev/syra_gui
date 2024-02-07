@@ -3,16 +3,16 @@ import numpy as np
 import configparser
 import pyqtgraph as pg
 from PyQt5 import QtGui
-from PyQt5.QtCore import Qt
-from PyQt5.QtGui import QColor, QPen
-from mira.rsys.mira_radar_sys import MIRA6024_RADAR_PARAMETER
+from PyQt5.QtGui import QColor
+from mira.rsys.mira_radar_sys import MIRA_RADAR_PARAMETER
+
 # ==============================================================================
-# Class Name: MIRA6024_PLOTTER
+# Class Name: MIRA_PLOTTER
 # ==============================================================================
-class MIRA6024_PLOTTER():
+class MIRA_PLOTTER():
     def __init__(self, qt_self):
         self.qt_self = qt_self
-        self.radar_param: MIRA6024_RADAR_PARAMETER = qt_self.radar_param
+        self.radar_param: MIRA_RADAR_PARAMETER = qt_self.radar_param
         self.time_signal = TIME_SIGNAL_PLOTTER(qt_self)  
         self.spectrum = SPECTRUM_PLOTTER(qt_self)
         self.spectrogram = SPECTROGRAM_PLOTTER(qt_self)
@@ -39,9 +39,9 @@ class MIRA6024_PLOTTER():
         self.range_azimuth.init_plot_parameters()
         
 # ==============================================================================
-# Class Name: MIRA6024_PLOT_CONFIG
+# Class Name: MIRA_PLOT_CONFIG
 # ==============================================================================
-class MIRA6024_PLOT_CONFIG():
+class MIRA_PLOT_CONFIG():
     def __init__(self, qt_self):
         self.config = configparser.ConfigParser()
         self.config.read(__init__.MIRA_SYS_CONFIG_PATH)
@@ -118,7 +118,7 @@ class MIRA6024_PLOT_CONFIG():
 # ==============================================================================
 class TIME_SIGNAL_PLOTTER():
     def __init__(self, qt_self):
-        self.plot_config = MIRA6024_PLOT_CONFIG(qt_self)
+        self.plot_config = MIRA_PLOT_CONFIG(qt_self)
         self.plot_time_list = [qt_self.plot_time_raw_data, 
                                qt_self.plot_time_dsp_output]
         self.init_plot_parameters()
@@ -186,7 +186,7 @@ class TIME_SIGNAL_PLOTTER():
 # ==============================================================================
 class SPECTRUM_PLOTTER():
     def __init__(self, qt_self):
-        self.plot_config = MIRA6024_PLOT_CONFIG(qt_self)
+        self.plot_config = MIRA_PLOT_CONFIG(qt_self)
         self.plot_spectrum = qt_self.plot_spectrum
         self.radar_param = qt_self.radar_param
         self.init_plot_parameters()
@@ -246,7 +246,7 @@ class SPECTRUM_PLOTTER():
 # ==============================================================================
 class SPECTROGRAM_PLOTTER():
     def __init__(self, qt_self):
-        self.plot_config = MIRA6024_PLOT_CONFIG(qt_self)
+        self.plot_config = MIRA_PLOT_CONFIG(qt_self)
         self.plot_spectrogram_list = [qt_self.plot_spectrogram_1, 
                                       qt_self.plot_spectrogram_2, 
                                       qt_self.plot_spectrogram_3, 
@@ -355,7 +355,7 @@ class SPECTROGRAM_PLOTTER():
 # ==============================================================================
 class RANGE_DOPPLER_PLOTTER():
     def __init__(self, qt_self):
-        self.plot_config = MIRA6024_PLOT_CONFIG(qt_self)
+        self.plot_config = MIRA_PLOT_CONFIG(qt_self)
         self.plot_range_doppler_list = [qt_self.plot_range_doppler_1, 
                                         qt_self.plot_range_doppler_2, 
                                         qt_self.plot_range_doppler_3, 
@@ -462,7 +462,7 @@ class RANGE_DOPPLER_PLOTTER():
 # ==============================================================================
 class RANGE_AZIMUTH_PLOTTER():
     def __init__(self, qt_self):
-        self.plot_config = MIRA6024_PLOT_CONFIG(qt_self)
+        self.plot_config = MIRA_PLOT_CONFIG(qt_self)
         self.plot_range_azimuth_list = [qt_self.plot_range_azimuth, 
                                         qt_self.plot_waterfall_azimuth_range_azimuth,
                                         qt_self.plot_range_doppler_azimuth_azimuth]

@@ -6,14 +6,14 @@ import pickle
 import numpy as np
 import configparser
 from datetime import datetime
-from mira.rsys.mira_radar_sys import MIRA6024_RADAR_PARAMETER
-from mira.bgt.mira_reg_cont_helper import generate_register_to_txt, \
+from mira.rsys.mira_radar_sys import MIRA_RADAR_PARAMETER
+from mira.sens.mira_reg_cont_helper import generate_register_to_txt, \
                                           generate_register_to_readable_txt
 
 # ==============================================================================
-# Class Name: MIRA6024_SAVE_MEAS
+# Class Name: MIRA_SAVE_MEAS
 # ==============================================================================
-class MIRA6024_SAVE_MEAS():
+class MIRA_SAVE_MEAS():
     def __init__(self, mira_device):
         self.config = configparser.ConfigParser()
         self.config.read(__init__.MIRA_SYS_CONFIG_PATH)
@@ -31,7 +31,7 @@ class MIRA6024_SAVE_MEAS():
         MIRA_MEAS_DATASET_GROUP_NAME = self.config.get("MIRA_SAVE_MEASUREMENT", 
                                                        "MIRA_MEAS_DATASET_GROUP_NAME")
         
-        self.radar_param: MIRA6024_RADAR_PARAMETER = mira_device.radar_param
+        self.radar_param: MIRA_RADAR_PARAMETER = mira_device.radar_param
         self.timestamp = str(datetime.now().strftime('%d_%m_%Y_%H_%M_%S'))
 
         self.hdf5_file_path = f'{MIRA_MEAS_HDF5_FOLDER_PATH}' + \

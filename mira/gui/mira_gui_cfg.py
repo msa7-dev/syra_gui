@@ -2,9 +2,9 @@ from typing import Callable, Dict, List, Any
 
 Function = Callable[[None], None]
 # ==============================================================================
-# Class Name: MIRA6024_FUNC_PIPELINE
+# Class Name: MIRA_FUNC_PIPELINE
 # ==============================================================================
-class MIRA6024_FUNC_PIPELINE():
+class MIRA_FUNC_PIPELINE():
     def __init__(self, qt_self) -> None:
         self.qt_self = qt_self
         self._create_func_compose_dict()
@@ -60,9 +60,9 @@ class MIRA6024_FUNC_PIPELINE():
         }
         
 # ==============================================================================
-# Class Name: MIRA6024_WIDGET_VALUES
+# Class Name: MIRA_WIDGET_VALUES
 # ==============================================================================
-class MIRA6024_WIDGET_VALUES():
+class MIRA_WIDGET_VALUES():
     def __init__(self) -> None:
         self._create_values_combo_box()
         

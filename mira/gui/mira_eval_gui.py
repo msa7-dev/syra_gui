@@ -1,18 +1,20 @@
 import __init__ 
+import os
 import sys
 import time
+import psutil
 import numpy as np
 import configparser
-# import setproctitle
+import setproctitle
 from loguru import logger
 from threading import Thread
 from typing import List, Optional
 from PyQt5 import uic, QtCore, QtWidgets
-from mira.ctrl.mira_ctrl import MIRA6024_CTRL_GUI
+from mira.ctrl.mira_ctrl import MIRA_CTRL_GUI
 from mira.com.mira_tcp_client import MIRA_TCP_CLIENT
-from mira.rsys.mira_radar_sys import MIRA6024_RADAR_PARAMETER
-from mira.ctrl.mira_multiprocessing import MIRA_MULTIPROCESSOR
-from mira.gui.mira_gui_ctrl import MIRA6024_GUI_CTRL, init_gui_window, init_gui_qtwidgets
+from mira.rsys.mira_radar_sys import MIRA_RADAR_PARAMETER
+from mira.gui.mira_gui_ctrl import MIRA_GUI_CTRL, init_gui_window, init_gui_qtwidgets
+from mira.ctrl.mira_multiprocessing import MIRA_MULTIPROCESSOR,distribute_cores_to_process
 
 # ==============================================================================
 # Class Name: MIRA_MAIN_GUI
@@ -26,7 +28,12 @@ class MIRA_MAIN_GUI(QtWidgets.QMainWindow):
         MIRA_UI_PYQT_FILE_PATH = self.config.get("MIRA_6024_EVAL_GUI",
                                                  "MIRA_UI_PYQT_FILE_PATH")
 
-        # setproctitle.setproctitle('Sykno - MiRa Eval GUI - GUI Process')
+        setproctitle.setproctitle('Sykno - MiRa Eval GUI - GUI Process')
+        mira_eval_gui_main_process = psutil.Process(os.getpid())
+        mira_eval_gui_main_process.cpu_affinity([3])
+        mira_eval_gui_main_process.nice(-20)
+        distribute_cores_to_process(mira_eval_gui_main_process, 3)
+        
         uic.loadUi(f"{MIRA_UI_PYQT_FILE_PATH}", self)
 
         logger.debug(f"Start Sykno {str(self.config.get('DEFAULT', 'SYKNO_PRODUCT'))} Evaluation GUI")
@@ -53,8 +60,8 @@ class MIRA_MAIN_GUI(QtWidgets.QMainWindow):
         timer.start(int(1000 / fps))  # Interval in milliseconds
 
     def init_gui_controller(self):
-        self.radar_param = MIRA6024_RADAR_PARAMETER()
-        self.gui_controller = MIRA6024_GUI_CTRL(self, self.radar_param)
+        self.radar_param = MIRA_RADAR_PARAMETER()
+        self.gui_controller = MIRA_GUI_CTRL(self, self.radar_param)
         self.gui_controller.update_radar_params()
         self.start_auto_connect()
             
@@ -74,7 +81,7 @@ class MIRA_MAIN_GUI(QtWidgets.QMainWindow):
             self.button_startstop.clicked.connect(self.start_stop)
             
             if self.mira_controller is None:
-                self.mira_controller = MIRA6024_CTRL_GUI(self.radar_param)
+                self.mira_controller = MIRA_CTRL_GUI(self.radar_param)
 
             if self.mira_controller.mira_device.mira_bridge.device is None:
                 self.mira_controller = None
@@ -102,7 +109,7 @@ class MIRA_MAIN_GUI(QtWidgets.QMainWindow):
             self.button_startstop.clicked.disconnect()
             self.button_startstop.setText("Start")
 
-            self.mira_processor.stop_event.set()
+            self.mira_processor.process_stop_event.set()
             self.running = False
             self.graph_update_flag = False
             self.mira_processor.stop_processes()
@@ -127,7 +134,7 @@ class MIRA_MAIN_GUI(QtWidgets.QMainWindow):
             
     def auto_connect_device(self) -> None:
         if self.mira_controller is None:
-            self.mira_controller = MIRA6024_CTRL_GUI(self.radar_param)
+            self.mira_controller = MIRA_CTRL_GUI(self.radar_param)
         if self.mira_controller.mira_device.mira_bridge.device is None:
             self.mira_controller = None
             return
@@ -175,7 +182,7 @@ class MIRA_MAIN_GUI(QtWidgets.QMainWindow):
     def update_gui(self) -> None:
         if self.running:
             if not self.mira_processor.update_gui_info_queue.empty():
-                update_info_dict = self.mira_processor.update_gui_info_queue.get(block=False)
+                update_info_dict = self.mira_processor.update_gui_info_queue.get_nowait()
                 self.radar_param.mon.temperature = float(update_info_dict['temperature'])
                 self.radar_param.mon.duration_frame_counter = str(update_info_dict['frame_cnt'])
                 self.radar_param.mon.datarate = float(update_info_dict['datarate'])
@@ -206,9 +213,7 @@ class MIRA_MAIN_GUI(QtWidgets.QMainWindow):
     def update_temperature(self) -> None:
         if self.radar_param.mon.temperature >= -99: # Random out of range number
             self.label_temperature.setText(f'{round(self.radar_param.mon.temperature, 2)} °C')
-            self.mira_processor.set_header_queue_event.set()
-        else:
-            self.mira_processor.set_header_queue_event.set()
+
     
     def updata_datarate(self) -> None:
         self.label_datarate.setText(f'{round(self.radar_param.mon.datarate*1e-6, 2)} Mbps')
@@ -216,15 +221,16 @@ class MIRA_MAIN_GUI(QtWidgets.QMainWindow):
     def update_plot(self) -> None:
         if self.running and \
            not self.graph_update_flag and \
-           not self.mira_processor.stop_event.is_set():
-            if self.mira_processor.radar_plot_map_queue.empty():
+           not self.mira_processor.process_stop_event.is_set():
+
+            if self.mira_processor.processed_gui_data_queue.empty():
                 return None
             if not self.mira_processor.process_param_queue.empty():
-                while not self.mira_processor.radar_plot_map_queue.empty():
-                    self.mira_processor.radar_plot_map_queue.get_nowait()
+                while not self.mira_processor.processed_gui_data_queue.empty():
+                    self.mira_processor.processed_gui_data_queue.get_nowait()
                 return None
 
-            processed_data_dict = self.mira_processor.radar_plot_map_queue.get(block=False)
+            processed_data_dict = self.mira_processor.processed_gui_data_queue.get(block=False)
 
             self.process_info = processed_data_dict['Process Info']
             self.processed_radar_data = processed_data_dict['Processed Data']
@@ -372,7 +378,7 @@ class MIRA_MAIN_GUI(QtWidgets.QMainWindow):
 
     def app_exit(self):
         try:
-            self.mira_processor.stop_event.set()
+            self.mira_processor.process_stop_event.set()
         except:
             pass
         self.running = False

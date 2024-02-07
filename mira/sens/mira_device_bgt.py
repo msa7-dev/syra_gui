@@ -1,17 +1,16 @@
 import __init__
-import time
 import numpy as np
 from loguru import logger
 from scipy.constants import c
-from mira.bgt.mira_reg_cont_helper import *
-import mira.bgt.mira6024_reg_def as BGT_REG
-import mira.bgt.mira_reg_cont_bgt as MIRA6024_CONTENT
+from mira.sens.mira_reg_cont_helper import *
+import mira.sens.mira6024_reg_def as BGT_REG
+import mira.sens.mira_reg_cont_bgt as MIRA6024_CONTENT
 from mira.com.mira_usb_spi_bridge import MIRA_USB_SPI_BRIDGE
-from mira.rsys.mira_radar_sys  import MIRA6024_RADAR_PARAMETER
+from mira.rsys.mira_radar_sys  import MIRA_RADAR_PARAMETER
 
 class MIRA_DEVICE:
-    def __init__(self, radar_param: MIRA6024_RADAR_PARAMETER):
-        self.radar_param: MIRA6024_RADAR_PARAMETER = radar_param
+    def __init__(self, radar_param: MIRA_RADAR_PARAMETER):
+        self.radar_param = radar_param
         clear_log_file()
         self.init = True
         self.mira_bridge = MIRA_USB_SPI_BRIDGE(self)
@@ -21,13 +20,12 @@ class MIRA_DEVICE:
             return 
         else:
             self.init_device_content()
-
+                
         for attr in self.CONTENT:
             register_instance = self.CONTENT.get(f"{attr}", 0)
             set_bgt_dev_register(register_instance)
             register_instance.CONVERT
-        self.set_spi_high_speed()
-        self.set_header_prefix()
+            
         self.mira_bridge.init_fifo_overhead()
 
         generate_register_to_txt(self, save_to_file=True)
@@ -35,7 +33,7 @@ class MIRA_DEVICE:
         for reg in self.pll_1_shape_regs:
             reg.CONVERT
         bgt_register_checker = check_sensor_register(self)
-        logger.debug(f"BGT6024 register check: {'Pass' if bgt_register_checker else 'Fail'}")
+        logger.debug(f"Sensor register check: {'Pass' if bgt_register_checker else 'Fail'}")
         
         self.init_radar_system_parameters()
         if bgt_register_checker != True:

@@ -1,7 +1,7 @@
 # ==============================================================================
-# Class Name: MIRA_STM_COMMANDS
+# Class Name: MIRA_MCU_COMMANDS
 # ==============================================================================
-class MIRA_STM_COMMANDS():
+class MIRA_MCU_COMMANDS():
     def __init__(self) -> None:
         self.read_cmd = 0x22
         self.write_cmd = 0x44
@@ -15,4 +15,8 @@ class MIRA_STM_COMMANDS():
         self.init_finished_cmd = 0xAA
         self.set_dummy_cycles_cmd = 0x0A
         self.set_fifo_overhead_cmd = 0x1A
-        
+
+class MIRA_MCU_USB_DEF():
+    def __init__(self) -> None:
+        self.get_chip_id_rx_len = 8
+        self.spi_read_reg_cmd_len = 4

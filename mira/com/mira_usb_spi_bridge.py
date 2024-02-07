@@ -1,11 +1,10 @@
 import __init__
 import os 
-import sys
 import psutil
 import usb.core
 import usb.util
 import numpy as np
-# import setproctitle
+import setproctitle
 import configparser
 import multiprocessing
 
@@ -13,8 +12,8 @@ from typing import List
 from pathlib import Path
 from loguru import logger
 
-from mira.com.mira_stm_cmds import MIRA_STM_COMMANDS 
-from mira.rsys.mira_radar_sys import MIRA6024_RADAR_PARAMETER
+from mira.rsys.mira_radar_sys import MIRA_RADAR_PARAMETER
+from mira.com.mira_mcu_cmds import MIRA_MCU_COMMANDS, MIRA_MCU_USB_DEF
 
 # ==============================================================================
 # Class Name: MIRA_USB_SPI_BRIDGE
@@ -24,9 +23,11 @@ class MIRA_USB_SPI_BRIDGE():
         self.config = configparser.ConfigParser()
         self.config.read(__init__.MIRA_SYS_CONFIG_PATH)
         
-        self.radar_param: MIRA6024_RADAR_PARAMETER = mira_device.radar_param
-        self.stm_commands = MIRA_STM_COMMANDS()
         self.mira_device = mira_device
+        self.mcu_usb_def = MIRA_MCU_USB_DEF()
+        self.mcu_commands = MIRA_MCU_COMMANDS()
+        self.radar_param: MIRA_RADAR_PARAMETER = mira_device.radar_param
+        
         self.device = None
         self.interface = None
         self.endpoint_in = None
@@ -66,7 +67,7 @@ class MIRA_USB_SPI_BRIDGE():
     def spi_init_bgt(self) -> None:
         user_reg_vals = self.get_default_bgt_register_values()
         self.spi_set_dummy_cref(user_reg_vals)
-        usb_payload = bytearray([self.stm_commands.init_bgt_cmd]) + user_reg_vals
+        usb_payload = bytearray([self.mcu_commands.init_bgt_cmd]) + user_reg_vals
         self.send_usb_payload(usb_payload)
         self.spi_get_chip_id()
         
@@ -79,31 +80,33 @@ class MIRA_USB_SPI_BRIDGE():
         self.spi_stm_reset()
         
     def spi_bgt_finished_init(self) -> None:
-        self.send_usb_payload(bytearray([self.stm_commands.init_finished_cmd]))
+        self.send_usb_payload(bytearray([self.mcu_commands.init_finished_cmd]))
         
     def spi_bgt_reset(self) -> None:
-        self.send_usb_payload(bytearray([self.stm_commands.bgt_reset_cmd]))
+        self.send_usb_payload(bytearray([self.mcu_commands.bgt_reset_cmd]))
         
     def spi_stm_reset(self) -> None:
-        self.send_usb_payload(bytearray([self.stm_commands.stm_rst_cmd]))
+        self.send_usb_payload(bytearray([self.mcu_commands.stm_rst_cmd]))
         self.init_stm = False
         
     def init_fifo_overhead(self):
         USB_SPI_BRIDGE_DATA_ALLOCATION = int(self.config.get("MIRA_USB_SPI_BRIDGE", 
                                                              "USB_SPI_BRIDGE_DATA_ALLOCATION")) 
-        self.radar_param.sys.n_fifo_overhead = np.uint8(USB_SPI_BRIDGE_DATA_ALLOCATION/(self.radar_param.sys.n_samples_per_chirp[0]*3*(self.radar_param.sys.rx_active_antennas[0]/sum(self.radar_param.sys.tx_active_antennas)))) # TODO 4
+        self.radar_param.sys.n_fifo_overhead = np.uint8(USB_SPI_BRIDGE_DATA_ALLOCATION/ \
+            (self.radar_param.sys.n_samples_per_chirp[0]*3* \
+            (self.radar_param.sys.rx_active_antennas[0]/sum(self.radar_param.sys.tx_active_antennas))))
         self.spi_set_n_fifo_overhead(self.radar_param.sys.n_fifo_overhead)
       
     def spi_set_n_fifo_overhead(self, n_fifo_overhead: np.uint8) -> None:
         self.n_fifo_overhead = n_fifo_overhead
-        usb_payload = bytearray([self.stm_commands.set_fifo_overhead_cmd, self.n_fifo_overhead])
+        usb_payload = bytearray([self.mcu_commands.set_fifo_overhead_cmd, self.n_fifo_overhead])
         self.send_usb_payload(usb_payload)
         
     def spi_get_chip_id(self) -> None:
-        usb_payload = bytearray([self.stm_commands.bgt_chip_id_cmd])
+        usb_payload = bytearray([self.mcu_commands.bgt_chip_id_cmd])
         self.send_usb_payload(usb_payload)
-        ret_payload = self.receive_usb_payload(8)
-            
+        ret_payload = self.receive_usb_payload(self.mcu_usb_def.get_chip_id_rx_len)
+        print(ret_payload)
         chip_id = np.uint64(np.uint64(ret_payload[0] << 40) | \
                             np.uint64(ret_payload[1] << 32) | \
                             np.uint64(ret_payload[2] << 24) | \
@@ -117,8 +120,17 @@ class MIRA_USB_SPI_BRIDGE():
         
         if chip_digital_id == 5:
             self.radar_param.mon.chip_version_digital_id = str("BGT60ATR24C")
+        elif chip_digital_id == 3:
+            self.radar_param.mon.chip_version_digital_id = str("BGT60TR13C")
+        elif chip_digital_id == 7:
+            self.radar_param.mon.chip_version_digital_id = str("BGT60UTR11AIP")
+
         if chip_rf_id == 4:
-            self.radar_param.mon.chip_version_rf_id = str("2ch Tx, 4ch Rx")
+            self.radar_param.mon.chip_version_rf_id = str("2 Tx, 4 Rx")
+        elif chip_rf_id == 3:
+            self.radar_param.mon.chip_version_rf_id = str("1 Tx, 3 Rx")
+        elif chip_rf_id == 12:
+            self.radar_param.mon.chip_version_rf_id = str("2 Tx, 4 Rx")
 
 
     def spi_set_dummy_cref(self, user_reg_vals: bytearray) -> None:
@@ -131,25 +143,25 @@ class MIRA_USB_SPI_BRIDGE():
                     cref = user_reg_vals[index+2:index + 4]
                     dummy_cycles = np.uint8(user_reg_vals[index+1] >> 4) + 1
                     index = 0xff
-                    usb_payload = bytearray([self.stm_commands.set_fifo_cref_cmd]) + cref
+                    usb_payload = bytearray([self.mcu_commands.set_fifo_cref_cmd]) + cref
                     self.send_usb_payload(usb_payload)
-                    usb_payload = bytearray([self.stm_commands.set_dummy_cycles_cmd, dummy_cycles])
+                    usb_payload = bytearray([self.mcu_commands.set_dummy_cycles_cmd, dummy_cycles])
                     self.send_usb_payload(usb_payload)
                 else:
                     user_reg_vals[index] = 0x00
         
-    def raw_data_aquisition_process(self, raw_data_queue: multiprocessing.Queue,
-                                    stop_event: multiprocessing.Event) -> None:
+    def raw_data_aquisition_process(self, usb_extraction_data_queue: multiprocessing.Queue,
+                                    process_stop_event: multiprocessing.Event) -> None:
         
         MIRA_AQUISITION_CPU_CORE = int(self.config.get("MIRA_HOST_SYS_PARAMETER",
                                                        "MIRA_AQUISITION_CPU_CORE"))
+        MIRA_PROCESS_PRIO = np.int8(self.config.get("MIRA_HOST_SYS_PARAMETER", 
+                                                    "MIRA_PROCESS_PRIO"))        
+        
         current_process = psutil.Process(os.getpid())
         current_process.cpu_affinity([MIRA_AQUISITION_CPU_CORE])
-        # setproctitle.setproctitle("Sykno - MiRa Eval GUI - Data Acquisition Process")
-        
-        MIRA_PROCESS_PRIO = np.int8(self.config.get("MIRA_HOST_SYS_PARAMETER", 
-                                                    "MIRA_PROCESS_PRIO"))
         current_process.nice(MIRA_PROCESS_PRIO)
+        setproctitle.setproctitle("Sykno - MiRa Eval GUI - Data Acquisition Process")
 
         USB_SPI_BRIDGE_TIMEOUT = np.uint32(self.config.get("MIRA_USB_SPI_BRIDGE", 
                                                            "USB_SPI_BRIDGE_TIMEOUT"))
@@ -157,30 +169,28 @@ class MIRA_USB_SPI_BRIDGE():
                                                                    "USB_SPI_BRIDGE_DATA_ALLOCATION")) 
         DATA_ALLOCATION = np.uint32(USB_SPI_BRIDGE_DATA_ALLOCATION+self.radar_param.sys.n_fifo_overhead*9)
 
-        while not stop_event.is_set():
-            try:
-                self.usb_device_available.get_lock().acquire(block=False)
-                usb.util.release_interface(self.device, self.interface)
-                raw_data = np.array(self.endpoint_in.read(DATA_ALLOCATION, 
-                                                          timeout=USB_SPI_BRIDGE_TIMEOUT),
-                                    dtype=np.uint8)
-                if raw_data.shape == (DATA_ALLOCATION,):
-                    raw_data_queue.put(raw_data)
-                usb.util.release_interface(self.device, self.interface)
-                self.usb_device_available.get_lock().release()
-            except:
-                stop_event.set()
-            
+        while not process_stop_event.is_set():
+            self.usb_device_available.get_lock().acquire(block=False)
+            usb.util.release_interface(self.device, self.interface)
+            raw_data = np.array(self.endpoint_in.read(DATA_ALLOCATION, 
+                                                      timeout=USB_SPI_BRIDGE_TIMEOUT),
+                                dtype=np.uint8)
+            if raw_data.shape == (DATA_ALLOCATION,):
+                usb_extraction_data_queue.put_nowait(raw_data)
+
+            usb.util.release_interface(self.device, self.interface)
+            self.usb_device_available.get_lock().release()
+
     def spi_read_reg(self, reg_adr: np.uint8) -> list[np.uint8, np.ndarray]:
-        usb_payload = bytearray([self.stm_commands.read_cmd, reg_adr])
+        usb_payload = bytearray([self.mcu_commands.read_cmd, reg_adr])
         self.read_counter += 1
         
         self.send_usb_payload(usb_payload)
-        ret_payload = self.receive_usb_payload(4)
+        ret_payload = self.receive_usb_payload(self.mcu_usb_def.spi_read_reg_cmd_len)
         return [np.uint8(ret_payload[0]), np.array(ret_payload[1:])]
 
     def spi_read_n_reg(self, reg_start_adr: np.uint8, n_reg: np.uint16) -> np.ndarray:
-        usb_payload = bytearray([self.stm_commands.read_n_cmd, reg_start_adr, 
+        usb_payload = bytearray([self.mcu_commands.read_n_cmd, reg_start_adr, 
                                  np.uint8((n_reg >> 8)), np.uint8(n_reg)]) 
         self.send_usb_payload(usb_payload)
         ret_payload = self.receive_usb_payload(n_reg*3)
@@ -188,17 +198,16 @@ class MIRA_USB_SPI_BRIDGE():
         return np.array(ret_payload)
 
     def spi_write_reg_vals(self, reg_adr: np.uint8, reg_vals: list[np.uint8]) -> None:
-        usb_payload = bytearray([self.stm_commands.write_cmd, reg_adr] + reg_vals)
+        usb_payload = bytearray([self.mcu_commands.write_cmd, reg_adr] + reg_vals)
         self.send_usb_payload(usb_payload)
 
     def spi_write_reg_val(self, reg_adr: np.uint8, reg_vals: list[np.uint8]) -> None:
-        usb_payload = bytearray([self.stm_commands.write_cmd, reg_adr] + reg_vals)
+        usb_payload = bytearray([self.mcu_commands.write_cmd, reg_adr] + reg_vals)
         self.write_counter += 1
         self.send_usb_payload(usb_payload)
         
     def init_stm_usb_device(self) -> None:
         # Find the USB device based on vendor and product IDs
-        # adding upper boundary interations_counter = 0
         vendor_id = int(self.config.get("MIRA_USB_SPI_BRIDGE", 
                                         "USB_VENDOR_ID"), 16) 
         product_id = int(self.config.get("MIRA_USB_SPI_BRIDGE", 
@@ -270,7 +279,6 @@ class MIRA_USB_SPI_BRIDGE():
                         self.device = None
                         return
                     
-                    # self.interface = interface
                     # Check for IN endpoint
                     if usb.util.endpoint_direction(endpoint.bEndpointAddress) == usb.util.ENDPOINT_IN:
                         if endpoint.bEndpointAddress == 0x81:  # Endpoint 0x81 (IN)

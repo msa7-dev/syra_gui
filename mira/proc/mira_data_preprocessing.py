@@ -1,13 +1,13 @@
 import __init__
 import numpy as np
 from scipy.signal import butter, filtfilt, sosfiltfilt
-from mira.rsys.mira_radar_sys import MIRA6024_RADAR_PARAMETER
+from mira.rsys.mira_radar_sys import MIRA_RADAR_PARAMETER
 
 # ==============================================================================
-# Class Name: MIRA6024_DATA_PREPROCESSOR
+# Class Name: MIRA_DATA_PREPROCESSOR
 # ==============================================================================
-class MIRA6024_DATA_PREPROCESSOR():
-    def __init__(self, radar_param: MIRA6024_RADAR_PARAMETER) -> None:
+class MIRA_DATA_PREPROCESSOR():
+    def __init__(self, radar_param: MIRA_RADAR_PARAMETER) -> None:
         self.radar_param = radar_param
         self.fc_hp = None
         self.window = None

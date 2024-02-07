@@ -2,10 +2,10 @@ import __init__
 import ctypes
 from loguru import logger
 import numpy as np
-import mira.bgt.mira6024_reg_def as BGT_REG
+import mira.sens.mira6024_reg_def as BGT_REG
+from mira.rsys.mira_radar_sys  import MIRA_RADAR_PARAMETER
 from mira.com.mira_usb_spi_bridge import MIRA_USB_SPI_BRIDGE
-from mira.rsys.mira_radar_sys  import MIRA6024_RADAR_PARAMETER
-from mira.bgt.mira_reg_cont_helper import set_reg_val, build_content
+from mira.sens.mira_reg_cont_helper import set_reg_val, build_content
 
 # ==============================================================================
 # Class Name: BGT_MAIN
@@ -25,7 +25,7 @@ class BGT_MAIN:
         self._FRAME_START = None
         
         self.usb_spi_bridge: MIRA_USB_SPI_BRIDGE = device.mira_bridge
-        self.radar_param: MIRA6024_RADAR_PARAMETER = device.radar_param
+        self.radar_param: MIRA_RADAR_PARAMETER = device.radar_param
         self.REG_DEF = BGT_REG.MAIN_REG
     
     @property
@@ -187,7 +187,7 @@ class BGT_ADC0:
         self._STC = None 
         
         self.usb_spi_bridge: MIRA_USB_SPI_BRIDGE = device.mira_bridge
-        self.radar_param: MIRA6024_RADAR_PARAMETER = device.radar_param
+        self.radar_param: MIRA_RADAR_PARAMETER = device.radar_param
         self.REG_DEF = BGT_REG.ADC0_REG
           
     @property
@@ -296,7 +296,7 @@ class BGT_CHIP_VERSION:
         self.RF_ID = None
         
         self.usb_spi_bridge: MIRA_USB_SPI_BRIDGE = device.mira_bridge
-        self.radar_param: MIRA6024_RADAR_PARAMETER = device.radar_param
+        self.radar_param: MIRA_RADAR_PARAMETER = device.radar_param
 
         self.REG_DEF = BGT_REG.CHIP_VERSION_REG
         
@@ -337,7 +337,7 @@ class BGT_STAT1:
         self._SHAPE_GRP_CNT = None
         
         self.usb_spi_bridge: MIRA_USB_SPI_BRIDGE = device.mira_bridge
-        self.radar_param: MIRA6024_RADAR_PARAMETER = device.radar_param
+        self.radar_param: MIRA_RADAR_PARAMETER = device.radar_param
         self.REG_DEF = BGT_REG.STAT1_REG
 
     @property
@@ -391,7 +391,7 @@ class BGT_PACR1:
         self._U2IEN = None
         
         self.usb_spi_bridge: MIRA_USB_SPI_BRIDGE = device.mira_bridge
-        self.radar_param: MIRA6024_RADAR_PARAMETER = device.radar_param
+        self.radar_param: MIRA_RADAR_PARAMETER = device.radar_param
         self.REG_DEF = BGT_REG.PACR1_REG
         
     @property
@@ -563,7 +563,7 @@ class BGT_PACR2:
         self._DIVSET = None
         
         self.usb_spi_bridge: MIRA_USB_SPI_BRIDGE = device.mira_bridge
-        self.radar_param: MIRA6024_RADAR_PARAMETER = device.radar_param
+        self.radar_param: MIRA_RADAR_PARAMETER = device.radar_param
         self.REG_DEF = BGT_REG.PACR2_REG
             
     @property
@@ -645,7 +645,7 @@ class BGT_SFCTL:
         self._FIFO_CREF = None
         
         self.usb_spi_bridge: MIRA_USB_SPI_BRIDGE = device.mira_bridge
-        self.radar_param: MIRA6024_RADAR_PARAMETER = device.radar_param
+        self.radar_param: MIRA_RADAR_PARAMETER = device.radar_param
         self.REG_DEF = BGT_REG.SFCTL_REG
 
     @property
@@ -729,7 +729,7 @@ class BGT_SADC_CTRL:
         self._SADC_CHSEL =None
         
         self.usb_spi_bridge: MIRA_USB_SPI_BRIDGE = device.mira_bridge
-        self.radar_param: MIRA6024_RADAR_PARAMETER = device.radar_param
+        self.radar_param: MIRA_RADAR_PARAMETER = device.radar_param
         self.REG_DEF = BGT_REG.SADC_CTRL_REG
         
     @property
@@ -842,7 +842,7 @@ class BGT_CSX_0:
         
         self.REG_ADR = reg_adr
         self.usb_spi_bridge: MIRA_USB_SPI_BRIDGE = device.mira_bridge
-        self.radar_param: MIRA6024_RADAR_PARAMETER = device.radar_param
+        self.radar_param: MIRA_RADAR_PARAMETER = device.radar_param
         self.REG_DEF = BGT_REG.CSX_0_REG
         
     @property
@@ -1121,7 +1121,7 @@ class BGT_CSX_1:
 
         self.REG_ADR = reg_adr
         self.usb_spi_bridge: MIRA_USB_SPI_BRIDGE = device.mira_bridge
-        self.radar_param: MIRA6024_RADAR_PARAMETER = device.radar_param
+        self.radar_param: MIRA_RADAR_PARAMETER = device.radar_param
         self.REG_DEF = BGT_REG.CSX_1_REG
         
     @property
@@ -1222,7 +1222,7 @@ class BGT_CSX_2:
         self._HPF_SEL1 = None
         
         self.usb_spi_bridge: MIRA_USB_SPI_BRIDGE = device.mira_bridge
-        self.radar_param: MIRA6024_RADAR_PARAMETER = device.radar_param
+        self.radar_param: MIRA_RADAR_PARAMETER = device.radar_param
         self.REG_ADR = reg_adr
         self.REG_DEF = BGT_REG.CSX_2_REG
 
@@ -1353,7 +1353,7 @@ class BGT_CSCX:
         
         self.REG_ADR = reg_adr
         self.usb_spi_bridge: MIRA_USB_SPI_BRIDGE = device.mira_bridge
-        self.radar_param: MIRA6024_RADAR_PARAMETER = device.radar_param
+        self.radar_param: MIRA_RADAR_PARAMETER = device.radar_param
         self.REG_DEF = BGT_REG.CSCX_REG
         
     @property
@@ -1462,7 +1462,7 @@ class BGT_CCR0:
         self._TR_INIT1_MUL = None
 
         self.usb_spi_bridge: MIRA_USB_SPI_BRIDGE = device.mira_bridge
-        self.radar_param: MIRA6024_RADAR_PARAMETER = device.radar_param
+        self.radar_param: MIRA_RADAR_PARAMETER = device.radar_param
         self.REG_DEF = BGT_REG.CCR0_REG
 
     @property
@@ -1573,7 +1573,7 @@ class BGT_CCR1:
         self._TR_FED_MUL = None
 
         self.usb_spi_bridge: MIRA_USB_SPI_BRIDGE = device.mira_bridge
-        self.radar_param: MIRA6024_RADAR_PARAMETER = device.radar_param
+        self.radar_param: MIRA_RADAR_PARAMETER = device.radar_param
         self.REG_DEF = BGT_REG.CCR1_REG
 
     @property
@@ -1644,7 +1644,7 @@ class BGT_CCR2:
         self._FRAME_LEN = None
 
         self.usb_spi_bridge: MIRA_USB_SPI_BRIDGE = device.mira_bridge
-        self.radar_param: MIRA6024_RADAR_PARAMETER = device.radar_param
+        self.radar_param: MIRA_RADAR_PARAMETER = device.radar_param
         self.REG_DEF = BGT_REG.CCR2_REG
 
     @property
@@ -1699,7 +1699,7 @@ class BGT_CCR3:
         self._TR_INIT0_MUL = None
 
         self.usb_spi_bridge: MIRA_USB_SPI_BRIDGE = device.mira_bridge
-        self.radar_param: MIRA6024_RADAR_PARAMETER = device.radar_param
+        self.radar_param: MIRA_RADAR_PARAMETER = device.radar_param
         self.REG_DEF = BGT_REG.CCR3_REG
 
     @property
@@ -1772,7 +1772,7 @@ class BGT_PLLX_0:
         self._FSU = None
 
         self.usb_spi_bridge: MIRA_USB_SPI_BRIDGE = device.mira_bridge
-        self.radar_param: MIRA6024_RADAR_PARAMETER = device.radar_param
+        self.radar_param: MIRA_RADAR_PARAMETER = device.radar_param
         self.REG_ADR = reg_adr
         self.REG_DEF = BGT_REG.PLLX_0_REG
 
@@ -1818,7 +1818,7 @@ class BGT_PLLX_1:
         self._RSU = None
 
         self.usb_spi_bridge: MIRA_USB_SPI_BRIDGE = device.mira_bridge
-        self.radar_param: MIRA6024_RADAR_PARAMETER = device.radar_param
+        self.radar_param: MIRA_RADAR_PARAMETER = device.radar_param
         self.REG_ADR = reg_adr
         self.REG_DEF = BGT_REG.PLLX_1_REG
 
@@ -1864,7 +1864,7 @@ class BGT_PLLX_2:
         self._TR_EDU = None
         
         self.usb_spi_bridge: MIRA_USB_SPI_BRIDGE = device.mira_bridge
-        self.radar_param: MIRA6024_RADAR_PARAMETER = device.radar_param
+        self.radar_param: MIRA_RADAR_PARAMETER = device.radar_param
         self.REG_ADR = reg_adr
         self.REG_DEF = BGT_REG.PLLX_2_REG
 
@@ -1947,7 +1947,7 @@ class BGT_PLLX_3:
         self._APD = None
         
         self.usb_spi_bridge: MIRA_USB_SPI_BRIDGE = device.mira_bridge
-        self.radar_param: MIRA6024_RADAR_PARAMETER = device.radar_param
+        self.radar_param: MIRA_RADAR_PARAMETER = device.radar_param
         self.REG_ADR = reg_adr
         self.REG_DEF = BGT_REG.PLLX_3_REG
 
@@ -2004,7 +2004,7 @@ class BGT_PLLX_4:
         self._FSD = None
 
         self.usb_spi_bridge: MIRA_USB_SPI_BRIDGE = device.mira_bridge
-        self.radar_param: MIRA6024_RADAR_PARAMETER = device.radar_param
+        self.radar_param: MIRA_RADAR_PARAMETER = device.radar_param
         self.REG_ADR = reg_adr
         self.REG_DEF = BGT_REG.PLLX_4_REG
 
@@ -2051,7 +2051,7 @@ class BGT_PLLX_5:
         self._RSD = None
         
         self.usb_spi_bridge: MIRA_USB_SPI_BRIDGE = device.mira_bridge
-        self.radar_param: MIRA6024_RADAR_PARAMETER = device.radar_param
+        self.radar_param: MIRA_RADAR_PARAMETER = device.radar_param
         self.REG_ADR = reg_adr
         self.REG_DEF = BGT_REG.PLLX_5_REG
 
@@ -2098,7 +2098,7 @@ class BGT_PLLX_6:
         self._TR_EDD = None
 
         self.usb_spi_bridge: MIRA_USB_SPI_BRIDGE = device.mira_bridge
-        self.radar_param: MIRA6024_RADAR_PARAMETER = device.radar_param
+        self.radar_param: MIRA_RADAR_PARAMETER = device.radar_param
         self.REG_ADR = reg_adr
         self.REG_DEF = BGT_REG.PLLX_6_REG
 
@@ -2184,7 +2184,7 @@ class BGT_PLLX_7:
         self._TR_SED_MUL = None
 
         self.usb_spi_bridge: MIRA_USB_SPI_BRIDGE = device.mira_bridge
-        self.radar_param: MIRA6024_RADAR_PARAMETER = device.radar_param
+        self.radar_param: MIRA_RADAR_PARAMETER = device.radar_param
         self.REG_ADR = reg_adr
         self.REG_DEF = BGT_REG.PLLX_7_REG
 
@@ -2308,7 +2308,7 @@ class BGT_RFT0:
         self._RFTSIGCLK_DIV_EN = None
         
         self.usb_spi_bridge: MIRA_USB_SPI_BRIDGE = device.mira_bridge
-        self.radar_param: MIRA6024_RADAR_PARAMETER = device.radar_param
+        self.radar_param: MIRA_RADAR_PARAMETER = device.radar_param
         self.REG_DEF = BGT_REG.RFT0_REG
         
     @property
@@ -2392,7 +2392,7 @@ class BGT_DFT0:
         self._EFUSE_SENSE = None
         self._EFUSE_EN = None
         self.usb_spi_bridge: MIRA_USB_SPI_BRIDGE = device.mira_bridge
-        self.radar_param: MIRA6024_RADAR_PARAMETER = device.radar_param
+        self.radar_param: MIRA_RADAR_PARAMETER = device.radar_param
         self.REG_DEF = BGT_REG.DFT0_REG
 
     @property
@@ -2432,7 +2432,7 @@ class BGT_DFT1:
     def __init__(self, device):
         self._EFUSE_READY = None
         self.usb_spi_bridge: MIRA_USB_SPI_BRIDGE = device.mira_bridge
-        self.radar_param: MIRA6024_RADAR_PARAMETER = device.radar_param
+        self.radar_param: MIRA_RADAR_PARAMETER = device.radar_param
         self.REG_DEF = BGT_REG.DFT1_REG
 
     @property
@@ -2464,7 +2464,7 @@ class BGT_PLL_DFT0:
         self._BYPRMPEN = None
         
         self.usb_spi_bridge: MIRA_USB_SPI_BRIDGE = device.mira_bridge
-        self.radar_param: MIRA6024_RADAR_PARAMETER = device.radar_param
+        self.radar_param: MIRA_RADAR_PARAMETER = device.radar_param
         self.REG_DEF = BGT_REG.PLL_DFT0_REG
 
     @property
@@ -2520,7 +2520,7 @@ class BGT_STAT0:
         self._SADC_RDY = None
         
         self.usb_spi_bridge: MIRA_USB_SPI_BRIDGE = device.mira_bridge
-        self.radar_param: MIRA6024_RADAR_PARAMETER = device.radar_param
+        self.radar_param: MIRA_RADAR_PARAMETER = device.radar_param
         self.REG_DEF = BGT_REG.STAT0_REG
 
     @property
@@ -2608,7 +2608,7 @@ class BGT_SADC_RESULT:
         self._SADC_RESULT = None
         
         self.usb_spi_bridge: MIRA_USB_SPI_BRIDGE = device.mira_bridge
-        self.radar_param: MIRA6024_RADAR_PARAMETER = device.radar_param
+        self.radar_param: MIRA_RADAR_PARAMETER = device.radar_param
         self.REG_DEF = BGT_REG.SADC_RESULT_REG
         
     @property
@@ -2665,7 +2665,7 @@ class BGT_FSTAT:
         self._FILL_STATUS = None
         
         self.usb_spi_bridge: MIRA_USB_SPI_BRIDGE = device.mira_bridge
-        self.radar_param: MIRA6024_RADAR_PARAMETER = device.radar_param
+        self.radar_param: MIRA_RADAR_PARAMETER = device.radar_param
         self.REG_DEF = BGT_REG.FSTAT_REG
 
     @property
@@ -2752,7 +2752,7 @@ class BGT_CHIP_ID_1:
         self._CHIP_ID_1 = None
         
         self.usb_spi_bridge: MIRA_USB_SPI_BRIDGE = device.mira_bridge
-        self.radar_param: MIRA6024_RADAR_PARAMETER = device.radar_param
+        self.radar_param: MIRA_RADAR_PARAMETER = device.radar_param
         self.REG_DEF = BGT_REG.CHIP_ID_1_REG
 
     @property
@@ -2782,7 +2782,7 @@ class BGT_CHIP_ID_2:
         self._CHIP_ID_2 = None
         
         self.usb_spi_bridge: MIRA_USB_SPI_BRIDGE = device.mira_bridge
-        self.radar_param: MIRA6024_RADAR_PARAMETER = device.radar_param
+        self.radar_param: MIRA_RADAR_PARAMETER = device.radar_param
         self.REG_DEF = BGT_REG.CHIP_ID_2_REG
 
     @property

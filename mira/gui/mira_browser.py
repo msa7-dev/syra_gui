@@ -2,12 +2,14 @@ import __init__
 import configparser
 from pathlib import Path
 from PyQt5.QtWidgets import QFileDialog
+from mira.rsys.mira_radar_sys import MIRA_RADAR_PARAMETER
 
-class MIRA6024_BROWSER():
+class MIRA_BROWSER():
     def __init__(self, qt_self, browser_type: str):
         self.qt_self = qt_self
         self.browser_type = browser_type
-        self.radar_param = self.qt_self.radar_param
+        self.radar_param: MIRA_RADAR_PARAMETER = self.qt_self.radar_param
+        
         self.config = configparser.ConfigParser()
         self.config.read(__init__.MIRA_SYS_CONFIG_PATH)
         MIRA_MEASUREMENT_PATH = self.config.get("MIRA_SAVE_MEASUREMENT",
@@ -51,10 +53,8 @@ class MIRA6024_BROWSER():
         self.set_path_labels()
     
     def reinit(self, mira_project: str) -> None:
-        
         MIRA_MEASUREMENT_PATH = self.config.get("MIRA_SAVE_MEASUREMENT", 
                                                 "MIRA_MEASUREMENT_PATH")
-
         if self.browser_type == "bgt_reg_browser":
             caption="Select BGT-Register for MiRa6024|1A"
             default_dir = f"./mira/cfg/mira6024_projects/" 

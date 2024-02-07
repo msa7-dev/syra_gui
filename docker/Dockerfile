@@ -46,4 +46,4 @@ RUN cd /home/sykno/mira/proc/mira_cython/ && \
     cd -
 
 # Define the command to run the application
-CMD ["sh", "-c", "taskset -c 1 python3.11 -B ./sykno_cli mira-gui"]
+# CMD ["sh", "-c", "taskset -c 1 python3.11 -B ./sykno_cli mira-gui"]
