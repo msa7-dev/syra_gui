@@ -47,7 +47,7 @@ class MIRA_MAIN_GUI(QtWidgets.QMainWindow):
         self.fps_timer = None
         self.connect_timer = None
         self.update_gui_timer = None
-        
+        self.frame_counter_multiplicator = 0
         self.prev_processed_radar_data_shape = {'Channel 1': (2,2,2),
                                                 'Channel 2': (2,2,2)}
         self.processed_radar_data = {'Channel 1': np.zeros((1,1,1), dtype=np.float32),
@@ -196,7 +196,12 @@ class MIRA_MAIN_GUI(QtWidgets.QMainWindow):
             return
             
     def update_frame_cnt(self) -> None:
-        self.label_frame_counter.setText(self.radar_param.mon.duration_frame_counter)
+        self.frame_counter_multiplicator += int(self.radar_param.mon.duration_frame_counter)
+        self.frame_counter_multiplicator += 1
+        frame_count = int(self.radar_param.mon.duration_frame_counter)
+        self.label_frame_counter.setText(str(frame_count))
+        frame_count = self.radar_param.mon.duration_frame_counter
+            
     
     def update_duration_time(self) -> None:
         self.current_time = time.time()

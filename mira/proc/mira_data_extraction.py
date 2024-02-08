@@ -81,7 +81,7 @@ class MIRA_DATA_EXTRACTOR():
             self.data_values = self.data_values[-128:]
             start_time = time.time()
 
-
+            print(header_matches)
             for header_match in header_matches:
                 self.header_dict = mira6024_extract_from_raw_data.prefix_header(
                         raw_fifo_data[header_match : header_match + 9]) # 10 - 50 us
@@ -97,22 +97,28 @@ class MIRA_DATA_EXTRACTOR():
                     frame_cnt = np.mod(curr_frame_cnt, self.radar_param.sys.max_frame_cnt)
                 else:
                     frame_cnt = curr_frame_cnt
-                
-                if np.all(radar_data_cube_build_buffer[:,:, self.header_dict['cs'], 
-                          np.uint16(self.header_dict['shape_grp_cnt']/sum(self.radar_param.sys.tx_active_antennas)),
-                          frame_cnt] == 0):
-                    radar_data_cube_build_buffer[:,:, self.header_dict['cs'], 
-                                                 np.uint16(self.header_dict['shape_grp_cnt']/sum(self.radar_param.sys.tx_active_antennas)),
-                                                 frame_cnt] = data_field[:,:]
-                else:
-                    combined_chrips = np.concatenate((radar_data_cube_build_buffer[np.newaxis,:,:, 
-                                                 self.header_dict['cs'], 
-                                                 np.uint16(self.header_dict['shape_grp_cnt']/sum(self.radar_param.sys.tx_active_antennas)),
-                                                 frame_cnt], data_field[np.newaxis,:,:]), axis=0, dtype=np.float32)
-                    radar_data_cube_build_buffer[:,:,
-                                                 self.header_dict['cs'], 
-                                                 np.uint16(self.header_dict['shape_grp_cnt']/sum(self.radar_param.sys.tx_active_antennas)),
-                                                 frame_cnt] = np.mean(combined_chrips, axis=0, dtype=np.float32)
+                print(data_field[:10,:])
+                print(self.header_dict['cs'])
+                print(self.header_dict['shape_grp_cnt']/sum(self.radar_param.sys.tx_active_antennas))
+                radar_data_cube_build_buffer[:,:, self.header_dict['cs'], 
+                                             np.uint16(self.header_dict['shape_grp_cnt']/sum(self.radar_param.sys.tx_active_antennas)),
+                                             frame_cnt] = data_field[:,:]
+
+                # if np.all(radar_data_cube_build_buffer[:,:, self.header_dict['cs'], 
+                        #   np.uint16(self.header_dict['shape_grp_cnt']/sum(self.radar_param.sys.tx_active_antennas)),
+                        #   frame_cnt] == 0):
+                    # radar_data_cube_build_buffer[:,:, self.header_dict['cs'], 
+                                                #  np.uint16(self.header_dict['shape_grp_cnt']/sum(self.radar_param.sys.tx_active_antennas)),
+                                                #  frame_cnt] = data_field[:,:]
+                # else:
+                    # combined_chrips = np.concatenate((radar_data_cube_build_buffer[np.newaxis,:,:, 
+                                                #  self.header_dict['cs'], 
+                                                #  np.uint16(self.header_dict['shape_grp_cnt']/sum(self.radar_param.sys.tx_active_antennas)),
+                                                #  frame_cnt], data_field[np.newaxis,:,:]), axis=0, dtype=np.float32)
+                    # radar_data_cube_build_buffer[:,:,
+                                                #  self.header_dict['cs'], 
+                                                #  np.uint16(self.header_dict['shape_grp_cnt']/sum(self.radar_param.sys.tx_active_antennas)),
+                                                #  frame_cnt] = np.mean(combined_chrips, axis=0, dtype=np.float32)
                                              
                 if self.prev_frame_cnt != curr_frame_cnt:
                     if self.prev_frame_cnt > self.radar_param.sys.max_frame_cnt:
@@ -130,6 +136,7 @@ class MIRA_DATA_EXTRACTOR():
                             self.header_dict)
 
                     self.prev_frame_cnt = curr_frame_cnt
+            
 
     def _update_header_dict_to_gui(self) -> None:
         if self.prefix_header_queue.empty():

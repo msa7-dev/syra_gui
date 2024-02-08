@@ -30,6 +30,8 @@ class MIRA_SAVE_MEAS():
                                                   "MIRA_MEAS_META_SYS_INFO")
         MIRA_MEAS_DATASET_GROUP_NAME = self.config.get("MIRA_SAVE_MEASUREMENT", 
                                                        "MIRA_MEAS_DATASET_GROUP_NAME")
+        self.MIRA_MEAS_DATASET_GROUP_NAME = self.config.get("MIRA_SAVE_MEASUREMENT", 
+                                                            "MIRA_MEAS_DATASET_GROUP_NAME")
         
         self.radar_param: MIRA_RADAR_PARAMETER = mira_device.radar_param
         self.timestamp = str(datetime.now().strftime('%d_%m_%Y_%H_%M_%S'))
@@ -70,24 +72,29 @@ class MIRA_SAVE_MEAS():
 
         # Open the HDF5 file in append mode for each process
         with h5py.File(self.hdf5_file_path, "a") as file:
-            data_group_path = self.config.get("MIRA_SAVE_MEASUREMENT", "MIRA_MEAS_DATASET_GROUP_NAME")
-
             # Check if the dataset already exists; if not, create it
-            if dataset_name not in file[data_group_path]:
+            if dataset_name not in file[self.MIRA_MEAS_DATASET_GROUP_NAME]:
                 # Create a new dataset within the data group
-                dataset = file[data_group_path].create_dataset(dataset_name,
-                                                               data=frame_data_cube,
-                                                               chunks=True)
+                for tx in range(2):
+                    for rx in range(4):
+                        for shape in range(16):
+                            print(frame_data_cube[:,rx,tx,shape])
+                dataset = file[str(self.MIRA_MEAS_DATASET_GROUP_NAME)].create_dataset(
+                                                                  name=dataset_name,
+                                                                  data=frame_data_cube,
+                                                                  shape=frame_data_cube.shape,
+                                                                  dtype=np.float32,
+                                                                  chunks=True)
+
                 self.curr_time = time.time()
                 dataset.attrs['timestamp'] = self.curr_time
                 dataset.attrs['delta_time'] = self.curr_time - self.prev_time
-                self.prev_time = self.curr_time
                 dataset.attrs['shape'] = str(frame_data_cube.shape)
+                self.prev_time = self.curr_time
 
     def ini_to_json(self):
         # Convert INI data to a nested dictionary
         config_dict = \
             {section: dict(self.config.items(section)) for section in self.config.sections()}
-
         # Convert dictionary to JSON string
         return json.dumps(config_dict)

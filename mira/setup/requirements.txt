@@ -16,3 +16,4 @@ pyqtgraph
 psutil
 paramiko
 setproctitle
+jupyter
