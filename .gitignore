@@ -7,4 +7,4 @@ mira/meas/npy/*
 !mira/meas/npy/.gitkeep
 mira/meas/mat/*
 !mira/meas/mat/.gitkeep
-.__pycache__
+**/__pycache__
