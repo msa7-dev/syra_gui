@@ -329,8 +329,10 @@ class MIRA_USB_SPI_BRIDGE():
         return reg_val_ret
 
     def get_default_bgt_register_values(self) -> bytearray:
-        file_path = Path(self.config.get("MIRA_BGT_SETTINGS",
-                                         "BGT_REG_PATH_TXT")).resolve()
+        mira_reg_dir_path = Path(self.config.get("MIRA_BGT_SETTINGS",
+                                                 "MIRA_SENS_CONF_DIR_PATH")).resolve()
+        file_path = Path(f"{mira_reg_dir_path}/{self.radar_param.gui.project_name}.txt")
+        
         file = open(file_path, 'r')
         content = file.read()
         lines = content.splitlines()

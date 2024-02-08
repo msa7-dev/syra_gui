@@ -37,7 +37,9 @@ class MIRA_SAVE_MEAS():
         self.timestamp = str(datetime.now().strftime('%d_%m_%Y_%H_%M_%S'))
 
         self.hdf5_file_path = f'{MIRA_MEAS_HDF5_FOLDER_PATH}' + \
-                              f'{MIRA_MEAS_FILENAME}_{self.timestamp}.hdf5'
+                              f'{MIRA_MEAS_FILENAME}_{self.timestamp}_' + \
+                              f'{self.radar_param.gui.project_name}_' + \
+                              f'{self.radar_param.meas.session_label}.hdf5'
                               
         reg_content_content = generate_register_to_txt(mira_device, save_to_file=False)
         reg_content_content_readable = generate_register_to_readable_txt(mira_device, save_to_file=False)
@@ -75,10 +77,10 @@ class MIRA_SAVE_MEAS():
             # Check if the dataset already exists; if not, create it
             if dataset_name not in file[self.MIRA_MEAS_DATASET_GROUP_NAME]:
                 # Create a new dataset within the data group
-                for tx in range(2):
-                    for rx in range(4):
-                        for shape in range(16):
-                            print(frame_data_cube[:,rx,tx,shape])
+                # for tx in range(2):
+                #     for rx in range(4):
+                #         for shape in range(16):
+                #             print(frame_data_cube[:,rx,tx,shape])
                 dataset = file[str(self.MIRA_MEAS_DATASET_GROUP_NAME)].create_dataset(
                                                                   name=dataset_name,
                                                                   data=frame_data_cube,

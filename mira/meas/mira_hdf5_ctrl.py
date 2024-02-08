@@ -4,7 +4,7 @@ import json
 import numpy as np
 import scipy.io as sio
 
-class HDF5Reader:
+class MIRA_HDF5_CTRL:
     def __init__(self, filename):
         self.filename = filename
 
@@ -171,24 +171,24 @@ class HDF5Reader:
         sio.savemat(filename, {"data": data_cube})
 
 
-# Usage
-reader = HDF5Reader("./hdf5/MiRa6024_Measurement_07_02_2024_16_02_46.hdf5")
-reader.print_hdf5_structure("hdf5_structure.txt")
+# # Usage
+# reader = MIRA_HDF5_CTRL("./hdf5/MiRa6024_Measurement_07_02_2024_16_02_46.hdf5")
+# reader.print_hdf5_structure("hdf5_structure.txt")
 
-# Reading a specific dataset
-data = reader.read_dataset("/Data/Frame_Data_Cube_0000_0001")
-print(data[:,:,1,1])
+# # Reading a specific dataset
+# data = reader.read_dataset("/Data/Frame_Data_Cube_0000_0001")
+# print(data[:,:,1,1])
 
-# Getting statistics for a dataset
-stats = reader.get_dataset_statistics("/Data/Frame_Data_Cube_0000_0001")
-print(stats)
+# # Getting statistics for a dataset
+# stats = reader.get_dataset_statistics("/Data/Frame_Data_Cube_0000_0001")
+# print(stats)
 
-info = reader.get_dataset_info("/Data/Frame_Data_Cube_0000_0001")
-print(info)
+# info = reader.get_dataset_info("/Data/Frame_Data_Cube_0000_0001")
+# print(info)
 
 
-# # Finding datasets with a specific attribute
-# datasets = reader.find_datasets_with_attribute('/', '')
-# print(datasets)
+# # # Finding datasets with a specific attribute
+# # datasets = reader.find_datasets_with_attribute('/', '')
+# # print(datasets)
 
-reader.convert_dataset('./')
+# reader.convert_dataset('./')

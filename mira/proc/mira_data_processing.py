@@ -7,7 +7,7 @@ import configparser
 import setproctitle
 import multiprocessing
 from pathlib import Path
-from typing import Any, Callable, Dict, List, Optional
+from typing import Any, Callable, Dict, List
 from scipy.interpolate import griddata
 
 from mira.rsys.mira_radar_sys import MIRA_RADAR_PARAMETER
@@ -110,7 +110,7 @@ class MIRA_DATA_PROCESSOR():
             if not extracted_processing_data_queue.empty():
                 radar_data = np.array(extracted_processing_data_queue.get_nowait(), dtype=np.uint16)
             else:
-                time.sleep(1e-3) # wait 250us << processing time of data_extracting()
+                time.sleep(500e-6) # wait 250us << processing time of data_extracting()
                 continue
             
             # radar_data.shape = (samples, rx, tx, shape_set), dtype(np.uint16)
@@ -149,14 +149,29 @@ class MIRA_DATA_PROCESSOR():
             self.processed_gui_data_queue.put_nowait({'Process Info': {'Process Name': self.main_tab_index,},
                                                       'Processed Data': processed_radar_data})
         return None
+
+    def scale_raw_data(self, raw_radar_data_cube: np.ndarray,
+                       preprocessing: bool=False,
+                       output_mean: bool=False) -> np.ndarray:
+        if preprocessing and output_mean:
+            return np.mean(np.array(self.data_preprocessor.preprocess_channels(raw_radar_data_cube), 
+                                    dtype=np.float32),
+                           axis=3, dtype=np.float32)
+        elif preprocessing and not output_mean:
+            return np.array(self.data_preprocessor.preprocess_channels(raw_radar_data_cube), dtype=np.float32)
+        elif not preprocessing and output_mean:
+            return np.mean(np.array((np.divide(raw_radar_data_cube, np.power(2, 12)-1) * 1200), dtype=np.float32), axis=3, dtype=np.float32)
+        elif not preprocessing and not output_mean:
+            return np.array((np.divide(raw_radar_data_cube, np.power(2, 12)-1) * 1200), dtype=np.float32)
     
     def _scale_raw_data(self, raw_radar_data_cube: np.ndarray) -> np.ndarray:
-        if self.time_tab_index == 'Raw Data':
-            return np.array((np.divide(raw_radar_data_cube, np.power(2, 12)-1) * 1200), dtype=np.float32)[:,:,0]
-        elif self.time_tab_index == 'DSP Output':
+        if self.time_tab_index == 'DSP Output':
             return np.mean(np.array(self.data_preprocessor.preprocess_channels(raw_radar_data_cube), 
                                     dtype=np.float32),
                            axis=2, dtype=np.float32)
+        elif self.time_tab_index == 'Raw Data':
+            return np.array((np.divide(raw_radar_data_cube, np.power(2, 12)-1) * 1200), dtype=np.float32)[:,:,0]
+
             
     def _prepare_time_output_format(self, data: np.ndarray) ->  dict:
         if sum(self.radar_param.sys.n_active_shape) == 1:
@@ -180,13 +195,25 @@ class MIRA_DATA_PROCESSOR():
             return {'Channel 1': np.mean(ch_data[:,0:4,:], axis=2, dtype=np.float32),
                     'Channel 2': np.mean(ch_data[:,4:8,:], axis=2, dtype=np.float32)}
     
-    def _calc_spectogram(self, ch_data: np.ndarray) -> np.ndarray:
+    def _calc_spectogram(self, ch_data: np.ndarray, padding_len: int=0) -> np.ndarray:
+        try:
+            temp = self.main_tab_index
+            temp = self.spectrogram_tab_index
+        except:
+            self.main_tab_index = None
+            self.spectrogram_tab_index = None
+            self.max_value_type = None
+        
         if self.spectrogram_tab_index == 'TX1' or \
            self.main_tab_index == 'Waterfall Azimuth':
             ch_fft = self._calc_rfft_channels(np.mean(ch_data[:,0:4,:], axis=2, dtype=np.float32))
         elif self.spectrogram_tab_index == 'TX2':
             ch_fft = self._calc_rfft_channels(np.mean(ch_data[:,4:8,:], axis=2, dtype=np.float32))
-            
+        else:
+            self.waterfall_spectrogram_time = 1
+            self.padding_len = padding_len
+            ch_fft = self._calc_rfft_channels(np.mean(ch_data[:,:,:], axis=2, dtype=np.float32))
+                
         self.n_frames_spectrogram = np.uint32(np.divide(np.abs(self.waterfall_spectrogram_time), 
                                                         self.radar_param.sys.frame_duration))
 
@@ -194,10 +221,12 @@ class MIRA_DATA_PROCESSOR():
             fft_len = int(self.max_value/(self.radar_param.sys.max_range/ch_fft.shape[0]))
         elif self.max_value_type == 'freq':
             fft_len = int(self.max_value*1e3/(self.radar_param.sys.max_dsp_freq/ch_fft.shape[0]))
-        
+        else: 
+            fft_len = ch_fft.shape[0]
+
         if fft_len != self.spectogram_map.shape[1] or \
            self.n_frames_spectrogram != self.spectogram_map.shape[0]:
-            self.spectogram_map = np.zeros((self.n_frames_spectrogram, fft_len, 4), dtype=np.float32)
+            self.spectogram_map = np.zeros((self.n_frames_spectrogram, fft_len, ch_fft.shape[1]), dtype=np.float32)
         
         self.spectogram_map = np.concatenate((ch_fft[np.newaxis,0:fft_len,:],
                                               self.spectogram_map[0:self.n_frames_spectrogram-1,:,:]),

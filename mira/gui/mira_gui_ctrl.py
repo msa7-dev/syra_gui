@@ -55,7 +55,9 @@ class MIRA_GUI_CTRL():
         self.get_bgt_vga_gain()
         self.get_gui_fps()
         self.handle_usb_auto_connect_state()
-
+        self.set_mira_session_label()
+        self.set_mira_project()
+        
     def update_radar_params(self) -> None:
         self.set_value_labels()
         self.update_processing_parameters()
@@ -337,6 +339,7 @@ class MIRA_GUI_CTRL():
         
     def set_mira_project(self) -> None:
         mira_project = self.qt_self.mira_project_plainTextEdit.toPlainText()
+        self.radar_param.gui.project_name = str(mira_project)
         self.bgt_reg_browser.reinit(mira_project)
         self.meas_in_path_browser.reinit(mira_project)
         self.meas_out_path_browser.reinit(mira_project)
