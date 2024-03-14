@@ -11,7 +11,7 @@ from threading import Thread
 from typing import List, Optional
 from PyQt5 import uic, QtCore, QtWidgets
 from mira.ctrl.mira_ctrl import MIRA_CTRL_GUI
-from mira.com.mira_tcp_client import MIRA_TCP_CLIENT
+# from mira.com.mira_tcp_client import MIRA_TCP_CLIENT
 from mira.rsys.mira_radar_sys import MIRA_RADAR_PARAMETER
 from mira.gui.mira_gui_ctrl import MIRA_GUI_CTRL, init_gui_window, init_gui_qtwidgets
 from mira.ctrl.mira_multiprocessing import MIRA_MULTIPROCESSOR,distribute_cores_to_process

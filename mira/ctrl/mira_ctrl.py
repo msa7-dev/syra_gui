@@ -1,7 +1,7 @@
 import __init__
 import configparser
 
-from mira.com.mira_tcp_client import MIRA_TCP_CLIENT
+# from mira.com.mira_tcp_client import MIRA_TCP_CLIENT
 from mira.sens.mira_device_bgt import MIRA_DEVICE
 from mira.meas.mira_save_meas import MIRA_SAVE_MEAS
 from mira.sens.mira_device_bgt import MIRA_RADAR_PARAMETER
