@@ -9,10 +9,9 @@ import configparser
 import multiprocessing
 from pathlib import Path
 from mira.sens.mira_device_bgt import MIRA_DEVICE
-from mira.meas.mira_save_meas import MIRA_SAVE_MEAS
 from mira.rsys.mira_radar_sys import MIRA_RADAR_PARAMETER
 from mira.ctrl.mira_multiprocessing import distribute_cores_to_process
-import mira.proc.mira_cython.mira6024_extract_from_raw_data as mira6024_extract_from_raw_data
+import mira.proc.cython.mira_extract_raw_data as mira_extract_raw_data
 
 # ==============================================================================
 # Class Name: MIRA_DATA_EXTRACTOR
@@ -23,12 +22,11 @@ class MIRA_DATA_EXTRACTOR():
         self.config.read(Path(__init__.MIRA_SYS_CONFIG_PATH).resolve())
         self.mira_device = mira_device
         self.radar_param: MIRA_RADAR_PARAMETER = mira_device.radar_param
-        if self.radar_param.meas.measurement_flag == True:
-            self.save_meas = MIRA_SAVE_MEAS(self.mira_device)
 
     def data_extracting_process(self, usb_extraction_data_queue: multiprocessing.Queue,
                                 prefix_header_queue: multiprocessing.Queue, 
                                 extracted_processing_data_queue: multiprocessing.Queue,
+                                save_data_queue: multiprocessing.Queue,
                                 process_stop_event: multiprocessing.Event):
         self.prefix_header_queue = prefix_header_queue
 
@@ -49,7 +47,7 @@ class MIRA_DATA_EXTRACTOR():
                                                 int(self.radar_param.sys.shape_set_repetition), # Dim. 4 - Shape Set Repetition
                                                  self.radar_param.sys.max_frame_cnt), # Dim. 5
                                                 dtype=np.uint16)
-        
+
         USB_SPI_BRIDGE_DATA_ALLOCATION = np.uint32(
                 self.config.get("MIRA_USB_SPI_BRIDGE", "USB_SPI_BRIDGE_DATA_ALLOCATION"))
         DATA_ALLOCATION = np.uint32(USB_SPI_BRIDGE_DATA_ALLOCATION+self.radar_param.sys.n_fifo_overhead*9)
@@ -62,7 +60,7 @@ class MIRA_DATA_EXTRACTOR():
         header_matches = list()
         for n_headers in range(np.uint32(DATA_ALLOCATION/self.package_chirp_header_index_distance)):
             header_matches.append(self.package_chirp_header_index_distance*n_headers)
-
+        
         self.data_values = []
         start_time = time.time()
         self.prev_frame_cnt = np.uint16(0)
@@ -70,9 +68,9 @@ class MIRA_DATA_EXTRACTOR():
             # check multiprocessing queue if there is new data available 
             if not usb_extraction_data_queue.empty():
                 # get latest data_cube from mira_usb_spi_bridge.raw_data_aquisition() process
-                raw_fifo_data = np.array(usb_extraction_data_queue.get_nowait(), dtype=np.uint8) # ndarray.shape = (12288, )
+                raw_fifo_data = np.array(usb_extraction_data_queue.get(), dtype=np.uint8) # ndarray.shape = (12288, )
             else:
-                time.sleep(250e-6)
+                time.sleep(750e-6)
                 continue
             # Append the data rate to the array
             self.data_values.append((raw_fifo_data.shape[0] * 8) / (time.time() - start_time))
@@ -81,25 +79,21 @@ class MIRA_DATA_EXTRACTOR():
             self.data_values = self.data_values[-128:]
             start_time = time.time()
 
-            print(header_matches)
             for header_match in header_matches:
-                self.header_dict = mira6024_extract_from_raw_data.prefix_header(
-                        raw_fifo_data[header_match : header_match + 9]) # 10 - 50 us
+                self.header_dict = mira_extract_raw_data.prefix_header(
+                        raw_fifo_data[header_match : header_match + 9]) 
                 self._update_header_dict_to_gui()
                 curr_frame_cnt = np.uint16(self.header_dict['frame_cnt'])
                 
-                raw_data = raw_fifo_data[header_match + 9 : header_match + \
-                                         self.package_chirp_header_index_distance]
-                   
-                data_field = self._extract_channels(raw_data) # 1 - 3 ms ---> with cython 10-70 us
-
+                data_field = mira_extract_raw_data.extract_raw_data_cy((raw_fifo_data[header_match + 9 : header_match + self.package_chirp_header_index_distance]).astype(np.uint8), 
+                                                                      (raw_fifo_data[header_match + 9 : header_match + self.package_chirp_header_index_distance]).shape[0],
+                                                                      self.radar_param.sys.rx_active_antennas[0]).astype(np.uint16)
+                
                 if curr_frame_cnt > self.radar_param.sys.max_frame_cnt:
                     frame_cnt = np.mod(curr_frame_cnt, self.radar_param.sys.max_frame_cnt)
                 else:
                     frame_cnt = curr_frame_cnt
-                print(data_field[:10,:])
-                print(self.header_dict['cs'])
-                print(self.header_dict['shape_grp_cnt']/sum(self.radar_param.sys.tx_active_antennas))
+
                 radar_data_cube_build_buffer[:,:, self.header_dict['cs'], 
                                              np.uint16(self.header_dict['shape_grp_cnt']/sum(self.radar_param.sys.tx_active_antennas)),
                                              frame_cnt] = data_field[:,:]
@@ -127,13 +121,12 @@ class MIRA_DATA_EXTRACTOR():
                         frame_cnt = self.prev_frame_cnt
 
                     if extracted_processing_data_queue.empty():
-                        extracted_processing_data_queue.put_nowait(radar_data_cube_build_buffer[:,:,:,:,frame_cnt])
-
+                        extracted_processing_data_queue.put(radar_data_cube_build_buffer[:,:,:,:,frame_cnt])
+                    
                     if self.radar_param.meas.measurement_flag == True:
                         self.header_dict['frame_cnt'] = frame_cnt
-                        self.save_meas.save_to_hdf5(
-                            radar_data_cube_build_buffer[:,:,:,:,frame_cnt], 
-                            self.header_dict)
+                        save_data_queue.put({'Data': radar_data_cube_build_buffer[:,:,:,:,frame_cnt],
+                                             'Header': self.header_dict})
 
                     self.prev_frame_cnt = curr_frame_cnt
             
@@ -155,19 +148,3 @@ class MIRA_DATA_EXTRACTOR():
         else: 
             return np.float32(-42.17) # magic number 
         
-    
-    def _extract_channels(self, raw_data_block: np.ndarray) -> np.ndarray:
-        if   self.radar_param.sys.rx_active_antennas[0] == 4:   
-            return mira6024_extract_from_raw_data.extract_channels_cy(
-                                raw_data_block).astype(np.uint16)
-        elif self.radar_param.sys.rx_active_antennas[0] == 3:
-            return mira6024_extract_from_raw_data.rx_mode_3_cy(
-                                raw_data_block, self.radar_param.sys.n_samples_per_chirp[0]).astype(np.uint16)
-        elif self.radar_param.sys.rx_active_antennas[0] == 2:
-            return mira6024_extract_from_raw_data.rx_mode_2_cy(
-                                raw_data_block, self.radar_param.sys.n_samples_per_chirp[0]).astype(np.uint16)
-        elif self.radar_param.sys.rx_active_antennas[0] == 1:
-            return mira6024_extract_from_raw_data.rx_mode_1_cy(
-                                raw_data_block, self.radar_param.sys.n_samples_per_chirp[0]).astype(np.uint16)
-
-    

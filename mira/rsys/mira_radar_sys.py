@@ -55,11 +55,12 @@ class MIRA_RADAR_SYS_PARAMETER():
         self.tx_active_antennas = np.zeros((8), dtype=np.uint8)
         self.tx_power = np.zeros((8,2), dtype=np.uint8)
         
-        self.fullscale_voltage = np.float32(0)
-        self.waterfall_spectrogram_time = np.float32(0)
+        self.fullscale_voltage = np.float32(1200)
+        self.waterfall_spectrogram_time = np.float32(1)
         self.plot_axis_max_value = np.float32(0)
-        self.plot_axis_min_dbfs = np.float32(0)
-        self.plot_axis_max_dbfs = np.float32(0)
+        self.curr_plot_ampl_limit = np.uint8(0)
+        self.plot_ampl_limit_min = np.zeros((8), dtype=int)
+        self.plot_ampl_limit_max = np.zeros((8), dtype=int)
         self.curr_select_axis_unit = str('')
         
         self.min_range = np.float32(0)

@@ -1,12 +1,64 @@
 import os
 import h5py
 import json
+import pickle
 import numpy as np
 import scipy.io as sio
 
 class MIRA_HDF5_CTRL:
     def __init__(self, filename):
         self.filename = filename
+        self.datasets = {}
+        self.metadata = {}
+        self.frame_data_cube = None
+        self.delta_time = None
+        self.shape = None
+        self.timestamp = None
+        self.mira_config = None
+        self.mira_bgt_reg_content = None
+        self.mira_bgt_reg_content_readable = None
+        self.radar_param = None
+        # self.load_all_data()
+
+    def load_all_data(self):
+        self.load_datasets()
+        self.load_metadata()
+        self.load_specific_dataset_attributes('/Data/Frame_Data_Cube_0000_0000')
+        self.load_specific_metadata_attributes()
+
+    def load_datasets(self):
+        with h5py.File(self.filename, 'r') as file:
+            for dataset_name in file['/Data']:
+                data = np.array(file['/Data'][dataset_name][:], dtype=np.float32)
+                self.datasets[dataset_name] = np.expand_dims(data, axis=0)
+            if self.datasets:
+                self.mira_data_cube = np.concatenate(list(self.datasets.values()), axis=0)
+
+    def load_metadata(self):
+        with h5py.File(self.filename, 'r') as file:
+            if 'Metadata' in file:
+                metadata_group = file['Metadata']
+                for item in metadata_group:
+                    self.metadata[item] = metadata_group[item].attrs
+
+    def load_specific_dataset_attributes(self, path):
+        with h5py.File(self.filename, 'r') as file:
+            if path in file:
+                dataset = file[path]
+                self.frame_data_cube = np.array(dataset, dtype=np.float32)
+                self.delta_time = dataset.attrs['delta_time']
+                self.shape = dataset.attrs['shape']
+                self.timestamp = dataset.attrs['timestamp']
+
+    def load_specific_metadata_attributes(self):
+        # self.mira_config = self.metadata.get('mira_config', {}).get('mira_config')
+        # self.mira_bgt_reg_content = self.metadata.get('mira_bgt_reg_content', {}).get('mira_bgt_reg_content')
+        # self.mira_bgt_reg_content_readable = self.metadata.get('mira_bgt_reg_content_readable', {}).get('mira_bgt_reg_content_readable')
+        # radar_param_data = self.metadata.get('mira_radar_parameters', {}).get('mira_radar_parameters')
+        # if radar_param_data is not None:
+        #     self.radar_param = pickle.loads(radar_param_data.tobytes())
+        pass
+
 
     def print_hdf5_structure(self, output_filename=None):
         with h5py.File(self.filename, "r") as file:
@@ -170,25 +222,47 @@ class MIRA_HDF5_CTRL:
         print(data_cube.shape)
         sio.savemat(filename, {"data": data_cube})
 
+    def load_radar_data_cube(self, group_path='/Data', dtype=np.float32):
+        datasets = []
+        with h5py.File(self.filename, 'r') as file:
+            for dataset_name in file[group_path]:
+                data = np.array(file[f'{group_path}/{dataset_name}'][:], dtype=dtype)
+                datasets.append(np.expand_dims(data, axis=0))
+        mira_data_cube = np.concatenate(datasets, axis=0)
+        return mira_data_cube
 
-# # Usage
-# reader = MIRA_HDF5_CTRL("./hdf5/MiRa6024_Measurement_07_02_2024_16_02_46.hdf5")
-# reader.print_hdf5_structure("hdf5_structure.txt")
+    def read_dataset_with_attributes(self, dataset_path):
 
-# # Reading a specific dataset
-# data = reader.read_dataset("/Data/Frame_Data_Cube_0000_0001")
-# print(data[:,:,1,1])
+        with h5py.File(self.filename, 'r') as file:
+            if dataset_path in file:
+                dataset = file[dataset_path]
+                data = np.array(dataset, dtype=np.float32)
+                attrs = {attr: dataset.attrs[attr] for attr in dataset.attrs}
+                return data, attrs
+            else:
+                print(f"Dataset {dataset_path} not found in file.")
+                return None, None
 
-# # Getting statistics for a dataset
-# stats = reader.get_dataset_statistics("/Data/Frame_Data_Cube_0000_0001")
-# print(stats)
+    def read_metadata(self, metadata_path='Metadata'):
 
-# info = reader.get_dataset_info("/Data/Frame_Data_Cube_0000_0001")
-# print(info)
+        metadata = {}
+        with h5py.File(self.filename, 'r') as file:
+            if metadata_path in file:
+                metadata_group = file[metadata_path]
+                for name in metadata_group:
+                    item = metadata_group[name]
+                    if isinstance(item, h5py.Group) or isinstance(item, h5py.Dataset):
+                        metadata[name] = {attr: item.attrs[attr] for attr in item.attrs}
+        return metadata
 
+    def unpickle_metadata(self, metadata_path='Metadata/mira_radar_parameters/mira_radar_parameters'):
 
-# # # Finding datasets with a specific attribute
-# # datasets = reader.find_datasets_with_attribute('/', '')
-# # print(datasets)
-
-# reader.convert_dataset('./')
+        with h5py.File(self.filename, 'r') as file:
+            if metadata_path in file:
+                item = file[metadata_path]
+                radar_param_data = item[()].tobytes()
+                radar_param = pickle.loads(radar_param_data)
+                return radar_param
+            else:
+                print(f"Metadata path {metadata_path} not found in file.")
+                return None

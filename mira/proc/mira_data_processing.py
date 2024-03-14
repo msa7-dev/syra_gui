@@ -64,6 +64,7 @@ class MIRA_DATA_PROCESSOR():
     def _init_buffers(self) -> None:
         self.spectogram_map = np.zeros((1,1,1), dtype=np.float32)
         self.range_doppler_map = np.zeros((1,1,1), dtype=np.float32)
+        self.prev_range_azimuth_shape = (0,0,0)
         self.range_azimuth_map = np.zeros((1,1,1), dtype=np.float32)
         self.ch_range_doppler_buf = np.zeros((1,1,1), dtype=np.float32)
         
@@ -100,22 +101,19 @@ class MIRA_DATA_PROCESSOR():
         setproctitle.setproctitle("Sykno - MiRa Eval GUI - Processing Process")
 
         radar_data_cube = np.zeros((np.uint16(self.radar_param.sys.n_samples_per_chirp[0]), # Dim. 1
-                                    int(self.radar_param.sys.rx_active_antennas[0] *        # Dim. 2
-                                        sum(self.radar_param.sys.tx_active_antennas)),
+                                    int(8),
                                     self.radar_param.sys.shape_set_repetition),             # Dim. 3
                                    dtype=np.uint16) 
-
         self.counter = 0
         while not process_stop_event.is_set():
             if not extracted_processing_data_queue.empty():
-                radar_data = np.array(extracted_processing_data_queue.get_nowait(), dtype=np.uint16)
+                radar_data = np.array(extracted_processing_data_queue.get(), dtype=np.uint16)
             else:
-                time.sleep(500e-6) # wait 250us << processing time of data_extracting()
+                time.sleep(750e-6) # wait 250us << processing time of data_extracting()
                 continue
-            
-            # radar_data.shape = (samples, rx, tx, shape_set), dtype(np.uint16)
-            radar_data_cube[:,0:4,:] = radar_data[:,:,0,:] 
-            radar_data_cube[:,4:8,:] = radar_data[:,:,1,:]
+
+            radar_data_cube[:, 0:self.radar_param.sys.rx_active_antennas[0], :] = radar_data[:, :, 0, :]
+            radar_data_cube[:, 4:4+self.radar_param.sys.rx_active_antennas[0], :] = radar_data[:, :, 1, :]
             
             if not self.gui_parameter_queue.empty():
                 self._update_gui_parameter()
@@ -146,7 +144,7 @@ class MIRA_DATA_PROCESSOR():
     
     def _move_data_to_gui_queue(self, processed_radar_data: np.ndarray) -> None:
         if self.processed_gui_data_queue.empty():
-            self.processed_gui_data_queue.put_nowait({'Process Info': {'Process Name': self.main_tab_index,},
+            self.processed_gui_data_queue.put({'Process Info': {'Process Name': self.main_tab_index,},
                                                       'Processed Data': processed_radar_data})
         return None
 
@@ -195,7 +193,7 @@ class MIRA_DATA_PROCESSOR():
             return {'Channel 1': np.mean(ch_data[:,0:4,:], axis=2, dtype=np.float32),
                     'Channel 2': np.mean(ch_data[:,4:8,:], axis=2, dtype=np.float32)}
     
-    def _calc_spectogram(self, ch_data: np.ndarray, padding_len: int=0) -> np.ndarray:
+    def _calc_spectogram(self, ch_data: np.ndarray) -> np.ndarray:
         try:
             temp = self.main_tab_index
             temp = self.spectrogram_tab_index
@@ -211,8 +209,8 @@ class MIRA_DATA_PROCESSOR():
             ch_fft = self._calc_rfft_channels(np.mean(ch_data[:,4:8,:], axis=2, dtype=np.float32))
         else:
             self.waterfall_spectrogram_time = 1
-            self.padding_len = padding_len
-            ch_fft = self._calc_rfft_channels(np.mean(ch_data[:,:,:], axis=2, dtype=np.float32))
+            self.padding_len = 0
+            ch_fft = self._calc_rfft_channels(np.mean(ch_data[:,0:4,:], axis=2, dtype=np.float32))
                 
         self.n_frames_spectrogram = np.uint32(np.divide(np.abs(self.waterfall_spectrogram_time), 
                                                         self.radar_param.sys.frame_duration))
@@ -274,47 +272,43 @@ class MIRA_DATA_PROCESSOR():
             return {'Channel 1': ch_data, 'Channel 2': np.zeros((1,1,1), dtype=np.float32)}
 
     def transform_range_azimuth_to_half_circle(self, range_azimuth_map):
-        output_shape = range_azimuth_map.shape
-        # Define the range (radius) and azimuth angles based on the input map dimensions
+        
         num_ranges, num_azimuths = range_azimuth_map.shape
-        ranges = np.linspace(0, 1, num_ranges)  # Normalize range to [0, 1] for simplicity
-        azimuths = np.linspace(-90, 90, num_azimuths)  # Azimuth angles from -90 to 90 degrees
+        if self.prev_range_azimuth_shape != range_azimuth_map.shape:
+            ranges = np.linspace(0, 1, num_ranges)  # Normalize range to [0, 1] for simplicity
+            azimuths = np.linspace(-90, 90, num_azimuths)  # Azimuth angles from -90 to 90 degrees
+            # Create a grid in polar coordinates
+            r, az = np.meshgrid(ranges, np.radians(azimuths))
 
-        # Create a grid in polar coordinates
-        r, az = np.meshgrid(ranges, np.radians(azimuths))
-
-        # Adjust the conversion to orient the half-circle upwards
-        # Swap x and y roles, and adjust azimuth angles for upward orientation
-        x = r * np.sin(az)
-        y = r * np.cos(az)  # This will orient the half-circle with the flat side up
-
-        # Ensure the half-circle is facing upwards by adjusting y
-        # y = -y  # This makes the top of the circle the maximum y-value
+            # Adjust the conversion to orient the half-circle upwards
+            # Swap x and y roles, and adjust azimuth angles for upward orientation
+            x = r * np.sin(az)
+            y = r * np.cos(az)  # This will orient the half-circle with the flat side up
+            # Create the Cartesian output grid
+            grid_x, grid_y = np.mgrid[
+                np.min(x):np.max(x):complex(num_ranges), 
+                np.min(y):np.max(y):complex(num_azimuths)
+            ]
 
         # Flatten the arrays for interpolation
         points = np.vstack((x.flatten(), y.flatten())).T
         values = range_azimuth_map.flatten()
 
-        # Create the Cartesian output grid
-        grid_x, grid_y = np.mgrid[
-            np.min(x):np.max(x):complex(output_shape[0]), 
-            np.min(y):np.max(y):complex(output_shape[1])
-        ]
 
         # Interpolate the data onto the Cartesian grid
-        cartesian_map = griddata(points, values, (grid_x, grid_y), method='cubic', fill_value=0)
+        cartesian_map = griddata(points, values, (grid_x, grid_y), method='nearest', fill_value=0)
 
         return cartesian_map
 
     
     def _calc_range_azimuth(self, processed_data_cube: np.ndarray) -> np.ndarray:
         data_cube = np.array(processed_data_cube[:,:,0], dtype=np.complex64)
-        az = np.deg2rad(np.linspace(-90,90,int(18*4+1)))
-        n = np.arange(8)
-        k = 2 * np.pi / self.radar_param.sys.lambda_freq[0]
-
-        # Steering matrix, shape: (Number of Azimuth Angles, Number of Antenna Elements)
-        self.v = np.exp(-1j * k * 0.001 * n * np.sin(az)[:, np.newaxis])
+        if self.prev_range_azimuth_shape != data_cube.shape:
+            az = np.deg2rad(np.linspace(-90,90,int(18*4+1)))
+            n = np.arange(8)
+            k = 2 * np.pi / self.radar_param.sys.lambda_freq[0]
+            # Steering matrix, shape: (Number of Azimuth Angles, Number of Antenna Elements)
+            self.v = np.exp(-1j * k * 0.001 * n * np.sin(az)[:, np.newaxis])
         
         self.range_azimuth_map = np.zeros((len(az), data_cube.shape[0]), dtype = np.float32)
         
@@ -329,8 +323,7 @@ class MIRA_DATA_PROCESSOR():
             self.range_azimuth_map = self.range_azimuth_map[0:self.range_azimuth_map.shape[0],
                                                             0:int(self.max_value/(self.radar_param.sys.max_dsp_freq * 1e-3
                                                                                 /self.range_azimuth_map.shape[1]))]
-        # print(self.range_azimuth_map.shape)
-        # self.range_azimuth_map = self.transform_range_azimuth_to_half_circle(self.range_azimuth_map.transpose((1,0)))
+        self.range_azimuth_map = self.transform_range_azimuth_to_half_circle(self.range_azimuth_map.transpose((1,0)))
 
         return np.array(self.range_azimuth_map, dtype=np.float32)
 

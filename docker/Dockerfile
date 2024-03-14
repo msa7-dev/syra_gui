@@ -24,26 +24,15 @@ RUN apt-get update -y && apt-get upgrade -y && \
     dpkg-reconfigure -f noninteractive tzdata && \
     apt-get autoremove -y && apt-get autoclean -y
 
-RUN apt-get update -y && apt-get upgrade -y
-
-RUN cp /home/sykno/mira/setup/udev/99-mira6024_sykno.rules /etc/udev/rules.d/
+# Copy the udev rules
+RUN cp /home/sykno/mira/setup/unix/udev/99-mira_sykno.rules /etc/udev/rules.d/
 
 # Download and install Python 3.11.7
-RUN cd /usr/src && \
-    wget https://www.python.org/ftp/python/3.11.7/Python-3.11.7.tgz && \
-    tar xzf Python-3.11.7.tgz && \
-    cd Python-3.11.7 && \
-    ./configure --enable-optimizations && \
-    make altinstall
-
+RUN cd /home/sykno/
 # Upgrade pip and install Python packages
 RUN python3.11 -m pip install --upgrade pip && \
-    python3.11 -m pip install -r /home/sykno/requirements.txt
+    python3.11 -m pip install -r /home/sykno/mira/setup/requirements.txt
 
-# Compile Python extensions
-RUN cd /home/sykno/mira/proc/mira_cython/ && \
-    python3.11 ./setup.py build_ext --inplace && \
-    cd -
 
 # Define the command to run the application
 # CMD ["sh", "-c", "taskset -c 1 python3.11 -B ./sykno_cli mira-gui"]

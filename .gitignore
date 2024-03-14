@@ -1,10 +1,14 @@
-.sykno_env
+mira_installer.bin
+mira_build
+sykno_env
 poetry.lock
 .vscode
+.ipynb_checkpoints
 mira/meas/hdf5/*
 !mira/meas/hdf5/.gitkeep
 mira/meas/npy/*
 !mira/meas/npy/.gitkeep
-mira/meas/mat/*
-!mira/meas/mat/.gitkeep
+mira/meas/animation/*
+!mira/meas/animation/.gitkeep
 **/__pycache__
+__pycache__

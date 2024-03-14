@@ -234,7 +234,7 @@ def clear_log_file():
     # Check if the file exists before attempting to remove it
     if os.path.exists(file_path):
         os.remove(file_path)
-        logger.debug(f"File '{file_path}' removed successfully.")
+        logger.debug(f"\nFile '{file_path}' removed successfully.")
     else:
         with open(file_path, "w") as file:
             file.write("")
@@ -242,7 +242,7 @@ def clear_log_file():
     
     if os.path.exists(file_path_readable):
         os.remove(file_path_readable)
-        logger.debug(f"File '{file_path_readable}' removed successfully.")
+        logger.debug(f"\nFile '{file_path_readable}' removed successfully.")
     else:
         with open(file_path_readable, "w") as file:
             file.write("")

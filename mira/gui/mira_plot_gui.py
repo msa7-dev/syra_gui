@@ -84,18 +84,8 @@ class MIRA_PLOT_CONFIG():
         self.pen_cosmetic_bool = True if MIRA_PLOT_PEN_COSMETIC == "True" else False
         
         self.plot_pens = self.init_pen_colors()
+        self.init_color_lut(qt_self.radar_param.sys.plot_ampl_limit_min, qt_self.radar_param.sys.plot_ampl_limit_max)
 
-        pos = np.array([0.0, 0.125, 0.375, 0.64, 0.91, 1.0])
-        color = np.array([
-            [128, 0, 0, 255],    # Dark Red
-            [255, 0, 0, 255],    # Red
-            [255, 255, 0, 255],  # Yellow
-            [0, 255, 255, 255],  # Cyan
-            [0, 0, 255, 255],    # Blue
-            [0, 0, 128, 255],    # Dark Blue
-        ], dtype=np.ubyte)
-    
-        self.lut = pg.ColorMap(pos, color)
 
     def init_pen_colors(self):
         num_pens = 8
@@ -113,6 +103,17 @@ class MIRA_PLOT_CONFIG():
             
         return pen_colors
 
+    def init_color_lut(self, min, max):
+        pos = np.array([0.0, 0.125, 0.375, 0.64, 0.91, 1.0])
+        color = np.array([
+            [0, 0, 128, 255],    # Dark Blue
+            [0, 0, 255, 255],    # Blue
+            [0, 255, 255, 255],  # Cyan
+            [255, 255, 0, 255],  # Yellow
+            [255, 0, 0, 255],    # Red
+            [128, 0, 0, 255],    # Dark Red
+        ], dtype=np.ubyte)    
+        self.lut = pg.ColorMap(pos, color)
 # ==============================================================================
 # Class Name: TIME_SIGNAL_PLOTTER
 # ==============================================================================

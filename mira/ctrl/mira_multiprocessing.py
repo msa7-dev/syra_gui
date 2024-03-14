@@ -14,6 +14,7 @@ class MIRA_MULTIPROCESSOR():
         self.usb_extraction_data_queue = multiprocessing.Queue()
         self.update_gui_info_queue = multiprocessing.Queue()
         self.extracting_data_queue = multiprocessing.Queue()
+        self.save_data_queue = multiprocessing.Queue()
         self.extracted_processing_data_queue = multiprocessing.Queue()
         self.processed_gui_data_queue = multiprocessing.Queue()
         self.radar_gui_para_queue = multiprocessing.Queue()
@@ -22,13 +23,25 @@ class MIRA_MULTIPROCESSOR():
         self.data_queues = [self.usb_extraction_data_queue, self.update_gui_info_queue, 
                             self.extracting_data_queue, self.extracted_processing_data_queue,
                             self.processed_gui_data_queue, self.radar_gui_para_queue,
-                            self.process_param_queue]
+                            self.process_param_queue, self.save_data_queue]
     
     def _init_signal_events(self) -> None:
         self.process_stop_event = multiprocessing.Event()
         self.process_stop_event.clear()
         
     def _init_processes(self) -> None:
+        if self.radar_param.meas.measurement_flag and \
+           self.mira_controller.mira_device.mira_bridge.device is not None:
+            # Data Aquisition Process - BGT Raw Data via USB Bridge
+            self.data_save_process = multiprocessing.Process(
+                name='MiRa_Meas_Save_Process',
+                target=self.mira_controller.save_meas.save_to_hdf5_process,
+                args=(self.save_data_queue,
+                      self.process_stop_event))
+            self.data_save_process.daemon = True
+        else:
+            self.data_save_process = None
+        
         if self.radar_param.remt.remote_flag == False or \
            self.radar_param.remt.client_flag == True and \
            self.mira_controller.mira_device.mira_bridge.device is not None:
@@ -51,6 +64,7 @@ class MIRA_MULTIPROCESSOR():
                 args=(self.usb_extraction_data_queue, 
                       self.update_gui_info_queue,
                       self.extracted_processing_data_queue,
+                      self.save_data_queue,
                       self.process_stop_event))
             self.data_extracting_process.daemon = True
         else:
@@ -115,6 +129,7 @@ class MIRA_MULTIPROCESSOR():
                           self.data_receiving_process,
                           self.data_transmitting_process,
                           self.data_simulating_process,
+                          self.data_save_process,
                           self.data_aquisition_process]
         
     def start_processes(self) -> None:
@@ -148,4 +163,3 @@ def distribute_cores_to_process(process: multiprocessing.Process, process_id):
         current_affinity = process.cpu_affinity()
         new_affinity = list(set(current_affinity + additional_cores))  # Remove duplicates if any
         process.cpu_affinity(new_affinity)
-        print(new_affinity, process_id)

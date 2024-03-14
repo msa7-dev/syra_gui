@@ -3,6 +3,7 @@ import configparser
 
 from mira.com.mira_tcp_client import MIRA_TCP_CLIENT
 from mira.sens.mira_device_bgt import MIRA_DEVICE
+from mira.meas.mira_save_meas import MIRA_SAVE_MEAS
 from mira.sens.mira_device_bgt import MIRA_RADAR_PARAMETER
 from mira.proc.mira_data_extraction import MIRA_DATA_EXTRACTOR
 from mira.proc.mira_data_processing import MIRA_DATA_PROCESSOR
@@ -29,6 +30,8 @@ class MIRA_CTRL_GUI:
                 self.mira_device.set_spi_high_speed()
                 self.data_extrator = MIRA_DATA_EXTRACTOR(self.mira_device)
 
+            if self.radar_param.meas.measurement_flag:
+                self.save_meas = MIRA_SAVE_MEAS(self.mira_device)
         # elif radar_param.rply.replay_flag == True: # MIRA Replay Operation Mode
             # self.data_simulator = MIRA6024_DATA_SIMULATOR(self.radar_param)
             # self.mira_device = self.data_simulator.mira_device

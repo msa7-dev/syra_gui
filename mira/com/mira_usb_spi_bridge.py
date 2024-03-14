@@ -1,8 +1,11 @@
 import __init__
 import os 
+import time
 import psutil
+import logging
 import usb.core
 import usb.util
+import subprocess
 import numpy as np
 import setproctitle
 import configparser
@@ -13,7 +16,8 @@ from pathlib import Path
 from loguru import logger
 
 from mira.rsys.mira_radar_sys import MIRA_RADAR_PARAMETER
-from mira.com.mira_mcu_cmds import MIRA_MCU_COMMANDS, MIRA_MCU_USB_DEF
+#from mira.com.mira_mcu_cmds import MIRA_MCU_COMMANDS, MIRA_MCU_USB_DEF
+from mira.com.cython.mira_mcu_cmds import MIRA_MCU_COMMANDS, MIRA_MCU_USB_DEF
 
 # ==============================================================================
 # Class Name: MIRA_USB_SPI_BRIDGE
@@ -48,16 +52,16 @@ class MIRA_USB_SPI_BRIDGE():
     def send_usb_payload(self, usb_payload: bytearray) -> None:
         try:
             self.usb_device_available.get_lock().acquire(block=True, timeout=100)
-            self.endpoint_out.write(usb_payload, timeout=100)
+            self.endpoint_out.write(usb_payload)
             usb.util.release_interface(self.device, self.interface)
             self.usb_device_available.get_lock().release()
         except:
-            logger.debug("Error reading USB data.")
+            logger.debug("Error sending USB data.")
             
     def receive_usb_payload(self, read_n_bytes: int):
         try:
-            self.usb_device_available.get_lock().acquire(block=True, timeout=100)
-            ret_payload = self.endpoint_in.read(read_n_bytes, timeout=100)
+            self.usb_device_available.get_lock().acquire(block=True)
+            ret_payload = self.endpoint_in.read(read_n_bytes)
             usb.util.release_interface(self.device, self.interface)
             self.usb_device_available.get_lock().release()
             return ret_payload
@@ -88,13 +92,51 @@ class MIRA_USB_SPI_BRIDGE():
     def spi_stm_reset(self) -> None:
         self.send_usb_payload(bytearray([self.mcu_commands.stm_rst_cmd]))
         self.init_stm = False
-        
+    
+    def spi_activate_boot_mode(self) -> None:
+        self.send_usb_payload(bytearray([self.mcu_commands.flash_cmd]))
+        self.deinit_stm_usb_device()
+        time.sleep(2)  # Delay to ensure the device is ready for programming
+        command = [
+            './tools/programmer/bin/STM32_Programmer_CLI',
+            '-c', 'port=/dev/ttyUSB0', 'br=115200',
+            '-w', './mira/setup/fw/MiRa_IFX_60GHz.bin', '0x08000000',
+            '-v',
+            '-g 0x00000000'
+        ]
+
+        success_message = "  Address:      : 0x0"
+
+        # Start the subprocess and obtain handles to its stdout and stderr
+        with subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True) as proc:
+            try:
+                # Monitor the stdout of the process
+                for line in proc.stdout:
+                    print(line, end='')  # Print each line of stdout
+                    if success_message in line:
+                        print("\nDetected successful execution of the run command.")
+                        # Optionally do additional steps here
+                        # Terminate the process if it's still running
+                        time.sleep(0.5)
+                        proc.kill()  # Force-terminate if it didn't exit in time
+                        return
+                    
+                # It's important to read stderr to prevent deadlocks
+                for line in proc.stderr:
+                    print(line, end='')  # Log or handle errors as needed
+
+            except Exception as e:
+                logging.error(f"An error occurred: {e}")
+
+            
+
+
     def init_fifo_overhead(self):
         USB_SPI_BRIDGE_DATA_ALLOCATION = int(self.config.get("MIRA_USB_SPI_BRIDGE", 
                                                              "USB_SPI_BRIDGE_DATA_ALLOCATION")) 
         self.radar_param.sys.n_fifo_overhead = np.uint8(USB_SPI_BRIDGE_DATA_ALLOCATION/ \
             (self.radar_param.sys.n_samples_per_chirp[0]*3* \
-            (self.radar_param.sys.rx_active_antennas[0]/sum(self.radar_param.sys.tx_active_antennas))))
+        (self.radar_param.sys.rx_active_antennas[0]/sum(self.radar_param.sys.tx_active_antennas))))
         self.spi_set_n_fifo_overhead(self.radar_param.sys.n_fifo_overhead)
       
     def spi_set_n_fifo_overhead(self, n_fifo_overhead: np.uint8) -> None:
@@ -106,7 +148,6 @@ class MIRA_USB_SPI_BRIDGE():
         usb_payload = bytearray([self.mcu_commands.bgt_chip_id_cmd])
         self.send_usb_payload(usb_payload)
         ret_payload = self.receive_usb_payload(self.mcu_usb_def.get_chip_id_rx_len)
-        print(ret_payload)
         chip_id = np.uint64(np.uint64(ret_payload[0] << 40) | \
                             np.uint64(ret_payload[1] << 32) | \
                             np.uint64(ret_payload[2] << 24) | \
@@ -118,21 +159,25 @@ class MIRA_USB_SPI_BRIDGE():
         chip_rf_id = ret_payload[7]
         chip_digital_id = ret_payload[6]
         
+        self.decode_sensor_version(chip_rf_id, chip_digital_id)
+        
+    def decode_sensor_version(self, chip_rf_id: int, chip_digital_id: int) -> None:
+        product_name = str(self.config.get('DEFAULT', 
+                                          f'MIRA_PRODUCT_NAME_{self.used_usb_product_id}'))
         if chip_digital_id == 5:
             self.radar_param.mon.chip_version_digital_id = str("BGT60ATR24C")
         elif chip_digital_id == 3:
             self.radar_param.mon.chip_version_digital_id = str("BGT60TR13C")
         elif chip_digital_id == 7:
             self.radar_param.mon.chip_version_digital_id = str("BGT60UTR11AIP")
-
         if chip_rf_id == 4:
             self.radar_param.mon.chip_version_rf_id = str("2 Tx, 4 Rx")
         elif chip_rf_id == 3:
             self.radar_param.mon.chip_version_rf_id = str("1 Tx, 3 Rx")
         elif chip_rf_id == 12:
             self.radar_param.mon.chip_version_rf_id = str("2 Tx, 4 Rx")
-
-
+        logger.debug(f"\nConnected to {product_name} device, which is using {self.radar_param.mon.chip_version_digital_id} with {self.radar_param.mon.chip_version_rf_id} Antenns")
+    
     def spi_set_dummy_cref(self, user_reg_vals: bytearray) -> None:
         index = 0
         # TODO remove cref (not needed any longer through const qspi reading)
@@ -169,17 +214,24 @@ class MIRA_USB_SPI_BRIDGE():
                                                                    "USB_SPI_BRIDGE_DATA_ALLOCATION")) 
         DATA_ALLOCATION = np.uint32(USB_SPI_BRIDGE_DATA_ALLOCATION+self.radar_param.sys.n_fifo_overhead*9)
 
+        raw_data = np.zeros(1,)
         while not process_stop_event.is_set():
-            self.usb_device_available.get_lock().acquire(block=False)
+            # self.usb_device_available.get_lock().acquire(block=False)
             usb.util.release_interface(self.device, self.interface)
-            raw_data = np.array(self.endpoint_in.read(DATA_ALLOCATION, 
-                                                      timeout=USB_SPI_BRIDGE_TIMEOUT),
-                                dtype=np.uint8)
-            if raw_data.shape == (DATA_ALLOCATION,):
-                usb_extraction_data_queue.put_nowait(raw_data)
+            try:
+                raw_data = np.array(self.endpoint_in.read(DATA_ALLOCATION, 
+                                                      timeout=0),
+                                    dtype=np.uint8)
+            except:
+                continue
+            
+            usb.util.release_interface(self.device, self.interface)
 
-            usb.util.release_interface(self.device, self.interface)
-            self.usb_device_available.get_lock().release()
+            if raw_data.shape == (DATA_ALLOCATION,):
+                usb_extraction_data_queue.put(raw_data)
+            # self.usb_device_available.get_lock().release()
+
+
 
     def spi_read_reg(self, reg_adr: np.uint8) -> list[np.uint8, np.ndarray]:
         usb_payload = bytearray([self.mcu_commands.read_cmd, reg_adr])
@@ -209,32 +261,47 @@ class MIRA_USB_SPI_BRIDGE():
     def init_stm_usb_device(self) -> None:
         # Find the USB device based on vendor and product IDs
         vendor_id = int(self.config.get("MIRA_USB_SPI_BRIDGE", 
-                                        "USB_VENDOR_ID"), 16) 
-        product_id = int(self.config.get("MIRA_USB_SPI_BRIDGE", 
-                                         "USB_PRODUCT_ID"), 16)
-        try:
-            self.device = usb.core.find(idVendor=vendor_id, idProduct=product_id)
-        except usb.core.USBError as usb_error:
-            logger.debug(f"Error finding USB device: {str(usb_error)}") 
+                                        "MIRA_USB_VENDOR_ID"), 16) 
+        product_ids = []
+        product_ids.append(int(self.config.get("MIRA_USB_SPI_BRIDGE", 
+                                               "MIRA6024_USB_PRODUCT_ID"), 16))
+        product_ids.append(int(self.config.get("MIRA_USB_SPI_BRIDGE", 
+                                               "MIRA6013_USB_PRODUCT_ID"), 16))
+        product_ids.append(int(self.config.get("MIRA_USB_SPI_BRIDGE", 
+                                               "MIRA6011_USB_PRODUCT_ID"), 16))
+        product_ids.append(int(self.config.get("MIRA_USB_SPI_BRIDGE", 
+                                               "MIRA_ERR_USB_PRODUCT_ID"), 16))
+        
+        for product_id in product_ids:
+            try:
+                self.device = usb.core.find(idVendor=vendor_id, idProduct=product_id)
+                if self.device is not None: 
+                    self.used_usb_product_id = str(hex(product_id).split('x')[1])
+                    break
+                else:
+                    logger.debug(f"\nSearched for MiRa USB device with:\n" +
+                             f"USB Vendor ID:  {hex(vendor_id)},\n" + 
+                             f"USB Product ID: {hex(product_id)}") 
+            except usb.core.USBError as usb_error:
+                logger.debug(f"\nSearched for MiRa USB device with:\n" +
+                             f"USB Vendor ID:  {hex(vendor_id)},\n" + 
+                             f"USB Product ID: {hex(product_id)}") 
 
         if self.device is None:
-            logger.debug(f"Could not find the USB device.")
-            logger.debug(f"USB device: Product ID:" +
-                         f"{hex(product_id)}, Vendor ID: {hex(vendor_id)}")
             return
         
-        logger.debug(f"{str(self.config.get('DEFAULT', 'SYKNO_PRODUCT'))}" +
-                     f"Connected to USB device: Vendor ID {hex(vendor_id)}, " +
-                     f"Product ID {hex(product_id)}")
+        logger.debug('\nDevice found: '+str(self.config.get('DEFAULT', f'MIRA_PRODUCT_NAME_{self.used_usb_product_id}') + "\n") +
+                     f"Connected to USB device: Vendor ID: {hex(vendor_id)}\n" +
+                     f"Connected to USB device: Product ID: {hex(product_id)}")
         try:
-            logger.debug(
-                f"{str(self.config.get('DEFAULT', 'SYKNO_PRODUCT'))} Manufacturer:" +
+            logger.debug("\nConnected to USB Device iMandufacturer:\n" +
+                str(self.config.get('DEFAULT', f"MIRA_PRODUCT_NAME_{self.used_usb_product_id}") + " Manufacturer:") +
                 f"{usb.util.get_string(self.device, self.device.iManufacturer)}")
-            logger.debug(
-                f"{str(self.config.get('DEFAULT', 'SYKNO_PRODUCT'))} Product:" +
+            logger.debug("\nConnected to USB Device iProduct:\n" +
+                str(self.config.get('DEFAULT', f"MIRA_PRODUCT_NAME_{self.used_usb_product_id}") +" Product:") +
                 f"{usb.util.get_string(self.device, self.device.iProduct)}")
-            logger.debug(
-                f"{str(self.config.get('DEFAULT', 'SYKNO_PRODUCT'))} Serial Number:" +
+            logger.debug("\nConnected to USB Device iSerialNumber:\n" +
+                str(self.config.get('DEFAULT', f'MIRA_PRODUCT_NAME_{self.used_usb_product_id}') + " Serial Number:") +
                 f"{usb.util.get_string(self.device, self.device.iSerialNumber)}")
         except ValueError:
             logger.debug(f"Could not retrieve USB Device Descriptor.")
@@ -267,9 +334,8 @@ class MIRA_USB_SPI_BRIDGE():
                 # Detach the kernel driver if active
                 self.interface = interface.bInterfaceNumber
 
-                if os.name != 'nt':  # Windows
-                    if self.device.is_kernel_driver_active(self.interface):
-                        self.device.detach_kernel_driver(self.interface)
+                if self.device.is_kernel_driver_active(self.interface):
+                    self.device.detach_kernel_driver(self.interface)
                 
                 # Iterate through endpoints
                 for endpoint in interface:
@@ -291,15 +357,26 @@ class MIRA_USB_SPI_BRIDGE():
                         break
 
     def deinit_stm_usb_device(self) -> None:
-        self.spi_deinit_mira()
-        usb.util.release_interface(self.device, self.interface)
-        usb.util.dispose_resources(self.device)
+        # Check if the device is still connected
+        time.sleep(0.100)
+        try:
+            self.spi_deinit_mira()
+            # Attempt to release the interface and dispose resources if the device is connected
+            usb.util.release_interface(self.device, self.interface)
+            usb.util.dispose_resources(self.device)
+            logger.debug(str(self.config.get('DEFAULT', f"MIRA_PRODUCT_NAME_{self.used_usb_product_id}")) +
+                         " by Sykno GmbH: USB Interface released.")
+        except usb.core.USBError as e:
+            # Handle the case where the device has been disconnected
+            if e.errno == 19:  # Errno 19 corresponds to "No such device"
+                logger.debug("Device has been disconnected before interface could be released.")
+            else:
+                # Log other USB errors that may occur
+                logger.error(f"Error releasing USB interface: {e}")
         self.device = None
         self.endpoint_in = None
         self.endpoint_out = None
-        logger.debug(f"{str(self.config.get('DEFAULT','SYKNO_PRODUCT'))} " + \
-                     f"by Sykno GmbH: USB Interface released.")
-        
+
         
     def split_reg_val(self, reg_val: list) -> bytearray:
         reg, val = [], []

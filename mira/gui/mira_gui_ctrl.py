@@ -1,5 +1,7 @@
 import __init__
 import json
+import time
+import numpy as np
 import configparser
 import pyqtgraph as pg
 from pathlib import Path
@@ -7,6 +9,9 @@ from loguru import logger
 from PyQt5 import QtWidgets, QtCore
 from PyQt5.QtCore import Qt, QSize
 from PyQt5.QtGui import QPalette, QColor
+from PyQt5.QtWidgets import QApplication, QGraphicsView, QGraphicsScene, QGraphicsRectItem, QGraphicsTextItem
+from PyQt5.QtGui import QLinearGradient, QColor, QBrush, QFont
+from PyQt5.QtCore import QRectF
 
 from mira.gui.mira_browser import MIRA_BROWSER
 from mira.gui.mira_plot_gui import MIRA_PLOTTER
@@ -40,12 +45,13 @@ class MIRA_GUI_CTRL():
         self.init_values_combo_box()
         self.init_connect_buttons()
         self.init_connect_tab()
+        self.init_connect_slider()
+        self.init_silder_values()
         self.init_connect_combo_box()
         self.get_dsp_hp_parameters()
         self.get_window_func()
         self.get_padding_length()
         self.get_spectrum_rx_tx()
-        self.get_min_max_dbfs()
         self.get_measurement_duration()
         self.get_recording_n_frames()
         self.get_waterfall_time()
@@ -57,6 +63,7 @@ class MIRA_GUI_CTRL():
         self.handle_usb_auto_connect_state()
         self.set_mira_session_label()
         self.set_mira_project()
+        self.set_color_bar_graphics()
         
     def update_radar_params(self) -> None:
         self.set_value_labels()
@@ -73,6 +80,7 @@ class MIRA_GUI_CTRL():
         self.qt_self.load_default_tcp_settings_button.clicked.connect(self.set_remote_tcp_default_settings)
         self.qt_self.remote_tcp_connect_button.clicked.connect(self.start_tcp_connection)
         self.qt_self.usb_device_connect_button.clicked.connect(self.qt_self.auto_connect_device)
+        self.qt_self.activate_boot_mode_button.clicked.connect(self.activate_boot_mode)
 
     def init_values_combo_box(self):
         self.qt_self.combo_box_select_axis_x.addItems(self.widget_values.axis_unit_select_list)
@@ -87,8 +95,6 @@ class MIRA_GUI_CTRL():
         self.qt_self.combo_box_dsp_hp_filter_cutoff.addItems(self.widget_values.dsp_hp_filter_cutoff_list)
         self.qt_self.combo_box_measurement_duration.addItems(self.widget_values.measurement_duration_list)
         self.qt_self.combo_box_recording_n_frames.addItems(self.widget_values.recodring_n_frames_list)
-        self.qt_self.combo_box_set_min_dbfs.addItems(self.widget_values.plot_select_mv_min_raw_data_list)
-        self.qt_self.combo_box_set_max_dbfs.addItems(self.widget_values.plot_select_mv_min_raw_data_list)
         self.qt_self.combo_box_if_test_ton.addItems(self.widget_values.if_test_ton_list)
         self.qt_self.combo_box_waterfall_time.addItems(self.widget_values.waterfall_spectrogram_time_list)
         self.qt_self.combo_box_error_correction_files.addItems(self.widget_values.antenna_specific_error_correction_files_list)
@@ -107,8 +113,6 @@ class MIRA_GUI_CTRL():
         self.qt_self.combo_box_padding_len.currentTextChanged.connect(self.get_padding_length)
         self.qt_self.combo_box_measurement_duration.currentTextChanged.connect(self.get_measurement_duration)
         self.qt_self.combo_box_recording_n_frames.currentTextChanged.connect(self.get_recording_n_frames)
-        self.qt_self.combo_box_set_min_dbfs.currentTextChanged.connect(self.get_min_max_dbfs)
-        self.qt_self.combo_box_set_max_dbfs.currentTextChanged.connect(self.get_min_max_dbfs)
         self.qt_self.combo_box_waterfall_time.currentTextChanged.connect(self.get_waterfall_time)
         self.qt_self.combo_box_if_test_ton.currentTextChanged.connect(self.get_rf_test_mode)
         self.qt_self.combo_box_gui_fps.currentTextChanged.connect(self.get_gui_fps)
@@ -136,19 +140,19 @@ class MIRA_GUI_CTRL():
         self.qt_self.label_ramp_time.setText(f'{round(float(self.radar_param.sys.ramp_time[0] * 1e6), 2)} µs')
         self.qt_self.label_bandwidth.setText(f'{round(float(self.radar_param.sys.ramp_bandwidth[0] * 1e-9), 2)} GHz')
         self.qt_self.label_ramp_slope.setText(f'{round(float(self.radar_param.sys.ramp_slope[0] * 1e-12), 2)} MHz/µs')
-        self.qt_self.label_chirp_time.setText(f'{round(float(self.radar_param.sys.chirp_time[0]), 2)} ms')
+        # self.qt_self.label_chirp_time.setText(f'{round(float(self.radar_param.sys.chirp_time[0]), 2)} ms')
         self.qt_self.label_frame_duration.setText(f'{round(float(self.radar_param.sys.frame_duration)*1e3, 2)} ms')
         self.qt_self.label_frames_per_second.setText(f'{round(float(self.radar_param.sys.frames_per_second), 2)} fps')
         
         # Range Labels
         self.qt_self.label_range_resolution.setText(f'{round(float(self.radar_param.sys.resolution_range*1e3), 2)} mm')
         self.qt_self.label_min_range.setText(f'{round(float(self.radar_param.sys.min_range), 2)} m')
-        self.qt_self.label_max_range.setText(f'{round(float(self.radar_param.sys.max_range), 2)} m')
+        # self.qt_self.label_max_range.setText(f'{round(float(self.radar_param.sys.max_range), 2)} m')
         
         # Velocity Labels
-        self.qt_self.label_velocity_resolution.setText(f' {self.radar_param.sys.resolution_velocity[0]}')
+        self.qt_self.label_velocity_resolution.setText(f'{round(float(self.radar_param.sys.resolution_velocity[0]), 2)} m/s')
         self.qt_self.label_min_velocity.setText(f'{round(float(-self.radar_param.sys.max_velocity[0]), 2)} m/s')
-        self.qt_self.label_max_velocity.setText(f'{round(float(self.radar_param.sys.max_velocity[0]), 2)} m/s')
+        # self.qt_self.label_max_velocity.setText(f'{round(float(self.radar_param.sys.max_velocity[0]), 2)} m/s')
         self.qt_self.sensor_id_plainTextEdit.setPlainText(f'{self.radar_param.mon.chip_id}')
         # self.qt_self.sensor_id_plainTextEdit.setDisabled(True)
         
@@ -168,15 +172,15 @@ class MIRA_GUI_CTRL():
         self.qt_self.label_bandwidth.setText(f'')
         self.qt_self.label_ramp_time.setText(f'')
         self.qt_self.label_ramp_slope.setText(f'')
-        self.qt_self.label_chirp_time.setText(f'')
+        # self.qt_self.label_chirp_time.setText(f'')
         self.qt_self.label_frame_duration.setText(f'')
         self.qt_self.label_frames_per_second.setText(f'')
         self.qt_self.label_range_resolution.setText(f'')
         self.qt_self.label_min_range.setText(f'')
-        self.qt_self.label_max_range.setText(f'')
+        # self.qt_self.label_max_range.setText(f'')
         
         self.qt_self.label_velocity_resolution.setText(f'')
-        self.qt_self.label_max_velocity.setText(f'')
+        # self.qt_self.label_max_velocity.setText(f'')
         self.qt_self.label_min_velocity.setText(f'')
         self.qt_self.sensor_id_plainTextEdit.setPlainText(f'')
 
@@ -221,6 +225,37 @@ class MIRA_GUI_CTRL():
         self.qt_self.check_box_rf_test_en_rx3.setChecked(False)
         self.qt_self.check_box_rf_test_en_rx4.setChecked(False)
 
+    def init_silder_values(self):
+
+        ret_lower_upper_value = self.reinit_sliders()
+
+        for i in range(len(self.radar_param.sys.plot_ampl_limit_max)):
+            self.get_lower_ampl_limit(value=ret_lower_upper_value[0][i], index=i)
+            self.get_upper_ampl_limit(value=ret_lower_upper_value[1][i], index=i)
+
+    def reinit_sliders(self):
+        def parse_list(config, section, option):
+            return [int(item.strip()) for item in config.get(section, option).split(',')]
+        # Load amplitude limits for array of size 8
+        lower_min = parse_list(self.config, 'AMPLITUDE_LIMITS', 'LOWER_MIN')
+        lower_max = parse_list(self.config, 'AMPLITUDE_LIMITS', 'LOWER_MAX')
+        lower_value = parse_list(self.config, 'AMPLITUDE_LIMITS', 'LOWER_VALUE')
+        lower_tick_interval = parse_list(self.config, 'AMPLITUDE_LIMITS', 'LOWER_TICK_INTERVAL')
+        
+        upper_min = parse_list(self.config, 'AMPLITUDE_LIMITS', 'UPPER_MIN')
+        upper_max = parse_list(self.config, 'AMPLITUDE_LIMITS', 'UPPER_MAX')
+        upper_value = parse_list(self.config, 'AMPLITUDE_LIMITS', 'UPPER_VALUE')
+        upper_tick_interval = parse_list(self.config, 'AMPLITUDE_LIMITS', 'UPPER_TICK_INTERVAL')
+        
+        self.qt_self.lower_ampl_limit_slider.setMinimum(lower_min[self.radar_param.sys.curr_plot_ampl_limit])  # Set minimum value
+        self.qt_self.lower_ampl_limit_slider.setMaximum(lower_max[self.radar_param.sys.curr_plot_ampl_limit])  # Set maximum value
+        self.qt_self.lower_ampl_limit_slider.setTickInterval(lower_tick_interval[self.radar_param.sys.curr_plot_ampl_limit])
+        
+        self.qt_self.upper_ampl_limit_slider.setMinimum(upper_min[self.radar_param.sys.curr_plot_ampl_limit])  # Set minimum value
+        self.qt_self.upper_ampl_limit_slider.setMaximum(upper_max[self.radar_param.sys.curr_plot_ampl_limit])  # Set maximum value
+        self.qt_self.upper_ampl_limit_slider.setTickInterval(upper_tick_interval[self.radar_param.sys.curr_plot_ampl_limit]) 
+        return [lower_value, upper_value]
+    
     def handle_replay_state(self) -> None:
         if self.qt_self.check_box_replay.isChecked():
             self.qt_self.check_box_record.setChecked(False)
@@ -265,7 +300,6 @@ class MIRA_GUI_CTRL():
         else:
             self.radar_param.gui.auto_connect_device = False
             self.qt_self.usb_device_connect_button.setDisabled(False)
-
     
     def handle_usb_connection_state(self) -> None:
         if self.qt_self.usb_connection_checkBox.isChecked():
@@ -329,11 +363,16 @@ class MIRA_GUI_CTRL():
         self.qt_self.check_box_rf_test_en_rx2.stateChanged.connect(self.get_rf_test_mode)
         self.qt_self.check_box_rf_test_en_rx3.stateChanged.connect(self.get_rf_test_mode)
         self.qt_self.check_box_rf_test_en_rx4.stateChanged.connect(self.get_rf_test_mode)
-            
+        
+    def init_connect_slider(self):
+        self.qt_self.lower_ampl_limit_slider.valueChanged.connect(self.get_lower_ampl_limit)
+        self.qt_self.upper_ampl_limit_slider.valueChanged.connect(self.get_upper_ampl_limit)
+
     def set_device_connected(self) -> None:
         if self.radar_param.mon.chip_version_digital_id != '' and \
            self.radar_param.mon.chip_version_rf_id != '':
-            self.qt_self.usb_device_connected_label.setText(f'{self.radar_param.mon.chip_version_digital_id}, {self.radar_param.mon.chip_version_rf_id}')
+            self.qt_self.usb_device_connected_label.setText(f'{self.radar_param.mon.chip_version_digital_id}' + \
+                                                            f'{self.radar_param.mon.chip_version_rf_id}')
         else:
             self.qt_self.usb_device_connected_label.setText(f'No Device')
         
@@ -357,20 +396,20 @@ class MIRA_GUI_CTRL():
         
         if self.tab_name_main_instance_window == 'Time':
             self.mira_plotter.time_signal.set_plot_limits((0, time_axis_max*1e6), 
-                                                          (self.radar_param.sys.plot_axis_min_dbfs, 
-                                                           self.radar_param.sys.plot_axis_max_dbfs))
+                                                          (self.radar_param.sys.plot_ampl_limit_min[self.radar_param.sys.curr_plot_ampl_limit], 
+                                                           self.radar_param.sys.plot_ampl_limit_max[self.radar_param.sys.curr_plot_ampl_limit]))
         
         if self.tab_name_main_instance_window == 'Spectrum':
             self.mira_plotter.spectrum.set_plot_limits((0, plot_axis_max_value), 
-                                                       (self.radar_param.sys.plot_axis_min_dbfs, 
-                                                        self.radar_param.sys.plot_axis_max_dbfs))
+                                                       (self.radar_param.sys.plot_ampl_limit_min[self.radar_param.sys.curr_plot_ampl_limit], 
+                                                        self.radar_param.sys.plot_ampl_limit_max[self.radar_param.sys.curr_plot_ampl_limit]))
         
         if self.tab_name_main_instance_window == 'Waterfall Spectrogram' or \
            self.tab_name_main_instance_window == 'Waterfall Azimuth':
             self.mira_plotter.spectrogram.set_transform((0, plot_axis_max_value),
                                                         (-self.radar_param.sys.waterfall_spectrogram_time, 0),
-                                                        (self.radar_param.sys.plot_axis_min_dbfs,
-                                                         self.radar_param.sys.plot_axis_max_dbfs), 
+                                                        (self.radar_param.sys.plot_ampl_limit_min[self.radar_param.sys.curr_plot_ampl_limit],
+                                                         self.radar_param.sys.plot_ampl_limit_max[self.radar_param.sys.curr_plot_ampl_limit]), 
                                                         self.qt_self.processed_radar_data['Channel 1'].shape \
                                                               if self.tab_name_main_instance_window == 'Waterfall Spectrogram' \
                                                               else self.qt_self.processed_radar_data['Channel 2'].shape)
@@ -380,8 +419,8 @@ class MIRA_GUI_CTRL():
             self.mira_plotter.range_doppler.set_transform((0, plot_axis_max_value),
                                                           (-self.radar_param.sys.max_velocity[0],
                                                            self.radar_param.sys.max_velocity[0]),
-                                                          (self.radar_param.sys.plot_axis_min_dbfs,
-                                                           self.radar_param.sys.plot_axis_max_dbfs),
+                                                          (self.radar_param.sys.plot_ampl_limit_min[self.radar_param.sys.curr_plot_ampl_limit],
+                                                           self.radar_param.sys.plot_ampl_limit_max[self.radar_param.sys.curr_plot_ampl_limit]),
                                                           self.qt_self.processed_radar_data['Channel 1'].shape \
                                                               if self.tab_name_main_instance_window == 'Range Doppler' \
                                                               else self.qt_self.processed_radar_data['Channel 2'].shape)
@@ -391,8 +430,8 @@ class MIRA_GUI_CTRL():
            self.tab_name_main_instance_window == 'Range Doppler Azimuth':  
             self.mira_plotter.range_azimuth.set_transform((0, plot_axis_max_value), 
                                                           (-90, 90),
-                                                          (self.radar_param.sys.plot_axis_min_dbfs,
-                                                           self.radar_param.sys.plot_axis_max_dbfs),
+                                                          (self.radar_param.sys.plot_ampl_limit_min[self.radar_param.sys.curr_plot_ampl_limit],
+                                                           self.radar_param.sys.plot_ampl_limit_max[self.radar_param.sys.curr_plot_ampl_limit]),
                                                           self.qt_self.processed_radar_data['Channel 1'].shape)
         
     def clear_plots(self) -> None:
@@ -406,9 +445,6 @@ class MIRA_GUI_CTRL():
         self.mira_plotter.spectrogram.clear_plot()
         self.mira_plotter.range_doppler.clear_plot()
         self.mira_plotter.range_azimuth.clear_plot()
-
-
-
 
     def build_process_param_queue(self) -> dict:
         process_param_queue_dict = {
@@ -441,36 +477,27 @@ class MIRA_GUI_CTRL():
         self.tab_name_spectrogram = 'TX1'
         self.tab_name_range_doppler = 'TX1'
 
-        self.qt_self.combo_box_set_min_dbfs.clear()
-        self.qt_self.combo_box_set_max_dbfs.clear()
-        self.qt_self.combo_box_set_min_dbfs.clear()
-        self.qt_self.combo_box_set_max_dbfs.clear()
-        if self.tab_index_main_instance_window > 0:
-            self.qt_self.combo_box_set_min_dbfs.addItems(self.widget_values.plot_select_dbfs_min_list)
-            self.qt_self.combo_box_set_max_dbfs.addItems(self.widget_values.plot_select_dbfs_max_list)
-
         if self.tab_index_main_instance_window == 0:
             logger.debug(f"Switch to Tab: Time - Index: {self.tab_index_main_instance_window}")
             self.tab_name_main_instance_window = 'Time'
             if self.tab_index_time == 0:
                 logger.debug("Switch to Tab: Time Raw Data")
                 self.tab_name_time = 'Raw Data'
-                self.qt_self.combo_box_set_min_dbfs.addItems(self.widget_values.plot_select_mv_min_raw_data_list)
-                self.qt_self.combo_box_set_max_dbfs.addItems(self.widget_values.plot_select_mv_max_raw_data_list)
+                self.radar_param.sys.curr_plot_ampl_limit = 0 
             elif self.tab_index_time == 1:
                 logger.debug("Switch to Tab: Time DSP Output")
                 self.tab_name_time = 'DSP Output'
-                self.qt_self.combo_box_set_min_dbfs.addItems(self.widget_values.plot_select_mv_min_dsp_data_list)
-                self.qt_self.combo_box_set_max_dbfs.addItems(self.widget_values.plot_select_mv_max_dsp_data_list)
+                self.radar_param.sys.curr_plot_ampl_limit = 1 
                 
         elif self.tab_index_main_instance_window == 1: 
             logger.debug(f"Switch to Tab: Spectrum")
             self.tab_name_main_instance_window = 'Spectrum'
-            
+            self.radar_param.sys.curr_plot_ampl_limit = 2 
+
         elif self.tab_index_main_instance_window == 2:
             logger.debug(f"Switch to Tab: Waterfall Spectrogram - Index: {self.tab_index_main_instance_window}")
             self.tab_name_main_instance_window = 'Waterfall Spectrogram'
-            
+            self.radar_param.sys.curr_plot_ampl_limit = 3             
             if self.tab_index_spectrogram == 0:
                 logger.debug("Switch to Tab: Waterfall Spectrogram TX1")
                 self.tab_name_spectrogram = 'TX1'
@@ -481,7 +508,8 @@ class MIRA_GUI_CTRL():
         elif self.tab_index_main_instance_window == 3:
             logger.debug(f"Switch to Tab: Range Doppler - Index: {self.tab_index_main_instance_window}")
             self.tab_name_main_instance_window = 'Range Doppler'
-            
+            self.radar_param.sys.curr_plot_ampl_limit = 4             
+
             if self.tab_index_range_doppler == 0:
                 logger.debug("Switch to Tab: Range Doppler TX1")
                 self.tab_name_range_doppler = 'TX1'
@@ -492,16 +520,20 @@ class MIRA_GUI_CTRL():
         elif self.tab_index_main_instance_window == 4:
             logger.debug(f"Switch to Tab: Range Azimuth - Index: {self.tab_index_main_instance_window}")
             self.tab_name_main_instance_window = 'Range Azimuth'
-            
+            self.radar_param.sys.curr_plot_ampl_limit = 5             
+
         elif self.tab_index_main_instance_window == 5:
             logger.debug(f"Switch to Tab: Waterfall | Azimuth - Index: {self.tab_index_main_instance_window}")
             self.tab_name_main_instance_window = 'Waterfall Azimuth'
+            self.radar_param.sys.curr_plot_ampl_limit = 3 
         
         elif self.tab_index_main_instance_window == 6:
             logger.debug(f"Switch to Tab: Range Doppler | Azimuth - Index: {self.tab_index_main_instance_window}")
             self.tab_name_main_instance_window = 'Range Doppler Azimuth'
+            self.radar_param.sys.curr_plot_ampl_limit = 4 
 
         self.graph_update_flag = False
+        self.reinit_sliders()
         self.update_processing_parameters()
         self.get_axis_x()
                 
@@ -529,8 +561,8 @@ class MIRA_GUI_CTRL():
                 
             self.fft_axis = self.mira_plotter.calc_plot_axis()['range_axis'] 
             self.get_max_axis_x()
-            self.qt_self.plot_spectrum.setYRange(self.radar_param.sys.plot_axis_min_dbfs,
-                                                 self.radar_param.sys.plot_axis_max_dbfs)
+            # self.qt_self.plot_spectrum.setYRange(self.radar_param.sys.plot_ampl_limit_min[self.radar_param.sys.curr_plot_ampl_limit],
+                                                #  self.radar_param.sys.plot_ampl_limit_max[self.radar_param.sys.curr_plot_ampl_limit])
             
     def get_max_axis_x(self):
         self.curr_select_axis_x = self.qt_self.combo_box_select_axis_x.currentText()
@@ -622,7 +654,6 @@ class MIRA_GUI_CTRL():
         else:
             self.radar_param.meas.record_headless = False
         self.get_gui_fps()
-        print(self.radar_param.meas.record_headless)
             
     def get_recording_n_frames(self) -> None:
         recording_n_frames_text = self.qt_self.combo_box_measurement_duration.currentText()
@@ -630,19 +661,40 @@ class MIRA_GUI_CTRL():
             recording_n_frames_text = 0
         self.radar_param.meas.recording_n_frames = int(recording_n_frames_text)
     
-    def get_min_max_dbfs(self) -> None:
-        min_dbfs = self.qt_self.combo_box_set_min_dbfs.currentText()
-        max_dbfs = self.qt_self.combo_box_set_max_dbfs.currentText()
-    
-        try:
-            self.radar_param.sys.plot_axis_min_dbfs = int(min_dbfs.split(' ')[0]) if min_dbfs.strip() else 20 
-            self.radar_param.sys.plot_axis_max_dbfs = int(max_dbfs.split(' ')[0]) if max_dbfs.strip() else -100  
-        except ValueError as e:
-            self.radar_param.sys.plot_axis_min_dbfs = 20
-            self.radar_param.sys.plot_axis_max_dbfs = -100 
-    
-        self.get_axis_x()
+    def get_lower_ampl_limit(self, value, index: int=-1) -> None:
+        if index == -1:
+            try:
+                self.radar_param.sys.plot_ampl_limit_min[self.radar_param.sys.curr_plot_ampl_limit] = int(value) if value else 20 
+            except ValueError as e:
+                self.radar_param.sys.plot_ampl_limit_min[self.radar_param.sys.curr_plot_ampl_limit] = 20
+        else:
+            try:
+                self.radar_param.sys.plot_ampl_limit_min[index] = int(value) if value else 20 
+            except ValueError as e:
+                self.radar_param.sys.plot_ampl_limit_min[index] = 20
+        self.reinit_sliders()
+        self.qt_self.lower_ampl_limit_slider.setValue(self.radar_param.sys.plot_ampl_limit_min[self.radar_param.sys.curr_plot_ampl_limit])
         
+        self.set_color_bar_graphics()
+        self.get_axis_x()
+    
+    def get_upper_ampl_limit(self, value: int, index: int=-1):
+        if index == -1:
+            try:
+                self.radar_param.sys.plot_ampl_limit_max[self.radar_param.sys.curr_plot_ampl_limit] = int(value) if value else -100  
+            except ValueError as e:
+                self.radar_param.sys.plot_ampl_limit_max[self.radar_param.sys.curr_plot_ampl_limit] = -100 
+        else:
+            try:
+                self.radar_param.sys.plot_ampl_limit_max[index] = int(value) if value else -100  
+            except ValueError as e:
+                self.radar_param.sys.plot_ampl_limit_max[index] = -100 
+                
+        self.reinit_sliders()
+        self.qt_self.upper_ampl_limit_slider.setValue(self.radar_param.sys.plot_ampl_limit_max[self.radar_param.sys.curr_plot_ampl_limit])
+        self.set_color_bar_graphics()
+        self.get_axis_x()
+
     def get_waterfall_time(self) -> None:
         waterfall_time_text = self.qt_self.combo_box_waterfall_time.currentText()
         waterfall_time_value, waterfall_time_unit = waterfall_time_text.split(' ')
@@ -778,6 +830,74 @@ class MIRA_GUI_CTRL():
                 self.qt_self.mira_processor.process_param_queue.get_nowait()
             self.qt_self.mira_processor.process_param_queue.put(self.build_process_param_queue())
 
+    def activate_boot_mode(self):
+        self.qt_self.mira_controller.mira_device.mira_bridge.spi_activate_boot_mode()
+        time.sleep(1)
+        self.qt_self.start_auto_connect()
+        
+    def set_color_bar_graphics(self):
+        # Assuming self.qt_self.color_bar_graphics_view is already defined as QGraphicsView somewhere
+        graphics_view = self.qt_self.color_bar_graphics_view
+        graphics_view.setWindowTitle('Flipped Color Bar with Linear Scale')
+        graphics_view.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+        graphics_view.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+        
+        # Create a QGraphicsScene
+        scene = QGraphicsScene()
+        graphics_view.setScene(scene)
+        # Define the color map positions and colors (normalized to [0, 1] for QColor)
+        min_dbfs = self.radar_param.sys.plot_ampl_limit_min[self.radar_param.sys.curr_plot_ampl_limit]
+        max_dbfs = self.radar_param.sys.plot_ampl_limit_max[self.radar_param.sys.curr_plot_ampl_limit]
+        # self.mira_plotter.time_signal.plot_config.init_color_lut(min_dbfs, max_dbfs)
+        pos = np.linspace(min_dbfs, max_dbfs, 5)
+        
+        colors = np.array([
+            [128, 0, 0, 255],    # Dark Red
+            [255, 0, 0, 255],    # Red
+            [255, 255, 0, 255],  # Yellow
+            [0, 255, 0, 255],    # Green
+            [0, 0, 255, 255],    # Blue
+            [128, 0, 128, 255],  # Dark Blue
+        ], dtype=np.uint8)
+        
+        # Reverse the color array for the flipped color bar
+        colors = np.flipud(colors)
+        
+        # Normalize positions to [0, 1]
+        normalized_pos = (pos - min_dbfs) / (max_dbfs - min_dbfs)
+        
+        # Create a QLinearGradient object for the color bar
+        gradient = QLinearGradient(0, 0, 600, 0)  # Set the width to the desired value
+        for position, color in zip(normalized_pos, colors):
+            gradient.setColorAt(position, QColor(*color))
+        
+        # Create a rectangle item with the gradient
+        rect_item = QGraphicsRectItem(QRectF(0, 0, 600, 50))
+        rect_item.setBrush(QBrush(gradient))
+        
+        # Add the rectangle to the scene
+        scene.addItem(rect_item)
+        
+        # Add a linear scale below the color bar
+        font = QFont("Arial", 20)  # Define font for the scale
+        scale_height = 20  # Height of the scale area
+        for i, position in enumerate(pos):
+            # Calculate the horizontal position for each label
+            label_x_position = i * 600 / (len(pos) - 1)
+            # Create a text item for the scale
+            text_item = QGraphicsTextItem(f"{int(position)} dBFS")
+            text_item.setFont(font)
+            text_item.setPos(label_x_position - text_item.boundingRect().width() / 2, 60)  # Center the text
+            scene.addItem(text_item)
+        
+        # Set the scene rect to the content size
+        scene.setSceneRect(0, 0, 600, 90 + scale_height)  # The height should include the color bar, scale, and any padding
+        
+        # Set the view to fit the scene exactly
+        graphics_view.fitInView(scene.sceneRect(), Qt.KeepAspectRatio)
+        
+            
+
 def load_palette_from_json(file_path: Path):
     with open(file_path, 'r') as file:
         json_palette = json.load(file)
@@ -835,11 +955,10 @@ def init_gui_window(app_instance, main_instance) -> QtWidgets.QApplication:
     width = rect.width()
     height = rect.height()
 
-    print(width, height)
-    if width >= 1400:
+    if width <= 2000:
         font_offset = 0
     if width >= 2000:
-        font_offset = 2
+        font_offset = 4
     # Create a temporary widget to get the current font settings
     temp_widget = QtWidgets.QLabel()
     current_font = temp_widget.font()

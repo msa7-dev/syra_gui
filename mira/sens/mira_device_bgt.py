@@ -199,15 +199,15 @@ class MIRA_DEVICE:
                                              + (self.radar_param.sys.ramp_bandwidth / 2)
         self.radar_param.sys.lambda_freq = c / self.radar_param.sys.mid_frequency
 
-        self.delta_range = np.float32(c / (2 * self.radar_param.sys.ramp_bandwidth[0]))
+        self.delta_range = np.float32(c / ((2 * self.radar_param.sys.ramp_bandwidth[0])+np.finfo(float).eps))
         self.radar_param.sys.max_dsp_freq = self.radar_param.sys.sampling_frequency / 2  # Nyquist Frequency 
         self.radar_param.sys.min_range = (c * (self.radar_param.sys.bgt_hp_fc[0]
                                               if self.radar_param.sys.bgt_hp_fc[0]
                                                > self.radar_param.dsp.hp_filter_cutoff
                                               else self.radar_param.dsp.hp_filter_cutoff)) \
-                                          / (self.radar_param.sys.ramp_slope[0] * 2) # minimum detectable range
+                                          / ((self.radar_param.sys.ramp_slope[0] * 2)+np.finfo(float).eps) # minimum detectable range
         self.radar_param.sys.max_range = c * self.radar_param.sys.max_dsp_freq \
-                                          / (self.radar_param.sys.ramp_slope[0] * 2)
+                                          / ((self.radar_param.sys.ramp_slope[0] * 2)+np.finfo(float).eps)
 
         timing_once_each_frame = self.radar_param.sys.t_wkup + self.radar_param.sys.t_fed + self.radar_param.sys.t_init0 + self.radar_param.sys.t_init1
         const_timings_each_chirp = self.radar_param.sys.t_start + self.radar_param.sys.t_end
@@ -219,14 +219,10 @@ class MIRA_DEVICE:
         self.radar_param.sys.frame_duration = timing_once_each_frame + shape_timings +\
                                           ((((const_timings_each_chirp + chirp_timings[0]) * self.radar_param.sys.shape_repetition[0])) + \
                                             ((const_timings_each_chirp + chirp_timings[1]) * self.radar_param.sys.shape_repetition[1])) * self.radar_param.sys.shape_set_repetition
-        print(f'{self.radar_param.sys.frame_duration=}')
         self.radar_param.sys.frames_per_second = (1/self.radar_param.sys.frame_duration)
  
-        print(self.radar_param.sys.pulse_repetition_time) 
         self.radar_param.sys.pulse_repetition_time = chirp_timings[0] + const_timings_each_chirp + self.radar_param.sys.t_sed[0]
-        print(self.radar_param.sys.pulse_repetition_time) 
         self.radar_param.sys.coherent_pulse_interval = self.radar_param.sys.pulse_repetition_time + chirp_timings[1] + const_timings_each_chirp + chirp_timings[0] + const_timings_each_chirp + self.radar_param.sys.t_sed[1]
-        print(self.radar_param.sys.coherent_pulse_interval) 
 
         self.radar_param.sys.max_velocity = np.float32(self.radar_param.sys.lambda_freq[0] \
                                                         / (4 * self.radar_param.sys.pulse_repetition_time))
@@ -238,12 +234,12 @@ class MIRA_DEVICE:
         
     def calc_system_parameters(self):
         self.radar_param.sys.max_velocity = np.float32(self.radar_param.sys.lambda_freq / (4 * self.radar_param.sys.pulse_repetition_time))
-        self.radar_param.sys.resolution_range = np.float32(c / (2 * self.radar_param.sys.ramp_bandwidth[0]))
+        self.radar_param.sys.resolution_range = np.float32(c / ((2 * self.radar_param.sys.ramp_bandwidth[0])+np.finfo(float).eps))
         self.radar_param.sys.max_dsp_freq = np.float32(self.radar_param.sys.sampling_frequency / 2) 
-        self.radar_param.sys.min_range = np.float32(c * self.radar_param.dsp.hp_filter_cutoff / (2 * self.radar_param.sys.ramp_slope[0]))
-        self.radar_param.sys.max_range = np.float32(c * self.radar_param.sys.max_dsp_freq / (2 * self.radar_param.sys.ramp_slope[0]))  
+        self.radar_param.sys.min_range = np.float32(c * self.radar_param.dsp.hp_filter_cutoff / ((2 * self.radar_param.sys.ramp_slope[0])+np.finfo(float).eps))
+        self.radar_param.sys.max_range = np.float32(c * self.radar_param.sys.max_dsp_freq / ((2 * self.radar_param.sys.ramp_slope[0])+np.finfo(float).eps))  
         self.radar_param.sys.resolution_velocity = \
-            np.float32(self.radar_param.sys.lambda_freq / (4 * self.radar_param.sys.coherent_pulse_interval *2))
+            np.float32(self.radar_param.sys.lambda_freq / ((4 * self.radar_param.sys.coherent_pulse_interval *2)+np.finfo(float).eps))
             
     @property
     def CONTENT(self):

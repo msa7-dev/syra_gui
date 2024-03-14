@@ -31,12 +31,12 @@ class MIRA_MAIN_GUI(QtWidgets.QMainWindow):
         setproctitle.setproctitle('Sykno - MiRa Eval GUI - GUI Process')
         mira_eval_gui_main_process = psutil.Process(os.getpid())
         mira_eval_gui_main_process.cpu_affinity([3])
-        mira_eval_gui_main_process.nice(-20)
+        mira_eval_gui_main_process.nice(0)
         distribute_cores_to_process(mira_eval_gui_main_process, 3)
         
         uic.loadUi(f"{MIRA_UI_PYQT_FILE_PATH}", self)
 
-        logger.debug(f"Start Sykno {str(self.config.get('DEFAULT', 'SYKNO_PRODUCT'))} Evaluation GUI")
+        logger.debug(f"Start Sykno MiRa Evaluation GUI")
 
         self.running = False
         self.mira_processor = None
@@ -47,7 +47,9 @@ class MIRA_MAIN_GUI(QtWidgets.QMainWindow):
         self.fps_timer = None
         self.connect_timer = None
         self.update_gui_timer = None
-        self.frame_counter_multiplicator = 0
+        self.frame_cnt = 0
+        self.prev_frame_cnt = 0
+        
         self.prev_processed_radar_data_shape = {'Channel 1': (2,2,2),
                                                 'Channel 2': (2,2,2)}
         self.processed_radar_data = {'Channel 1': np.zeros((1,1,1), dtype=np.float32),
@@ -79,6 +81,9 @@ class MIRA_MAIN_GUI(QtWidgets.QMainWindow):
         if not self.running:
             self.button_startstop.clicked.disconnect()
             self.button_startstop.clicked.connect(self.start_stop)
+            self.prev_time = 0
+            self.frame_cnt = 0 
+            self.prev_frame_cnt = 0
             
             if self.mira_controller is None:
                 self.mira_controller = MIRA_CTRL_GUI(self.radar_param)
@@ -90,8 +95,6 @@ class MIRA_MAIN_GUI(QtWidgets.QMainWindow):
             else:
                 self.button_startstop.setText("Stop")
             
-            self.prev_time = 0
-            self.start_time = time.time() 
             self.mira_processor = MIRA_MULTIPROCESSOR(self.mira_controller)
             
             self.gui_controller.get_axis_x()
@@ -103,6 +106,7 @@ class MIRA_MAIN_GUI(QtWidgets.QMainWindow):
 
             self.running = True
             self.graph_update_flag = False
+            self.start_time = time.time()
 
         elif self.running:
             
@@ -196,11 +200,13 @@ class MIRA_MAIN_GUI(QtWidgets.QMainWindow):
             return
             
     def update_frame_cnt(self) -> None:
-        self.frame_counter_multiplicator += int(self.radar_param.mon.duration_frame_counter)
-        self.frame_counter_multiplicator += 1
-        frame_count = int(self.radar_param.mon.duration_frame_counter)
-        self.label_frame_counter.setText(str(frame_count))
-        frame_count = self.radar_param.mon.duration_frame_counter
+        curr_frame_cnt = int(self.radar_param.mon.duration_frame_counter)
+        if self.prev_frame_cnt > curr_frame_cnt:
+            self.frame_cnt += ((4095-self.prev_frame_cnt) + curr_frame_cnt)
+        else:
+            self.frame_cnt += (curr_frame_cnt - self.prev_frame_cnt)
+        self.label_frame_counter.setText(str(self.frame_cnt))
+        self.prev_frame_cnt = curr_frame_cnt
             
     
     def update_duration_time(self) -> None:
@@ -374,7 +380,7 @@ class MIRA_MAIN_GUI(QtWidgets.QMainWindow):
 
     def closeEvent(self, event=None):
         self.app_exit()
-        logger.debug(f"Close Sykno {str(self.config.get('DEFAULT', 'SYKNO_PRODUCT'))} Evaluation GUI")
+        logger.debug(f"Close Sykno MiRa Evaluation GUI")
     
         # Hotkeys for closing the window (ESC)
     def keyPressEvent(self, event):
@@ -401,3 +407,8 @@ class MIRA_MAIN_GUI(QtWidgets.QMainWindow):
         self.mira_controller = None
 
         self.close()
+
+
+if __name__ == "__main__":
+    mira_gui = MIRA_MAIN_GUI()
+    mira_gui.mira_gui_main()

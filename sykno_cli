@@ -1,295 +1,131 @@
 #! /usr/bin/python3
-"""
-File: cli_Sykno.py\n
-Necessary Files:\n
-        ./xRad/
-               logic_analyzer_Sykno.py
-               frame_analyzer_Sykno.py
-               xRad_serial_Sykno.py
-               xRad_rx_convert_Sykno.py
-        
-        ./xRad_GUI/
-               xRad_gui_Sykno.py
-               
-        ./xRad_Qt/
-               xRad_qt_sykno.py
 
-        ./mira/
-               mira_ft4222.bgt.py
-               mira_regs_bgt.py
-               mira_spi_bgt.py
-                                        
-More Information: README.md
-"""
-#++++++++++++++++++++++++++++++++++xRad CLI IMPORT Sykno++++++++++++++++++++++++++++++++++#
+# $ python3 -m venv ./sykno_py
+# $ source ./sykno_py/bin/activate
+
+# $ sudo docker build -f ./docker/Dockerfile -t sykno_docker . 
+# sudo docker run -it --rm --privileged \
+#     -e DISPLAY=$DISPLAY \
+#     -v /dev/bus/usb:/dev/bus/usb \
+#     -v /tmp/.X11-unix:/tmp/.X11-unix \
+#     -v $(pwd)/mira/meas/hdf5/:/home/sykno/mira/meas/hdf5/ \
+#     --hostname sykno-docker \
+#     sykno_docker
+    
+# ==============================================================================
+#                                  SYKNO CLI
+# ==============================================================================
 import __init__
-import time
+import os
 import click
 import subprocess
-import configparser
-# import setproctitle
+import multiprocessing
 from loguru import logger
 
-#import usb_hub # to switch usb hub ports on and off
 @click.group()
 def cli():
     pass
 
 
-#+++++++++++++++++++++++++++++++++++xRad CLI PLOT Sykno+++++++++++++++++++++++++++++++++++#
+def check_activ_venv() -> bool:
+    if 'VIRTUAL_ENV' in os.environ:
+        try:
+            if os.environ['VIRTUAL_ENV'].split('/')[-1] == 'sykno_env':
+                logger.debug(f"Sykno MiRa Eval GUI is using {os.environ['VIRTUAL_ENV']} python venv")
+                return True
+            else:
+                return False
+        except:
+            return False
+    else:
+        return False
 
-## Here the cli interface commands, arguments and options are defined
-@cli.command(help="This command is for serial data aquistion and data plotting.\
-                   Use this to get data from the xRad radar system via serial USB connection from STM32.")
-# cli output mode | rt or no_rt
-@click.argument('output_mode', type=str, default="rt")
-# cli select com port | --com_port yourComPort
-@click.option('--com_port', type=str, default="/dev/ttyACM0", help="COM-Port as String - default: /dev/ttyACM0")
-# cli select rt samples | --rt_samples samples_per_update
-@click.option('--rt_samples', type=int, default=1024, help="Real Time Samples befor updating plot - default: 5120 samples")
-# cli select duration time | --duration_time duration_per_minute
-@click.option('--duration_time', type=int, default=1, help="Maximum Duration Time in minutes - default: 1") 
-# cli select number of samples | --n_samples total_number_of_sampels
-@click.option('--n_samples', type=int, default=512_0, help="Total Number of Samples - default: 512_000")
-# cli select baud rate of serial connection | --baud baud_rate
-@click.option('--baud', type=int, default=115200, help="Select Baud rate - default: 112500")
-# cli select debug output | --debug set_bool_debug_flag
-@click.option('--debug', type=bool, default=False, help="Select Debug Mode - default: False")
-# cli select usb hub port | --usb_port set_bool_usb_hub_flag
-@click.option('--usb_port', type=bool, default=False, help="Turns USB-Hub Port 1 on => Samples data => plot the data => Turns USB-Hub Port 1 off")
-
-#+++++++++++++++++++++++++++++++++CLICK FUNCTION plot_xRad+++++++++++++++++++++++++++++++++#
-
-# Interact with the plot_samples_xRad.py script which collects and process the serial xRad data
-def plot_xRad(output_mode, com_port, baud, rt_samples, duration_time, n_samples, usb_port, debug):
-    import xRad.xRad_rx_convert_Sykno as xRad_rx_convert_Sykno
-    if debug: logger.debug(f"xRad CLI called plot function - Processing Started")
-    if debug: logger.debug(f"Parameters:\nOutputmode: {output_mode}\n COM-Port: {com_port}\nBaud Rate: {baud}\nDebug Mode: {debug}")
-    # Real Time Mode » here a number of RealTimeSamples will be collected befor the plot is updated, the time is terminated by the duration time
-    if output_mode == "rt":
-        if debug: logger.debug(f"Real Time Samples befor updating plot: {rt_samples}\nMaximum Duration Time in minutes: {duration_time}")
-        if usb_port: 
-            logger.debug(f"USB-Hub port 1: Power On")
-            usb_hub.control_event('/dev/ttyACM0', baud, "port_1_on", debug)
-            time.sleep(1)
-            logger.debug(f"Plotting Serial Data in Real Time\n")
-            xRad_rx_convert_Sykno.plot_real_time(com_port, rt_samples, duration_time, baud, debug)
-            usb_hub.control_event('/dev/ttyACM0', baud, "port_1_off", debug)
-            logger.debug(f"USB-Hub port 1: Power Off")
-        else:
-            logger.debug(f"Live Serial Data Plot with {rt_samples} samples per update \n")
-            xRad_rx_convert_Sykno.plot_real_time(com_port, rt_samples, duration_time, baud, debug)
-
-    # No Real Time Mode » here a number of samples will be collected befor the data is plotted
-    if output_mode == "no_rt":
-        if debug: logger.debug(f"Total Number of Samples the will be colleted: {n_samples}")
-        if usb_port:
-            logger.debug(f"USB-Hub Port 1: Power On")
-            usb_hub.control_event('/dev/ttyACM0', baud, "port_1_on", debug)
-            time.sleep(1)
-            logger.debug(f"Plotting Serial Data with n Samples\n")
-            xRad_rx_convert_Sykno.plot_n_samples(com_port, n_samples, baud, debug)
-            usb_hub.control_event('/dev/ttyACM0', baud, "port_1_off", debug)
-            logger.debug(f"USB-Hub Port 1: Power Off")
-        else: 
-            if debug: logger.debug(f"Plotting Serial Data with n Samples\n")
-            xRad_rx_convert_Sykno.plot_n_samples(com_port, n_samples, baud, debug)
-
-
-
-#++++++++++++++++++++++++++++++++xRad CLI RAW to CSV Sykno++++++++++++++++++++++++++++++++#
-
-@cli.command(help="This command start capturing the raw serial data via USB and stores the data to a CSV file.")
-# cli select com port | --com_port yourComPort
-@click.option('--com_port', type=str, default="/dev/ttyACM1", help="COM-Port as String - default: /dev/ttyACM0")
-# cli select baud rate of serial connection | --baud baud_rate
-@click.option('--baud', type=int, default=115200, help="Select Baud rate - default: 112500")
-# cli select number of samples | --n_samples total_number_of_sampels
-@click.option('--n_samples', type=int, default=512_000, help="Total Number of Samples - default: 5120000")
-# cli select csv filename | --csv_file cvs_filename 
-@click.option('--filename', type=str, default="xRad_raw_data", help="Name of the csv file where the raw data will be stored")
-# cli select csv path | --csv_file /path/to/csv/file
-@click.option('--path', type=str, default="../Measurements/", help="Path to csv file where the raw data will be stored")
-@click.option('--duration', type=float, default=2, help="Duratoin in seconds of a capture")
-# cli select debug output | --debug set_bool_debug_flag
-@click.option('--debug', type=bool, default=False, help="Select Debug Mode - default: False")
-
-#+++++++++++++++++++++++++++++++CLICK FUNCTION data_csv_xRad++++++++++++++++++++++++++++++#
-def xrad_csv(com_port, baud, n_samples, filename, path, duration, debug):
-    import xRad.xRad_rx_convert_Sykno as xRad_rx_convert_Sykno
-    logger.debug(f"Collecting Raw Data and store it in a csv file")
-    time.sleep(0.5)
-    xRad_rx_convert_Sykno.raw_ser_data_to_csv(com_port=com_port, baud=baud, dir_path=path, filename=filename, n_samples=n_samples, duration=duration, debug=debug)
-
-
-
-#+++++++++++++++++++++++++++++xRad CLI LOGIC ANALYZER Sykno+++++++++++++++++++++++++++++++#
-
-@cli.command(help="This command controlls the Saleae Logic Analyzer to capture Raw Bus Data")
-@click.option('--path', type=str, default="../Measurements/", help="Path to csv file where the caputred data will be stored")
-@click.option('--name', type=str, default="saleae_spi_capture", help="Filename of csv file where the caputred data will be stored")
-@click.option('--duration', type=float, default=4, help="Duratoin in seconds of a capture")
-@click.option('--timestamp', type=bool, default=False, help="Include Timestamp to the raw data")
-@click.option('--duts', type=int, default=1, help="Enter here the number of DUTs with have to be measured")
-@click.option('--debug', type=bool, default=False, help="Enable Debug outputs")
-
-#+++++++++++++++++++++++++++++++CLICK FUNCTION logic_analyzer+++++++++++++++++++++++++++++#
-def logic_analyzer(path, name, duration, timestamp, duts, debug):
-    import xRad.logic_analyzer_Sykno as logic_analyzer_Sykno
-    if debug: 
-        logger.debug(f"Start Capturing SPI Data via Logic Analyzer Saleae")
-        logger.debug(f"Measurement of {duts} DUTs")
-    if duts == 1:
-        logic_analyzer_Sykno.capture_spi_data_csv(file_path=path, filename=name, duration_sec=duration, timestamp_flag=timestamp, debug=debug)
-    else: 
-        logic_analyzer_Sykno.capture_spi_data_csv_parallel(file_path=path, filename=name, duration_sec=duration, timestamp_flag=timestamp, debug=debug)
-
-
-
-#+++++++++++++++++++++++++++++xRad CLI LOGIC ANALYZER Sykno+++++++++++++++++++++++++++++++#
-
-@cli.command(help="This command controlls the raw data analyzer, to compare the raw data of two data frames e.g. ADC Data Frame and USB Data Frame.")
-@click.option('--path_frame_1', type=str, default="../Measurements/Saleae_Capture_CSV_Files/", help="")
-@click.option('--path_frame_2', type=str, default="../Measurements/xRad_ser_Capture_PKL_Files/", help="")
-@click.option('--filename_1', type=tuple, default=["adc_data_7875_1"], help="")
-@click.option('--filename_2', type=tuple, default=["usb_serial_data_adc_7875_1"], help="")
-@click.option('--output_path', type=str, default="../Measurements/Captures_PKL_Files/", help="")
-
-#++++++++++++++++++++++++++++++CLICK FUNCTION frame_analyzer++++++++++++++++++++++++++++++#
-def frame_analyzer(path_frame_1, path_frame_2, filename_1, filename_2, output_path):
-    import xRad.frame_analyzer_Sykno as frame_analyzer_Sykno 
-    logger.debug("Start Frame Analyzer")
-    #for i in range(0, len(filename_1)):
-    for i in range(0, len(filename_1)-1):
-        if True: logger.debug(f"Start Frame Analyzer: Iteration {i+1} of {len(filename_1)}")
-        frame_analyzer_Sykno.frame_analyzer(path_frame_1, path_frame_2, filename_1[i], filename_2[i], output_path)
-
-
-
-#+++++++++++++++++++++++++++++xRad CLI LOGIC ANALYZER Sykno+++++++++++++++++++++++++++++++#
-
-@cli.command(help="This command measures the serial output speed and datarate")
-# cli select com port | --com_port yourComPort
-@click.option('--com_port', type=str, default="/dev/ttyACM1", help="COM-Port as String - default: /dev/ttyACM0")
-# cli select baud rate of serial connection | --baud baud_rate
-@click.option('--baud', type=int, default=115200, help="Select Baud rate - default: 112500")
-@click.option('--debug', type=bool, default=False, help="Prints the serial Output when Flag is True")
-
-#++++++++++++++++++++++++++++++CLICK FUNCTION filtering++++++++++++++++++++++++++++++#
-def serial_meas(com_port, baud, debug):
-    import serial
-
-    serialPort = serial.Serial(port = com_port, baudrate=baud, timeout=1)
-    c = 0 
-    s = time.time()
-    n_samples = 10000
-    nbr_bytes_usb = 512
-    nbr_bytes_sample = 16
-    while(c < n_samples):
-        rawSerialString = serialPort.read(nbr_bytes_usb)
-        if debug: print(rawSerialString)
-        c += 1
-    samples_per_sec = int(n_samples * (nbr_bytes_usb / nbr_bytes_sample) / (time.time() - s))
-    logger.debug(f"Average Samplerate: {samples_per_sec} Samples/sec")
-    byte_per_sec = samples_per_sec * nbr_bytes_sample
-    logger.debug(f"Datarate (Bytes): {byte_per_sec} Bytes/sec =>> {byte_per_sec / 1e3} kBytes/sec")
-    bit_per_sec = byte_per_sec * 8
-    logger.debug(f"Datarate (Bit): {bit_per_sec} Bit/sec =>> {bit_per_sec / 1e6} MBit/sec") 
-
-
-
-#+++++++++++++++++++++++++++++xRad CLI LOGIC ANALYZER Sykno+++++++++++++++++++++++++++++++#
-
-@cli.command(help="This command enables digital data processing for previose captured data")
-@click.option('--filter', type=str, default="lowpass", help="Select the filter type: 'lowpass', 'highpass', 'bandpass', 'bandstop'")
-@click.option('--analog', type=bool, default=False, help="")
-@click.option('--order', type=int, default=2, help="")
-@click.option('--fc', type=float, default=1000, help="")
-@click.option('--fs', type=float, default=7500, help="")
-@click.option('--output', type=str, default="sos", help="")
-@click.option('--file', type=str, default="EnterYourFileName", help="")
-@click.option('--path_in', type=str, default="../Measurements/xRad_ser_Capture_PKL_Files/", help="")
-@click.option('--path_out', type=str, default="../Measurements/Processed_Data/", help="")
-@click.option('--plot', type=bool, default=False, help="")
-@click.option('--debug', type=bool, default=False, help="")
-
-#++++++++++++++++++++++++++++++xRad CLI filtering Sykno++++++++++++++++++++++++++++++#
-
-def filtering(file, path_in, path_out, filter, analog, order, fc, fs, output, plot, debug):
-    import xRad.filter_Sykno as filter_Sykno
-    filter_Sykno.filtering(file=file, path_in=path_in, path_out=path_out, filter=filter, 
-                           analog=analog, order=order, fc=fc, fs=fs, output=output, plot=plot, debug=debug)
-
-
-
-#++++++++++++++++++++++++++++++CLICK FUNCTION filtering++++++++++++++++++++++++++++++#
-
-@cli.command(help='This command opens the xRad Qt to display the plots')
-@click.option('--file1', type=str, default='./data/xRad_ser_Capture_CSV_Files/Measurment_XY_CH0_19_11_2022_10_51_19.csv', help='Enter here the path to the data file (CSV) for Re component')
-@click.option('--file2', type=str, default='./data/xRad_ser_Capture_CSV_Files/Measurment_XY_CH1_19_11_2022_10_51_19.csv', help='Enter here the path to the data file (CSV) for Im component')
-@click.option('--freq_ax', type=int, default='1', help='This arugment effects the Frequency axis of the spectrum plot e.g. for rpm -> 60, hz -> 1')
-
-#++++++++++++++++++++++++++++++++++xRad CLI Qt Sykno+++++++++++++++++++++++++++++++++#
-
-def xrad_qt(file1, file2, freq_ax):
-    import xRad_Qt.xRad_qt_Sykno as xRad_qt_Sykno
-    file_paths = [file1, file2]
-    xRad_qt_Sykno.MainWindow.xRad_display_main(file_paths, freq_ax)
-
-
-
-#++++++++++++++++++++++++++++++CLICK FUNCTION xRad GUI++++++++++++++++++++++++++++++#
-
-@cli.command(help="This command opens the xRad GUI where different live plots can be captured")
-@click.option('--input', type=str, default='serial', help='')
-@click.option('--file1', type=str, default='../Measurements/xRad_ser_Capture_CSV_Files/Measurment_XY_CH0_19_11_2022_10_51_19.csv', help='Enter here the path to the data file (CSV) for Re component')
-@click.option('--file2', type=str, default='../Measurements/xRad_ser_Capture_CSV_Files/Measurment_XY_CH1_19_11_2022_10_51_19.csv', help='Enter here the path to the data file (CSV) for Im component')
-@click.option('--freq_ax', type=int, default=1, help='This argument effects the Frequency axis of the spectrum plot e.g. for rpm -> 60, hz -> 1')
-@click.option('--update', type=int, default=1, help='This arguement effects the how often the plot gets updated, e.g. update=2 results in a plot update after 2 serial packages.')
-# cli select csv filename | --csv_file cvs_filename 
-@click.option('--filename', type=str, default="Measurement_GUI", help="Name of the csv file where the raw data will be stored")
-# cli select com port | --com_port yourComPort
-@click.option('--com_port', type=str, default="/dev/ttyACM0", help="COM-Port as String - e.g.: --com_port=/dev/ttyACM0")
-
-#+++++++++++++++++++++++++++++++++xRad CLI GUI Sykno++++++++++++++++++++++++++++++++#
-
-def xrad_gui(input, file1, file2, freq_ax, update, filename, com_port):
-    import xRad_GUI.xRad_gui_Sykno as xRad_gui_Sykno
-    file_path = [file1, file2]
-    xRad_gui_Sykno.MainWindow.xRad_gui_main(input, file_path, freq_ax, update, filename, com_port)
+def check_setup_venv():
+    if os.path.isfile('./sykno_env/bin/activate'):
+        logger.debug(f"Already setup sykno_env located: {os.path.abspath('./sykno_env')}")
+        return
+    else:
+        logger.debug(f"Installing sykno_env in {os.path.abspath('./sykno_env')}")
+        subprocess.run(['python3', '-m', 'venv', 'sykno_env'])
+        logger.debug(f'Successfully created sykno_env.')
+        
+def start_mira_venv():
+    """Start the virtual environment."""
+    subprocess.run(['/bin/bash', './mira/setup/unix/start_mira_gui_venv.sh'])
     
-    #import subprocess
-    #subprocess.call("python3 ./xRad/xRad_gui_Sykno.py", shell=True)
+@cli.command(help="This command starts the MiRa GUI application")
+def start_mira():
+    start_mira_process()
 
-
-#++++++++++++++++++++++++++++++CLICK FUNCTION xRad GUI++++++++++++++++++++++++++++++#
-
-@cli.command(help="This command opens the xRad GUI where different live plots can be captured")
-#+++++++++++++++++++++++++++++++++xRad CLI GUI Sykno++++++++++++++++++++++++++++++++#
-
-def mira_gui():
+def start_mira_process():
+    logger.debug("Starting MiRa GUI...")
+    import multiprocessing
     import mira.gui.mira_eval_gui as mira_eval_gui
 
-    config = configparser.ConfigParser()
-    config.read(__init__.MIRA_SYS_CONFIG_PATH)
-    
-    logger.info(f"Starting ")
-    mira_eval_gui.MIRA_MAIN_GUI.mira_gui_main()
-    
- #++++++++++++++++++++++++++++++CLICK FUNCTION xRad GUI++++++++++++++++++++++++++++++#
+    mira_eval_gui_main_process = multiprocessing.Process(
+        name='MiRa_Eval_GUI_Main_Process',
+        target=mira_eval_gui.MIRA_MAIN_GUI.mira_gui_main, 
+        args=())
+    mira_eval_gui_main_process.daemon = False
 
-@cli.command(help="This command opens the xRad GUI where different live plots can be captured")
-# @click.option('--input', type=str, default='serial', help='')
+    mira_eval_gui_main_process.start()
+    mira_eval_gui_main_process.join()
+    logger.debug("MiRa GUI started.")
+        
 
-#+++++++++++++++++++++++++++++++++xRad CLI GUI Sykno++++++++++++++++++++++++++++++++#
+# ==============================================================================
+# Click Command Name: build
+# ==============================================================================
+@cli.command(help="TODO")
+def setup_env():
+    # logger.debug("Building Cython modules...")
+    check_setup_venv()
+    # logger.debug("Cython modules successfully built.")
 
-def mira_cli():
-    import mira.ctrl.mira_cli as mira_eval_cli
-    mira_cli_controller = mira_eval_cli.MIRA_MAIN_CLI()
-    mira_cli_controller.mira_cli_main()
-    
 
-# Call the cli as main to start click access
+# ==============================================================================
+# Click Command Name: build
+# ==============================================================================
+@cli.command(help="This command builds the Cython modules for your Python3 version and CPU architecture")
+def build():
+    """
+    Builds the Cython modules for the specified Python version and CPU architecture.
+
+    This command invokes the setup.py script to compile the Cython modules.
+
+    Example:
+    python3 ./mira/proc/cython/setup.py build_ext --inplace
+    """
+    logger.debug("Building Cython modules...")
+    subprocess.run(['python3', './mira/proc/cython/setup.py', 'build_ext', '--inplace'], check=True)
+    subprocess.run(['python3', './mira/com/cython/setup.py', 'build_ext', '--inplace'], check=True)
+
+    logger.debug("Successfully build cython modules.")
+
+
+# ==============================================================================
+# Click Command Name: mira_gui
+# ==============================================================================
+@cli.command(help="This command starts the MiRa GUI application")
+def mira_gui():
+    """
+    Starts the MiRa GUI application.
+
+    This command spawns a new process to run the MiRa GUI, allowing the main process to continue executing other tasks.
+
+    Example:
+    ./sykno_cli mira-gui
+    """
+    check_setup_venv()
+    checker_venv = check_activ_venv()
+
+    if checker_venv:
+        # install_requirements()
+        start_mira_process()
+    else:
+        start_mira_venv()
+
+
+# Call the CLI as main to start Click access
 if __name__ == '__main__':
     cli()
-

@@ -1,10 +1,15 @@
 import __init__
+import os
 import time
 import h5py
 import json
+import queue
+import psutil
 import pickle
 import numpy as np
+import setproctitle
 import configparser
+import multiprocessing
 from datetime import datetime
 from mira.rsys.mira_radar_sys import MIRA_RADAR_PARAMETER
 from mira.sens.mira_reg_cont_helper import generate_register_to_txt, \
@@ -66,33 +71,43 @@ class MIRA_SAVE_MEAS():
         self.dataset_cnt = -1
 
 
-    def save_to_hdf5(self, frame_data_cube: np.ndarray, header_dict: dict) -> None:
-        if header_dict['frame_cnt'] == 0:
-            self.dataset_cnt += 1
+    def save_to_hdf5_process(self, save_data_queue: multiprocessing.Queue, process_stop_event: multiprocessing.Event) -> None:
+        mira_data_extraction_process = psutil.Process(os.getpid())
+        mira_data_extraction_process.cpu_affinity([0])
+        mira_data_extraction_process.nice(0)
+        setproctitle.setproctitle("Sykno - MiRa Eval GUI - Save Process")
+        
+        while not process_stop_event.is_set():
+            if not save_data_queue.empty():
+                meas_save_dict = save_data_queue.get_nowait()
+            else:
+                time.sleep(250e-6)
+                continue
+            header_dict = meas_save_dict['Header']
+            frame_data_cube = meas_save_dict['Data']
+            
+            if header_dict['frame_cnt'] == 0:
+                self.dataset_cnt += 1
 
-        dataset_name = f"{self.mira_meas_dataset_frame_name}_{self.dataset_cnt:04d}_{header_dict['frame_cnt']:04d}"
+            dataset_name = f"{self.mira_meas_dataset_frame_name}_{self.dataset_cnt:04d}_{header_dict['frame_cnt']:04d}"
 
-        # Open the HDF5 file in append mode for each process
-        with h5py.File(self.hdf5_file_path, "a") as file:
-            # Check if the dataset already exists; if not, create it
-            if dataset_name not in file[self.MIRA_MEAS_DATASET_GROUP_NAME]:
-                # Create a new dataset within the data group
-                # for tx in range(2):
-                #     for rx in range(4):
-                #         for shape in range(16):
-                #             print(frame_data_cube[:,rx,tx,shape])
-                dataset = file[str(self.MIRA_MEAS_DATASET_GROUP_NAME)].create_dataset(
-                                                                  name=dataset_name,
-                                                                  data=frame_data_cube,
-                                                                  shape=frame_data_cube.shape,
-                                                                  dtype=np.float32,
-                                                                  chunks=True)
+            # Open the HDF5 file in append mode for each process
+            with h5py.File(self.hdf5_file_path, "a") as file:
+                # Check if the dataset already exists; if not, create it
+                if dataset_name not in file[self.MIRA_MEAS_DATASET_GROUP_NAME]:
 
-                self.curr_time = time.time()
-                dataset.attrs['timestamp'] = self.curr_time
-                dataset.attrs['delta_time'] = self.curr_time - self.prev_time
-                dataset.attrs['shape'] = str(frame_data_cube.shape)
-                self.prev_time = self.curr_time
+                    dataset = file[str(self.MIRA_MEAS_DATASET_GROUP_NAME)].create_dataset(
+                                                                      name=dataset_name,
+                                                                      data=frame_data_cube,
+                                                                      shape=frame_data_cube.shape,
+                                                                      dtype=np.float32,
+                                                                      chunks=True)
+
+                    self.curr_time = time.time()
+                    dataset.attrs['timestamp'] = self.curr_time
+                    dataset.attrs['delta_time'] = self.curr_time - self.prev_time
+                    dataset.attrs['shape'] = str(frame_data_cube.shape)
+                    self.prev_time = self.curr_time
 
     def ini_to_json(self):
         # Convert INI data to a nested dictionary

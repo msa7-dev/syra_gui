@@ -95,7 +95,6 @@ class BGT_MAIN:
     def get_wakeup_time(self):
         # T_WKUP = (TR_WKUP x 2^TR_WKUP_MUL x 8 + TR_WKUP_MUL +3) x TSYS_CLK
         self.radar_param.sys.t_wkup = (self._TR_WKUP * 2**self._TR_WKUP_MUL * 8 + self._TR_WKUP_MUL + 3) * (1/80e6)
-        print(f"{self.radar_param.sys.t_wkup=}")
         
     def calculate_wakeup_registers(self, target_t_wu=1e-3, tsys_clk=1/80e6):
         min_error = float('inf')
@@ -200,8 +199,7 @@ class BGT_ADC0:
         set_reg_val(self)
 
     def calc_sampling_frequency(self) -> None:
-        self.radar_param.sys.sampling_frequency = np.float32(80*1e6 / self._ADC_DIV) # TODO : const clk 
-        print(f"{self.radar_param.sys.sampling_frequency=}")
+        self.radar_param.sys.sampling_frequency = np.float32(80*1e6 / (self._ADC_DIV+np.finfo(float).eps)) # TODO : const clk 
         
     @property
     def BG_CHOP_EN(self):
@@ -1025,7 +1023,6 @@ class BGT_CSX_0:
         index = reg_adr_to_index.get(self.REG_ADR)
         if index is not None:
             self.radar_param.sys.rx_active_antennas[index] = sum(rx)
-        print(self.radar_param.sys.rx_active_antennas)
     
     def set_rx_active_antennas(self, index, value):
         # Mapping indices to REG_ADR values
@@ -1068,7 +1065,6 @@ class BGT_CSX_0:
         index = reg_adr_to_index.get(self.REG_ADR)
         if index is not None:
             self.radar_param.sys.tx_active_antennas[index] = sum(tx)
-        print(self.radar_param.sys.tx_active_antennas)
         
     
     def set_tx_active_antennas(self, index, value):
@@ -1193,7 +1189,6 @@ class BGT_CSX_1:
         if index is not None:
             self.radar_param.sys.tx_power[index] = [np.uint8(self._TX1_DAC),
                                                     np.uint8(self._TX2_DAC)]
-            print(self.radar_param.sys.tx_power)
 
     def convert_all_values(self):
         self.get_tx_power()
@@ -1477,7 +1472,6 @@ class BGT_CCR0:
     def get_end_time(self) -> None:
         # T_END = (TR_END x 8 +5) x TSYS_CLK
         self.radar_param.sys.t_end = (self._TR_END * 8 + 5) * (1/80e6)
-        print(f"{self.radar_param.sys.t_end=}")
         
     @property
     def CONT_MODE(self):
@@ -1518,7 +1512,6 @@ class BGT_CCR0:
     def get_init1_time(self) -> None:
         # T_INIT1 = (TR_INIT1 x 2^TR_INIT1_MUL x 8 + TR_INIT1_MUL +3 ) x TSYS_CLK
         self.radar_param.sys.t_init1 = ((self._TR_INIT1 * (2**self._TR_INIT1_MUL) * 8) + self._TR_INIT1_MUL + 3) * (1/80e6)
-        print(f"{self.radar_param.sys.t_init1=}")
         
     def set_init1_time(self, t_init1, t_end):
         tsys_clk = 1 / 80e6
@@ -1588,7 +1581,6 @@ class BGT_CCR1:
     def get_start_time(self) -> None:
         # T_START= (TR_START x 8 +10) x T SYS_CLK
         self.radar_param.sys.t_start = (self._TR_START * 8 + 10) * (1/80e6)
-        print(f"{self.radar_param.sys.t_start=}")
         
     @property
     def PD_MODE(self):
@@ -1620,7 +1612,6 @@ class BGT_CCR1:
     def get_fed_time(self) -> None:
         # T_FED = (TR_FED x 2^TR_FED_MUL x 8 + TR_FED_MUL +3) x TSYS_CLK
         self.radar_param.sys.t_fed = (self._TR_FED * 2**self._TR_FED_MUL * 8 + self._TR_FED_MUL + 3) * (1/80e6)
-        print(f"{self.radar_param.sys.t_fed=}")
 
     def convert_all_values(self):
         self.get_start_time()
@@ -1660,7 +1651,6 @@ class BGT_CCR2:
         self.radar_param.sys.max_frame_cnt = self._MAX_FRAME_CNT
         if self.radar_param.sys.max_frame_cnt == 0:
             self.radar_param.sys.max_frame_cnt = 4096
-        print(f"{self.radar_param.sys.max_frame_cnt=}")
 
     @property
     def FRAME_LEN(self):
@@ -1673,7 +1663,6 @@ class BGT_CCR2:
     # Shape Set
     def get_shape_set_repetition(self) -> None:
         self.radar_param.sys.shape_set_repetition = self._FRAME_LEN + 1
-        print(f"{self.radar_param.sys.shape_set_repetition=}")
     
     def convert_all_values(self):
         self.get_max_frame_length()
@@ -1714,7 +1703,6 @@ class BGT_CCR3:
     def get_paen_time(self) -> None:
         # T_PAEN= TR_PAEN x 8 x TSYS_CLK
         self.radar_param.sys.t_paen = self._TR_PAEN * 8 *  (1/80e6) # todo clk const
-        print(f"{self.radar_param.sys.t_paen=}")
 
     @property
     def TR_SSTART(self):
@@ -1728,7 +1716,6 @@ class BGT_CCR3:
     def get_sstart_time(self) -> None:
         # T_SSTART= (TR_SSTART x 8 +1) x TSYS_CLK
         self.radar_param.sys.t_sstart = (self._TR_SSTART * 8 + 1) * (1/80e6)
-        print(f"{self.radar_param.sys.t_sstart=}")
         
     @property
     def TR_INIT0(self):
@@ -1751,7 +1738,6 @@ class BGT_CCR3:
     def get_init0_time(self) -> None:
         # T_INIT0 = (TR_INIT0 x 2^TR_INIT0_MUL x 8 + TR_INIT0_MUL +3) x TSYS_CLK
         self.radar_param.sys.t_init0 = (self._TR_INIT0 * (2**self._TR_INIT0_MUL) * 8 + self._TR_INIT0_MUL + 3) * (1/80e6) 
-        print(f"{self.radar_param.sys.t_init0=}")
 
     def convert_all_values(self):
         self.get_sstart_time()
@@ -1794,9 +1780,8 @@ class BGT_PLLX_0:
         }
         index = reg_adr_to_index.get(self.REG_ADR)
         if index is not None:
-            start_freq = ctypes.c_int32(self._FSU << 8).value >> 8 
+            start_freq = (ctypes.c_int32(self._FSU << 8).value >> 8)
             self.radar_param.sys.start_frequency[index] = np.float32(((start_freq / 2**20) + 96) * 640e6)
-            print(f"{self.radar_param.sys.start_frequency=}")
         
     def convert_all_values(self):
         self.get_start_frequency()
@@ -1841,7 +1826,6 @@ class BGT_PLLX_1:
         index = reg_adr_to_index.get(self.REG_ADR)
         if index is not None:
             self.radar_param.sys.ramp_steps[index] = self._RSU
-            print(f"{self.radar_param.sys.ramp_steps=}")
         
     def convert_all_values(self):
         self.get_ramp_bandwidth()
@@ -1897,8 +1881,8 @@ class BGT_PLLX_2:
                                                                + self.radar_param.sys.ramp_bandwidth[index])
         
         self.radar_param.sys.ramp_slope[index] = np.float32(self.radar_param.sys.ramp_bandwidth[index] \
-                                                            // self.radar_param.sys.ramp_time[index] 
-                                                            + np.finfo(np.float32).eps) 
+                                                            // (self.radar_param.sys.ramp_time[index] 
+                                                              + np.finfo(np.float32).eps)) 
     @property
     def TR_EDU(self):
         return self._TR_EDU
@@ -1923,7 +1907,6 @@ class BGT_PLLX_2:
         elif self._TR_EDU != 0 and index is not None:
             # If TR_EDU/D > 0: T_EDU/D = (8 x TR_EDU/D + 5) x TSYS_CLK.
             self.radar_param.sys.t_ed[index] = (8 * self._TR_EDU + 5) * (1/80e6)
-        print(f"{self.radar_param.sys.t_ed=}")
         
     def convert_all_values(self):
         self.get_edu_time()
@@ -1982,7 +1965,6 @@ class BGT_PLLX_3:
         elif self.REG_ADR == BGT_REG.PLLX_3_REG.PLL4_3_ADR:
             self.radar_param.sys.n_samples_per_chirp[3] = self._APU
             self.radar_param.sys.n_samples_per_chirp[7] = self._APD
-        print(f"{self.radar_param.sys.n_samples_per_chirp=}")
         
     def convert_all_values(self):
         self.get_chirp_sample_len()
@@ -2027,9 +2009,8 @@ class BGT_PLLX_4:
         index = reg_adr_to_index.get(self.REG_ADR)
 
         if index is not None:
-            start_freq = ctypes.c_int32(self._FSD << 8).value >> 8 
+            start_freq = ctypes.c_int32(self._FSD).value
             self.radar_param.sys.start_frequency[index] = np.float32(((start_freq / 2**20) + 96) * 640e6)
-        print(f"{self.radar_param.sys.start_frequency=}")
 
     def convert_all_values(self):
         self.get_start_frequency()
@@ -2074,7 +2055,6 @@ class BGT_PLLX_5:
 
         index = reg_adr_to_index.get(self.REG_ADR)
         self.radar_param.sys.ramp_steps[index] = self._RSD
-        print(f"{self.radar_param.sys.ramp_steps=}")
         if index is not None:
             return
 
@@ -2157,7 +2137,6 @@ class BGT_PLLX_6:
         elif self._TR_EDD != 0 and index is not None:
             # If TR_EDU/D > 0: T_EDU/D = (8 x TR_EDU/D + 5) x TSYS_CLK.
             self.radar_param.sys.t_ed[index] = (8 * self._TR_EDD + 5) * (1/80e6)
-        print(f"{self.radar_param.sys.t_ed=}")
             
     def convert_all_values(self):
         self.get_edd_time()
@@ -2206,7 +2185,6 @@ class BGT_PLLX_7:
             self.radar_param.sys.shape_repetition[2] = np.uint32(2**self._REPS)
         elif self.REG_ADR == BGT_REG.PLLX_7_REG.PLL4_7_ADR:
             self.radar_param.sys.shape_repetition[3] = np.uint32(2**self._REPS)
-        print(f"{self.radar_param.sys.shape_repetition=}")
     
     @property
     def SH_EN(self):
@@ -2228,7 +2206,6 @@ class BGT_PLLX_7:
             self.radar_param.sys.n_active_shape[3] = np.uint8(self._SH_EN)
             self.radar_param.sys.shape_set_repetition /= sum(self.radar_param.sys.n_active_shape)
             self.radar_param.sys.shape_set_repetition = np.uint16(self.radar_param.sys.shape_set_repetition)
-        print(f"{self.radar_param.sys.n_active_shape=}")
 
     @property
     def CONT_MODE(self):
@@ -2279,8 +2256,6 @@ class BGT_PLLX_7:
             # T_SED = (TR_SED x 2^TR_SED_MUL x 8 + TR_SED_MUL +3) x TSYS_CLK
             self.radar_param.sys.t_sed[index] = \
                 (self._TR_SED * 2**self._TR_SED_MUL * 8 + self._TR_SED_MUL + 3) * (1/80e6)
-
-        print(f"{self.radar_param.sys.t_sed=}")
 
     def convert_all_values(self):
         self.get_shape_repetition()
