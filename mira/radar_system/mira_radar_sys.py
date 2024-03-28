@@ -28,6 +28,7 @@ class MIRA_RADAR_DSP_PARAMETER():
         self.hp_filter_type = str('')
         self.hp_filter_order = np.uint8(0)
         self.hp_filter_cutoff = np.uint32(0)
+        
 
 # ==============================================================================
 # Class Name: MIRA_RADAR_MON_PARAMETER
@@ -145,6 +146,7 @@ class MIRA_RADAR_SYS_PARAMETER():
         self.rf_test_mode_en = bool(False)
         self.rf_test_mode_en_channels = [False, False, 
                                          False, False]
+        self.rf_antenna = np.uint8(0)
 
 # ==============================================================================
 # Class Name: MIRA_RADAR_GUI_PARAMETER

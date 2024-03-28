@@ -565,7 +565,7 @@ class {
 </reflist>
 </clientDependency>
 <name>
-<val>MiRa_{Device_ID}_RF_Frontend_Aperture</val>
+<val>MiRa_{Device_ID}_RF_Frontend_antenna</val>
 </name>
 <package>
 <ref refid="832dda62-c463-11ee-84b9-b98b3618f18e"/>

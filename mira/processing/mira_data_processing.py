@@ -13,6 +13,7 @@ from scipy.interpolate import griddata
 from mira.radar_system.mira_radar_sys import MIRA_RADAR_PARAMETER
 from mira.processing.mira_data_preprocessing import MIRA_DATA_PREPROCESSOR
 from mira.control.mira_multiprocessing import distribute_cores_to_process
+from mira.rf_antenna.MIRA6024I1A import MIRA6024_RF_ANTENNA
 
 Function = Callable[[Any], Any]
 # ==============================================================================
@@ -105,6 +106,7 @@ class MIRA_DATA_PROCESSOR():
                                     self.radar_param.sys.shape_set_repetition),             # Dim. 3
                                    dtype=np.uint16) 
         self.counter = 0
+        self.rf_antenna = MIRA6024_RF_ANTENNA()
         while not process_stop_event.is_set():
             if not extracted_processing_data_queue.empty():
                 radar_data = np.array(extracted_processing_data_queue.get(), dtype=np.uint16)
@@ -134,11 +136,13 @@ class MIRA_DATA_PROCESSOR():
         self.max_value = gui_parameters['system_params']['plot_axis_max_value']
         self.max_value_type = gui_parameters['system_params']['current_selected_axis_unit']
         self.waterfall_spectrogram_time = gui_parameters['system_params']['waterfall_spectrogram_time']
+        self.rf_aperature_select = gui_parameters['rf_antenna']
         
         self.data_preprocessor.init_dsp_hp_filter(dsp_hp_parameters['order'],
                                                   dsp_hp_parameters['type'],
                                                   dsp_hp_parameters['cutoff'])
         self.data_preprocessor.init_window(window_func)
+        
         if self.prev_main_index != self.main_tab_index:
             self._init_buffers()
     
@@ -294,7 +298,7 @@ class MIRA_DATA_PROCESSOR():
         points = np.vstack((x.flatten(), y.flatten())).T
         values = range_azimuth_map.flatten()
         # Interpolate the data onto the Cartesian grid
-        cartesian_map = griddata(points, values, (grid_x, grid_y), method='linear', fill_value=0)
+        cartesian_map = griddata(points, values, (grid_x, grid_y), method='nearest', fill_value=0)
 
         return cartesian_map 
 
@@ -306,18 +310,18 @@ class MIRA_DATA_PROCESSOR():
         if self.prev_range_azimuth_shape != data_cube.shape:
             az = np.deg2rad(np.linspace(-90,90,int(18*4+1)))
             k = 2 * np.pi / self.radar_param.sys.lambda_freq[0]
-            lambda0 = 0.0049773543596489155 # center frequency wavelength
-            varray = [0.00248868, 0.00497735, 0.0 , 0.00746603, 0.00373302, 0.00622169, 0.00124434, 0.00871037] # element positions
-            self.v = np.empty((len(az), 8), dtype=np.cdouble)
-            phasecal = [0.23157002, -1.27419543,  2.40475702, -1.73327172,  2.98415613, 1.29408276, -1.39625335,  1.01601756]
+            lambda0 = self.radar_param.sys.lambda_freq[0]
+            
+            self.virtuel_array = np.empty((len(az), 8), dtype=np.cdouble)
             for m in range(len(az)):
                 for k in range(8):
-                    self.v[m,k] = np.exp(-1j*2*np.pi/lambda0*(varray[k]*np.sin(az[m])))*np.exp(1j*phasecal[k])
+                    self.virtuel_array[m,k] = np.exp(-1j*2*np.pi/lambda0*(self.rf_antenna.antenna_spacing[self.rf_aperature_select][k]* \
+                                                     np.sin(az[m])))*np.exp(1j*self.rf_antenna.phase_calibration[self.rf_aperature_select][k])
         
         self.range_azimuth_map = np.zeros((len(az), data_cube.shape[0]), dtype = np.float32)
         
         for m in range(len(az)):
-            self.range_azimuth_map[m,:] = np.abs(np.sum(data_cube * self.v[m,:], axis=1)).astype(np.float32)
+            self.range_azimuth_map[m,:] = np.abs(np.sum(data_cube * self.virtuel_array[m,:], axis=1)).astype(np.float32)
 
         if self.max_value_type == 'range':
             self.range_azimuth_map = self.range_azimuth_map[0:self.range_azimuth_map.shape[0],
@@ -327,8 +331,7 @@ class MIRA_DATA_PROCESSOR():
             self.range_azimuth_map = self.range_azimuth_map[0:self.range_azimuth_map.shape[0],
                                                             0:int(self.max_value/(self.radar_param.sys.max_dsp_freq * 1e-3
                                                                                 /self.range_azimuth_map.shape[1]))]
-        self.range_azimuth_map = self.transform_range_azimuth_to_half_circle(self.range_azimuth_map.transpose((1,0)))
-        # print(np.min(self.range_azimuth_map), np.max(self.range_azimuth_map))
+        # self.range_azimuth_map = self.transform_range_azimuth_to_half_circle(self.range_azimuth_map.transpose((1,0)))
         return np.array(self.range_azimuth_map, dtype=np.float32)
 
     def _prepare_range_azimuth_output_format(self, ch_data: np.ndarray) -> dict:

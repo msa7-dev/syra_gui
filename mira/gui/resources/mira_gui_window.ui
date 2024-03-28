@@ -638,7 +638,7 @@
          </font>
         </property>
         <property name="currentIndex">
-         <number>1</number>
+         <number>2</number>
         </property>
         <widget class="QWidget" name="tab_6">
          <attribute name="title">
@@ -3330,7 +3330,7 @@
             <item>
              <widget class="QLabel" name="label_49">
               <property name="text">
-               <string>Error correction select:</string>
+               <string>Select Antenna Type:</string>
               </property>
              </widget>
             </item>
@@ -3434,7 +3434,7 @@
            </widget>
           </item>
           <item row="2" column="0">
-           <widget class="QComboBox" name="combo_box_error_correction_files"/>
+           <widget class="QComboBox" name="combo_box_rf_antenna"/>
           </item>
           <item row="5" column="0">
            <widget class="Line" name="line_16">

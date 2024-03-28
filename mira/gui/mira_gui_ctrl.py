@@ -97,7 +97,7 @@ class MIRA_GUI_CTRL():
         self.qt_self.combo_box_recording_n_frames.addItems(self.widget_values.recodring_n_frames_list)
         self.qt_self.combo_box_if_test_ton.addItems(self.widget_values.if_test_ton_list)
         self.qt_self.combo_box_waterfall_time.addItems(self.widget_values.waterfall_spectrogram_time_list)
-        self.qt_self.combo_box_error_correction_files.addItems(self.widget_values.antenna_specific_error_correction_files_list)
+        self.qt_self.combo_box_rf_antenna.addItems(self.widget_values.rf_antenna_combo_box_list)
         self.qt_self.combo_box_gui_fps.addItems(self.widget_values.gui_fps_list)
         
     def init_connect_combo_box(self):
@@ -463,7 +463,8 @@ class MIRA_GUI_CTRL():
                 'waterfall_spectrogram_time': self.radar_param.sys.waterfall_spectrogram_time,
                 "plot_axis_max_value": self.radar_param.sys.plot_axis_max_value,
                 "current_selected_axis_unit": self.radar_param.sys.curr_select_axis_unit,
-            }
+            },
+            "rf_antenna": self.radar_param.sys.rf_antenna,
         }
         return process_param_queue_dict
     
@@ -843,6 +844,10 @@ class MIRA_GUI_CTRL():
         self.radar_param.dsp.hp_filter_type = self.qt_self.combo_box_dsp_hp_filter_type.currentText()
         dsp_hp_filter_cutoff = self.qt_self.combo_box_dsp_hp_filter_cutoff.currentText()
         self.radar_param.dsp.hp_filter_cutoff = int(dsp_hp_filter_cutoff.split(' ')[0])*1e3
+        self.update_processing_parameters()
+    
+    def get_rf_antenna(self) -> None:
+        self.radar_param.sys.rf_antenna = int(self.qt_self.combo_box_rf_antenna.currentText().split('Type ')[1]) - 1
         self.update_processing_parameters()
     
     def update_processing_parameters(self):
