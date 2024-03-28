@@ -34,15 +34,15 @@ class MIRA_BROWSER():
             caption=f"Select Measurement Dicretory {self.radar_param.mon.sykno_product_name}"
             default_dir = f"{MIRA_MEASUREMENT_PATH}/{MIRA_MEAS_PROJECT_NAME}"
             filter = None
-            file_path = "./mira/meas/hdf5/"
-            direcotry = "./mira/meas/hdf5/"
+            file_path = "./mira/measurement/hdf5/"
+            direcotry = "./mira/measurement/hdf5/"
             
         elif self.browser_type == "mira_meas_in_browser":
             caption=f"Select {self.radar_param.mon.sykno_product_name} Measurement File"
             default_dir = f"{MIRA_MEASUREMENT_PATH}/{MIRA_MEAS_PROJECT_NAME}"
             filter = "Text Files (*.hdf5)"
-            file_path = f"./mira/meas/hdf5/{MIRA_MEAS_PROJECT_NAME}.hdf5"
-            direcotry = f"./mira/meas/hdf5/{MIRA_MEAS_PROJECT_NAME}.hdf5"
+            file_path = f"./mira/measurement/hdf5/{MIRA_MEAS_PROJECT_NAME}.hdf5"
+            direcotry = f"./mira/measurement/hdf5/{MIRA_MEAS_PROJECT_NAME}.hdf5"
         
         self.caption = caption
         self.default_dir = default_dir
@@ -58,7 +58,7 @@ class MIRA_BROWSER():
                                                 "MIRA_MEASUREMENT_PATH")
         if self.browser_type == "bgt_reg_browser":
             caption=f"Select BGT-Register for {self.radar_param.mon.sykno_product_name}"
-            default_dir = f"./mira/cfg/mira6024_projects/" 
+            default_dir = f"./mira/config/register_hex_files/" 
             filter = "Text Files (*.txt)"
             file_path = f"{default_dir}/{mira_project}.txt"
             direcotry = "./"
@@ -67,15 +67,15 @@ class MIRA_BROWSER():
             caption=f"Select Measurement Dicretory {self.radar_param.mon.sykno_product_name}"
             default_dir = f"{MIRA_MEASUREMENT_PATH}/{mira_project}"
             filter = None
-            file_path = "./mira/meas/hdf5/"
-            direcotry = "./mira/meas/hdf5/"
+            file_path = "./mira/measurement/hdf5/"
+            direcotry = "./mira/measurement/hdf5/"
             
         elif self.browser_type == "mira_meas_in_browser":
             caption=f"Select {self.radar_param.mon.sykno_product_name} Measurement File"
             default_dir = f"{MIRA_MEASUREMENT_PATH}/{mira_project}"
             filter = "Text Files (*.hdf5)"
-            file_path = f"./mira/meas/hdf5/{mira_project}.hdf5"
-            direcotry = f"./mira/meas/hdf5/{mira_project}.hdf5"
+            file_path = f"./mira/measurement/hdf5/{mira_project}.hdf5"
+            direcotry = f"./mira/measurement/hdf5/{mira_project}.hdf5"
         
         self.caption = caption
         self.default_dir = default_dir

@@ -293,8 +293,6 @@ class MIRA_DATA_PROCESSOR():
         # Flatten the arrays for interpolation
         points = np.vstack((x.flatten(), y.flatten())).T
         values = range_azimuth_map.flatten()
-
-
         # Interpolate the data onto the Cartesian grid
         cartesian_map = griddata(points, values, (grid_x, grid_y), method='linear', fill_value=0)
 
