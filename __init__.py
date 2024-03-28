@@ -2,7 +2,7 @@ import sys
 from loguru import logger
 from pathlib import Path
 
-MIRA_SYS_CONFIG_PATH = Path("./mira/cfg/mira_sys_config.ini").resolve()
+MIRA_SYS_CONFIG_PATH = Path("./mira/config/emra_sys_config.ini").resolve()
 if MIRA_SYS_CONFIG_PATH.is_file():
     pass
 else:

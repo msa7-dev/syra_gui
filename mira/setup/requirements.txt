@@ -1,7 +1,7 @@
 setuptools
 loguru
 click
-pathlib
+pathlib; python_version < "3.10"
 h5py
 numpy
 scipy
@@ -9,7 +9,7 @@ pyusb
 path
 ft4222
 Cython
-pyqt5-tools
+pyqt5-tools; python_version < "3.10"
 PyQt5
 pyqtgraph
 psutil
@@ -17,3 +17,6 @@ paramiko
 setproctitle
 jupyter
 nuitka
+IPython
+matplotlib
+tqdm

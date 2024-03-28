@@ -15,7 +15,7 @@ from PyQt5.QtCore import QRectF
 
 from mira.gui.mira_browser import MIRA_BROWSER
 from mira.gui.mira_plot_gui import MIRA_PLOTTER
-from mira.rsys.mira_radar_sys import MIRA_RADAR_PARAMETER
+from mira.radar_system.mira_radar_sys import MIRA_RADAR_PARAMETER
 from mira.gui.mira_gui_cfg import MIRA_WIDGET_VALUES, MIRA_FUNC_PIPELINE
 
 # ==============================================================================
@@ -141,8 +141,8 @@ class MIRA_GUI_CTRL():
         self.qt_self.label_bandwidth.setText(f'{round(float(self.radar_param.sys.ramp_bandwidth[0] * 1e-9), 2)} GHz')
         self.qt_self.label_ramp_slope.setText(f'{round(float(self.radar_param.sys.ramp_slope[0] * 1e-12), 2)} MHz/µs')
         # self.qt_self.label_chirp_time.setText(f'{round(float(self.radar_param.sys.chirp_time[0]), 2)} ms')
-        self.qt_self.label_frame_duration.setText(f'{round(float(self.radar_param.sys.frame_duration)*1e3, 2)} ms')
-        self.qt_self.label_frames_per_second.setText(f'{round(float(self.radar_param.sys.frames_per_second), 2)} fps')
+        self.qt_self.label_frame_duration.setText(f'{round(float(self.radar_param.sys.frame_duration)*1e3, 2)} ms / ' +  \
+                                                  f'{round(float(self.radar_param.sys.frames_per_second), 2)} fps')
         
         # Range Labels
         self.qt_self.label_range_resolution.setText(f'{round(float(self.radar_param.sys.resolution_range*1e3), 2)} mm')
@@ -174,7 +174,6 @@ class MIRA_GUI_CTRL():
         self.qt_self.label_ramp_slope.setText(f'')
         # self.qt_self.label_chirp_time.setText(f'')
         self.qt_self.label_frame_duration.setText(f'')
-        self.qt_self.label_frames_per_second.setText(f'')
         self.qt_self.label_range_resolution.setText(f'')
         self.qt_self.label_min_range.setText(f'')
         # self.qt_self.label_max_range.setText(f'')
@@ -254,6 +253,7 @@ class MIRA_GUI_CTRL():
         self.qt_self.upper_ampl_limit_slider.setMinimum(upper_min[self.radar_param.sys.curr_plot_ampl_limit])  # Set minimum value
         self.qt_self.upper_ampl_limit_slider.setMaximum(upper_max[self.radar_param.sys.curr_plot_ampl_limit])  # Set maximum value
         self.qt_self.upper_ampl_limit_slider.setTickInterval(upper_tick_interval[self.radar_param.sys.curr_plot_ampl_limit]) 
+        
         return [lower_value, upper_value]
     
     def handle_replay_state(self) -> None:
@@ -371,7 +371,7 @@ class MIRA_GUI_CTRL():
     def set_device_connected(self) -> None:
         if self.radar_param.mon.chip_version_digital_id != '' and \
            self.radar_param.mon.chip_version_rf_id != '':
-            self.qt_self.usb_device_connected_label.setText(f'{self.radar_param.mon.chip_version_digital_id}' + \
+            self.qt_self.usb_device_connected_label.setText(f'{self.radar_param.mon.chip_version_digital_id} | ' + \
                                                             f'{self.radar_param.mon.chip_version_rf_id}')
         else:
             self.qt_self.usb_device_connected_label.setText(f'No Device')
@@ -429,9 +429,9 @@ class MIRA_GUI_CTRL():
            self.tab_name_main_instance_window == 'Waterfall Azimuth' or \
            self.tab_name_main_instance_window == 'Range Doppler Azimuth':  
             self.mira_plotter.range_azimuth.set_transform((0, plot_axis_max_value), 
-                                                          (-90, 90),
-                                                          (self.radar_param.sys.plot_ampl_limit_min[self.radar_param.sys.curr_plot_ampl_limit],
-                                                           self.radar_param.sys.plot_ampl_limit_max[self.radar_param.sys.curr_plot_ampl_limit]),
+                                                          (-90, 90), (0, 100),
+                                                        #   (self.radar_param.sys.plot_ampl_limit_min[self.radar_param.sys.curr_plot_ampl_limit],
+                                                        #    self.radar_param.sys.plot_ampl_limit_max[self.radar_param.sys.curr_plot_ampl_limit]),
                                                           self.qt_self.processed_radar_data['Channel 1'].shape)
         
     def clear_plots(self) -> None:
@@ -480,6 +480,8 @@ class MIRA_GUI_CTRL():
         if self.tab_index_main_instance_window == 0:
             logger.debug(f"Switch to Tab: Time - Index: {self.tab_index_main_instance_window}")
             self.tab_name_main_instance_window = 'Time'
+            self.radar_param.sys.curr_plot_ampl_limit = 0 
+
             if self.tab_index_time == 0:
                 logger.debug("Switch to Tab: Time Raw Data")
                 self.tab_name_time = 'Raw Data'
@@ -533,8 +535,8 @@ class MIRA_GUI_CTRL():
             self.radar_param.sys.curr_plot_ampl_limit = 4 
 
         self.graph_update_flag = False
-        self.reinit_sliders()
-        self.update_processing_parameters()
+        self.get_lower_ampl_limit(value=self.radar_param.sys.plot_ampl_limit_min[self.radar_param.sys.curr_plot_ampl_limit], index=self.radar_param.sys.curr_plot_ampl_limit)
+        self.get_upper_ampl_limit(value=self.radar_param.sys.plot_ampl_limit_max[self.radar_param.sys.curr_plot_ampl_limit], index=self.radar_param.sys.curr_plot_ampl_limit)
         self.get_axis_x()
                 
     def get_axis_x(self):
@@ -662,38 +664,57 @@ class MIRA_GUI_CTRL():
         self.radar_param.meas.recording_n_frames = int(recording_n_frames_text)
     
     def get_lower_ampl_limit(self, value, index: int=-1) -> None:
+        try:
+            self.qt_self.lower_ampl_limit_slider.valueChanged.disconnect(self.get_lower_ampl_limit)
+        except: 
+            pass
+        
         if index == -1:
             try:
-                self.radar_param.sys.plot_ampl_limit_min[self.radar_param.sys.curr_plot_ampl_limit] = int(value) if value else 20 
+                self.radar_param.sys.plot_ampl_limit_min[self.radar_param.sys.curr_plot_ampl_limit] = int(value)
             except ValueError as e:
                 self.radar_param.sys.plot_ampl_limit_min[self.radar_param.sys.curr_plot_ampl_limit] = 20
+            self.reinit_sliders()
+            self.qt_self.lower_ampl_limit_slider.setValue(self.radar_param.sys.plot_ampl_limit_min[self.radar_param.sys.curr_plot_ampl_limit])
+            self.set_color_bar_graphics()
+            self.get_axis_x()
         else:
             try:
-                self.radar_param.sys.plot_ampl_limit_min[index] = int(value) if value else 20 
+                self.radar_param.sys.plot_ampl_limit_min[index] = int(value)
             except ValueError as e:
                 self.radar_param.sys.plot_ampl_limit_min[index] = 20
-        self.reinit_sliders()
-        self.qt_self.lower_ampl_limit_slider.setValue(self.radar_param.sys.plot_ampl_limit_min[self.radar_param.sys.curr_plot_ampl_limit])
+            self.reinit_sliders()
+            self.qt_self.lower_ampl_limit_slider.setValue(self.radar_param.sys.plot_ampl_limit_min[index])
+            self.set_color_bar_graphics()
+            self.get_axis_x()
+        self.qt_self.lower_ampl_limit_slider.valueChanged.connect(self.get_lower_ampl_limit)
         
-        self.set_color_bar_graphics()
-        self.get_axis_x()
-    
+                
     def get_upper_ampl_limit(self, value: int, index: int=-1):
+        try:
+            self.qt_self.upper_ampl_limit_slider.valueChanged.disconnect(self.get_upper_ampl_limit)
+        except:
+            pass
         if index == -1:
             try:
-                self.radar_param.sys.plot_ampl_limit_max[self.radar_param.sys.curr_plot_ampl_limit] = int(value) if value else -100  
+                self.radar_param.sys.plot_ampl_limit_max[self.radar_param.sys.curr_plot_ampl_limit] = int(value)
             except ValueError as e:
                 self.radar_param.sys.plot_ampl_limit_max[self.radar_param.sys.curr_plot_ampl_limit] = -100 
+            self.reinit_sliders()
+            self.qt_self.upper_ampl_limit_slider.setValue(self.radar_param.sys.plot_ampl_limit_max[self.radar_param.sys.curr_plot_ampl_limit])
+            self.set_color_bar_graphics()
+            self.get_axis_x()
         else:
             try:
-                self.radar_param.sys.plot_ampl_limit_max[index] = int(value) if value else -100  
+                self.radar_param.sys.plot_ampl_limit_max[index] = int(value) 
             except ValueError as e:
                 self.radar_param.sys.plot_ampl_limit_max[index] = -100 
-                
-        self.reinit_sliders()
-        self.qt_self.upper_ampl_limit_slider.setValue(self.radar_param.sys.plot_ampl_limit_max[self.radar_param.sys.curr_plot_ampl_limit])
-        self.set_color_bar_graphics()
-        self.get_axis_x()
+            self.reinit_sliders()
+            self.qt_self.upper_ampl_limit_slider.setValue(self.radar_param.sys.plot_ampl_limit_max[index])
+            self.set_color_bar_graphics()
+            self.get_axis_x() 
+        self.qt_self.upper_ampl_limit_slider.valueChanged.connect(self.get_upper_ampl_limit)
+                       
 
     def get_waterfall_time(self) -> None:
         waterfall_time_text = self.qt_self.combo_box_waterfall_time.currentText()
@@ -838,7 +859,6 @@ class MIRA_GUI_CTRL():
     def set_color_bar_graphics(self):
         # Assuming self.qt_self.color_bar_graphics_view is already defined as QGraphicsView somewhere
         graphics_view = self.qt_self.color_bar_graphics_view
-        graphics_view.setWindowTitle('Flipped Color Bar with Linear Scale')
         graphics_view.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
         graphics_view.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
         
@@ -864,7 +884,7 @@ class MIRA_GUI_CTRL():
         colors = np.flipud(colors)
         
         # Normalize positions to [0, 1]
-        normalized_pos = (pos - min_dbfs) / (max_dbfs - min_dbfs)
+        normalized_pos = (pos - min_dbfs) / (max_dbfs - min_dbfs + 1e-12)
         
         # Create a QLinearGradient object for the color bar
         gradient = QLinearGradient(0, 0, 600, 0)  # Set the width to the desired value
@@ -879,13 +899,19 @@ class MIRA_GUI_CTRL():
         scene.addItem(rect_item)
         
         # Add a linear scale below the color bar
-        font = QFont("Arial", 20)  # Define font for the scale
+        font = QFont("Arial", 14)  # Define font for the scale
         scale_height = 20  # Height of the scale area
         for i, position in enumerate(pos):
             # Calculate the horizontal position for each label
             label_x_position = i * 600 / (len(pos) - 1)
             # Create a text item for the scale
-            text_item = QGraphicsTextItem(f"{int(position)} dBFS")
+            if (self.radar_param.sys.curr_plot_ampl_limit == 0 or \
+               self.radar_param.sys.curr_plot_ampl_limit == 1) and (i == 0 or i == 4):
+                text_item = QGraphicsTextItem(f"{int(position)} mV")
+            elif (i == 0 or i == 4):
+                text_item = QGraphicsTextItem(f"{int(position)} dBFS")
+            else:
+                text_item = QGraphicsTextItem(f"{int(position)}")
             text_item.setFont(font)
             text_item.setPos(label_x_position - text_item.boundingRect().width() / 2, 60)  # Center the text
             scene.addItem(text_item)
@@ -953,32 +979,29 @@ def init_gui_window(app_instance, main_instance) -> QtWidgets.QApplication:
     screen = app.primaryScreen()
     rect = screen.geometry()
     width = rect.width()
-    height = rect.height()
 
-    if width <= 2000:
-        font_offset = 0
-    if width >= 2000:
-        font_offset = 4
-    # Create a temporary widget to get the current font settings
-    temp_widget = QtWidgets.QLabel()
-    current_font = temp_widget.font()
-    
-    # Check if the font size is set in points or pixels
-    if current_font.pointSize() > 0:
-        current_font_size = current_font.pointSize()
-    else:
-        current_font_size = current_font.pixelSize()
-    
-    # Adjust the font size by the offset
-    new_font_size = current_font_size + font_offset
-    
-    # Apply the new font size globally
-    app.setStyleSheet(f"QWidget {{ font-size: {new_font_size}pt; }}")
+    # Define font offset based on screen width
+    font_offset = 4 if width <= 2000 else 4
 
+    # Mapping of Qt Widgets to their respective font size offsets
+    widget_font_offsets = {
+        "QWidget": font_offset,
+        "QLabel": font_offset + 4,
+        "QTab": font_offset + 2,
+        "QPushButton": font_offset-3,
+        # Add other widgets and their offsets as needed
+    }
+
+    for widget, offset in widget_font_offsets.items():
+        current_font = getattr(main_instance, 'label_18', QtWidgets.QLabel()).font()  # Fallback to QLabel if 'label_18' is not found
+        current_font_size = current_font.pointSize() if current_font.pointSize() > 0 else current_font.pixelSize()
+        new_font_size = current_font_size + offset
+        app.setStyleSheet(f".{widget} {{ font-size: {new_font_size}pt; }}")
+        
     MIRA_GUI_COLOR_PALETTE_PATH = config.get("MIRA_6024_EVAL_GUI", 
                                              "MIRA_GUI_COLOR_PALETTE_PATH")
-    app.setStyle("Fusion")
     available_styles = QtWidgets.QStyleFactory.keys()
+    app.setStyle("Fusion")
     json_palette = load_palette_from_json(Path(MIRA_GUI_COLOR_PALETTE_PATH))
     palette = create_palette_from_json(json_palette)
     app.setPalette(palette)

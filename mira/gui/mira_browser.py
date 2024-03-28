@@ -2,7 +2,7 @@ import __init__
 import configparser
 from pathlib import Path
 from PyQt5.QtWidgets import QFileDialog
-from mira.rsys.mira_radar_sys import MIRA_RADAR_PARAMETER
+from mira.radar_system.mira_radar_sys import MIRA_RADAR_PARAMETER
 
 class MIRA_BROWSER():
     def __init__(self, qt_self, browser_type: str):
@@ -18,26 +18,27 @@ class MIRA_BROWSER():
                                                  "MIRA_MEAS_PROJECT_NAME")
         MIRA_SESSION_LABEL_NAME = self.config.get("MIRA_SAVE_MEASUREMENT", 
                                                  "MIRA_SESSION_LABEL_NAME")
-        
-        self.qt_self.mira_project_plainTextEdit.setPlainText(MIRA_MEAS_PROJECT_NAME)
+        HEX_FILE_PATH = Path(self.config.get("MIRA_BGT_SETTINGS",
+                                         "MIRA_SENS_CONF_DIR_PATH")).resolve()
+        self.qt_self.mira_project_plainTextEdit.setPlainText(MIRA_MEAS_PROJECT_NAME+f"{self.radar_param.mon.sykno_product_name}")
         self.qt_self.session_label_plainTextEdit.setPlainText(MIRA_SESSION_LABEL_NAME)
         
         if self.browser_type == "bgt_reg_browser":
-            caption="Select BGT-Register for MiRa6024|1A"
-            default_dir = f"./mira/cfg/mira6024_projects/" 
+            caption=f"Select BGT-Register for {self.radar_param.mon.sykno_product_name}"
+            default_dir = HEX_FILE_PATH
             filter = "Text Files (*.txt)"
-            file_path = f"{default_dir}/reg_bgt_default.txt"
+            file_path = f"{default_dir}/Default_{self.radar_param.mon.sykno_product_name}.txt"
             direcotry = "./"
             
         elif self.browser_type == "mira_meas_out_browser":
-            caption="Select Measurement Dicretory MiRa6024|1A"
+            caption=f"Select Measurement Dicretory {self.radar_param.mon.sykno_product_name}"
             default_dir = f"{MIRA_MEASUREMENT_PATH}/{MIRA_MEAS_PROJECT_NAME}"
             filter = None
             file_path = "./mira/meas/hdf5/"
             direcotry = "./mira/meas/hdf5/"
             
         elif self.browser_type == "mira_meas_in_browser":
-            caption="Select MiRa6024|1A Measurement File"
+            caption=f"Select {self.radar_param.mon.sykno_product_name} Measurement File"
             default_dir = f"{MIRA_MEASUREMENT_PATH}/{MIRA_MEAS_PROJECT_NAME}"
             filter = "Text Files (*.hdf5)"
             file_path = f"./mira/meas/hdf5/{MIRA_MEAS_PROJECT_NAME}.hdf5"
@@ -56,21 +57,21 @@ class MIRA_BROWSER():
         MIRA_MEASUREMENT_PATH = self.config.get("MIRA_SAVE_MEASUREMENT", 
                                                 "MIRA_MEASUREMENT_PATH")
         if self.browser_type == "bgt_reg_browser":
-            caption="Select BGT-Register for MiRa6024|1A"
+            caption=f"Select BGT-Register for {self.radar_param.mon.sykno_product_name}"
             default_dir = f"./mira/cfg/mira6024_projects/" 
             filter = "Text Files (*.txt)"
             file_path = f"{default_dir}/{mira_project}.txt"
             direcotry = "./"
             
         elif self.browser_type == "mira_meas_out_browser":
-            caption="Select Measurement Dicretory MiRa6024|1A"
+            caption=f"Select Measurement Dicretory {self.radar_param.mon.sykno_product_name}"
             default_dir = f"{MIRA_MEASUREMENT_PATH}/{mira_project}"
             filter = None
             file_path = "./mira/meas/hdf5/"
             direcotry = "./mira/meas/hdf5/"
             
         elif self.browser_type == "mira_meas_in_browser":
-            caption="Select MiRa6024|1A Measurement File"
+            caption=f"Select {self.radar_param.mon.sykno_product_name} Measurement File"
             default_dir = f"{MIRA_MEASUREMENT_PATH}/{mira_project}"
             filter = "Text Files (*.hdf5)"
             file_path = f"./mira/meas/hdf5/{mira_project}.hdf5"

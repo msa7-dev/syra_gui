@@ -10,11 +10,11 @@ from loguru import logger
 from threading import Thread
 from typing import List, Optional
 from PyQt5 import uic, QtCore, QtWidgets
-from mira.ctrl.mira_ctrl import MIRA_CTRL_GUI
+from mira.control.mira_ctrl import MIRA_CTRL_GUI
 # from mira.com.mira_tcp_client import MIRA_TCP_CLIENT
-from mira.rsys.mira_radar_sys import MIRA_RADAR_PARAMETER
+from mira.radar_system.mira_radar_sys import MIRA_RADAR_PARAMETER
 from mira.gui.mira_gui_ctrl import MIRA_GUI_CTRL, init_gui_window, init_gui_qtwidgets
-from mira.ctrl.mira_multiprocessing import MIRA_MULTIPROCESSOR,distribute_cores_to_process
+from mira.control.mira_multiprocessing import MIRA_MULTIPROCESSOR,distribute_cores_to_process
 
 # ==============================================================================
 # Class Name: MIRA_MAIN_GUI
@@ -66,6 +66,8 @@ class MIRA_MAIN_GUI(QtWidgets.QMainWindow):
         self.gui_controller = MIRA_GUI_CTRL(self, self.radar_param)
         self.gui_controller.update_radar_params()
         self.start_auto_connect()
+        self.gui_version = self.config.get("DEFAULT", "VERSION")
+        self.mira_gui_main_window_down_label.setText(f"Embedded Radar GUI (v{self.gui_version}) | Sykno GmbH")
             
     def mira_gui_main() -> None:
         init_gui_qtwidgets()
@@ -139,6 +141,7 @@ class MIRA_MAIN_GUI(QtWidgets.QMainWindow):
     def auto_connect_device(self) -> None:
         if self.mira_controller is None:
             self.mira_controller = MIRA_CTRL_GUI(self.radar_param)
+            # self.firmware_version_label.setText(f"{self.radar_param.mon.product_usb.split('(')[1].replace(') |', '')}")
         if self.mira_controller.mira_device.mira_bridge.device is None:
             self.mira_controller = None
             return
@@ -167,6 +170,7 @@ class MIRA_MAIN_GUI(QtWidgets.QMainWindow):
             self.fps_timer = None
         
     def connect_tcp_client(self) -> None:
+        return
         if not self.tcp_remote_control_checkBox.isChecked():
             return
         

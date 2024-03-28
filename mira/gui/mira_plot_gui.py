@@ -4,7 +4,7 @@ import configparser
 import pyqtgraph as pg
 from PyQt5 import QtGui
 from PyQt5.QtGui import QColor
-from mira.rsys.mira_radar_sys import MIRA_RADAR_PARAMETER
+from mira.radar_system.mira_radar_sys import MIRA_RADAR_PARAMETER
 
 # ==============================================================================
 # Class Name: MIRA_PLOTTER
