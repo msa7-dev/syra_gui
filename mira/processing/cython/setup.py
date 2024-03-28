@@ -11,8 +11,8 @@ from setuptools import setup, Extension
 module_name = "mira_extract_raw_data"
 
 # Path to the Cython file
-cython_file = f"./mira/proc/cython/{module_name}.pyx"
-output_dir = "./mira/proc/cython/"  
+cython_file = f"./mira/processing/cython/{module_name}.pyx"
+output_dir = "./mira/processing/cython/"  
 # Convert the np.get_include() path to a string
 numpy_include_path = str(Path(np.get_include()).resolve())
 
@@ -35,7 +35,7 @@ files_to_move = glob.glob("./mira_extract_raw_data.*")
 
 # Move each found file to the desired directory
 for file_to_move in files_to_move:
-    destination_path = "./mira/proc/cython"
+    destination_path = "./mira/processing/cython"
     file_name = os.path.basename(file_to_move)
     destination_file_path = os.path.join(destination_path, file_name)
     

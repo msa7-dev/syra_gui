@@ -85,8 +85,8 @@ def build_cython():
     python3 ./mira/proc/cython/setup.py build_ext --inplace
     """
     logger.debug("Building Cython modules...")
-    subprocess.run(['python3', './mira/proc/cython/setup.py', 'build_ext', '--inplace'], check=True)
-    subprocess.run(['python3', './mira/com/cython/setup.py', 'build_ext', '--inplace'], check=True)
+    subprocess.run(['python3', './mira/processing/cython/setup.py', 'build_ext', '--inplace'])
+    subprocess.run(['python3', './mira/communication/cython/setup.py', 'build_ext', '--inplace'])
 
     logger.debug("Successfully build cython modules.")
 
