@@ -6,10 +6,10 @@ import configparser
 import pyqtgraph as pg
 from pathlib import Path
 from loguru import logger
-from PyQt5 import QtWidgets, QtCore, QtGui
+from PyQt5 import QtWidgets, QtCore
 from PyQt5.QtCore import Qt, QSize
 from PyQt5.QtGui import QPalette, QColor
-from PyQt5.QtWidgets import QApplication, QGraphicsView, QGraphicsScene, QGraphicsRectItem, QGraphicsTextItem
+from PyQt5.QtWidgets import QGraphicsScene, QGraphicsRectItem, QGraphicsTextItem
 from PyQt5.QtGui import QLinearGradient, QColor, QBrush, QFont
 from PyQt5.QtCore import QRectF
 
@@ -35,6 +35,8 @@ class MIRA_GUI_CTRL():
         self.meas_out_path_browser = MIRA_BROWSER(self.qt_self, "mira_meas_out_browser")
         self.mira_plotter = MIRA_PLOTTER(self.qt_self)
         self.update_pipeline = MIRA_FUNC_PIPELINE(self.qt_self)
+        self.radar_param.sys.curr_plot_ampl_limit = 0 
+
         self.init_gui_widgets()
         
     def init_gui_widgets(self):
@@ -45,8 +47,6 @@ class MIRA_GUI_CTRL():
         self.init_values_combo_box()
         self.init_connect_buttons()
         self.init_connect_tab()
-        self.init_connect_slider()
-        self.init_silder_values()
         self.init_connect_combo_box()
         self.get_dsp_hp_parameters()
         self.get_window_func()
@@ -63,6 +63,8 @@ class MIRA_GUI_CTRL():
         self.handle_usb_auto_connect_state()
         self.set_mira_session_label()
         self.set_mira_project()
+        self.init_connect_slider()
+        self.init_silder_values()
         self.set_color_bar_graphics()
         
     def update_radar_params(self) -> None:
@@ -141,8 +143,8 @@ class MIRA_GUI_CTRL():
         self.qt_self.label_bandwidth.setText(f'{round(float(self.radar_param.sys.ramp_bandwidth[0] * 1e-9), 2)} GHz')
         self.qt_self.label_ramp_slope.setText(f'{round(float(self.radar_param.sys.ramp_slope[0] * 1e-12), 2)} MHz/µs')
         # self.qt_self.label_chirp_time.setText(f'{round(float(self.radar_param.sys.chirp_time[0]), 2)} ms')
-        self.qt_self.label_frame_duration.setText(f'{round(float(self.radar_param.sys.frame_duration)*1e3, 2)} ms / ' +  \
-                                                  f'{round(float(self.radar_param.sys.frames_per_second), 2)} fps')
+        self.qt_self.label_frame_duration.setText(f'{round(float(self.radar_param.sys.frame_duration)*1e3, 2)} ms ' +  \
+                                                  f'({round(float(self.radar_param.sys.frames_per_second), 1)} fps)')
         
         # Range Labels
         self.qt_self.label_range_resolution.setText(f'{round(float(self.radar_param.sys.resolution_range*1e3), 2)} mm')
@@ -225,12 +227,18 @@ class MIRA_GUI_CTRL():
         self.qt_self.check_box_rf_test_en_rx4.setChecked(False)
 
     def init_silder_values(self):
-
         ret_lower_upper_value = self.reinit_sliders()
-
         for i in range(len(self.radar_param.sys.plot_ampl_limit_max)):
-            self.get_lower_ampl_limit(value=ret_lower_upper_value[0][i], index=i)
-            self.get_upper_ampl_limit(value=ret_lower_upper_value[1][i], index=i)
+            self.radar_param.sys.plot_ampl_limit_min[i] = ret_lower_upper_value[0][i] 
+            self.radar_param.sys.plot_ampl_limit_max[i] = ret_lower_upper_value[1][i]
+            self.qt_self.lower_ampl_limit_slider.setValue(self.radar_param.sys.plot_ampl_limit_min[i])
+            self.qt_self.upper_ampl_limit_slider.setValue(self.radar_param.sys.plot_ampl_limit_max[i])
+
+        self.get_lower_ampl_limit(value=self.radar_param.sys.plot_ampl_limit_min[self.radar_param.sys.curr_plot_ampl_limit], 
+                                  index=self.radar_param.sys.curr_plot_ampl_limit)
+        
+        self.get_upper_ampl_limit(value=self.radar_param.sys.plot_ampl_limit_max[self.radar_param.sys.curr_plot_ampl_limit], 
+                                  index=self.radar_param.sys.curr_plot_ampl_limit)
 
     def reinit_sliders(self):
         def parse_list(config, section, option):
@@ -245,15 +253,24 @@ class MIRA_GUI_CTRL():
         upper_max = parse_list(self.config, 'AMPLITUDE_LIMITS', 'UPPER_MAX')
         upper_value = parse_list(self.config, 'AMPLITUDE_LIMITS', 'UPPER_VALUE')
         upper_tick_interval = parse_list(self.config, 'AMPLITUDE_LIMITS', 'UPPER_TICK_INTERVAL')
-        
+
         self.qt_self.lower_ampl_limit_slider.setMinimum(lower_min[self.radar_param.sys.curr_plot_ampl_limit])  # Set minimum value
-        self.qt_self.lower_ampl_limit_slider.setMaximum(lower_max[self.radar_param.sys.curr_plot_ampl_limit])  # Set maximum value
-        self.qt_self.lower_ampl_limit_slider.setTickInterval(lower_tick_interval[self.radar_param.sys.curr_plot_ampl_limit])
-        
         self.qt_self.upper_ampl_limit_slider.setMinimum(upper_min[self.radar_param.sys.curr_plot_ampl_limit])  # Set minimum value
-        self.qt_self.upper_ampl_limit_slider.setMaximum(upper_max[self.radar_param.sys.curr_plot_ampl_limit])  # Set maximum value
-        self.qt_self.upper_ampl_limit_slider.setTickInterval(upper_tick_interval[self.radar_param.sys.curr_plot_ampl_limit]) 
         
+        self.qt_self.lower_ampl_limit_slider.setMaximum(lower_max[self.radar_param.sys.curr_plot_ampl_limit])  # Set maximum value
+        self.qt_self.upper_ampl_limit_slider.setMaximum(upper_max[self.radar_param.sys.curr_plot_ampl_limit])  # Set maximum value
+        
+        self.qt_self.lower_ampl_limit_slider.setTickInterval(lower_tick_interval[self.radar_param.sys.curr_plot_ampl_limit])
+        self.qt_self.upper_ampl_limit_slider.setTickInterval(upper_tick_interval[self.radar_param.sys.curr_plot_ampl_limit]) 
+
+        self.qt_self.lower_ampl_limit_slider.setValue(lower_value[self.radar_param.sys.curr_plot_ampl_limit])
+        self.qt_self.upper_ampl_limit_slider.setValue(upper_value[self.radar_param.sys.curr_plot_ampl_limit])
+        
+        try:
+            self.qt_self.lower_ampl_limit_slider.valueChanged.connect(self.get_lower_slider_value)
+            self.qt_self.upper_ampl_limit_slider.valueChanged.connect(self.get_upper_slider_value)
+        except:
+            pass
         return [lower_value, upper_value]
     
     def handle_replay_state(self) -> None:
@@ -367,8 +384,8 @@ class MIRA_GUI_CTRL():
         self.qt_self.check_box_rf_test_en_rx4.stateChanged.connect(self.get_rf_test_mode)
         
     def init_connect_slider(self):
-        self.qt_self.lower_ampl_limit_slider.valueChanged.connect(self.get_lower_ampl_limit)
-        self.qt_self.upper_ampl_limit_slider.valueChanged.connect(self.get_upper_ampl_limit)
+        self.qt_self.lower_ampl_limit_slider.valueChanged.connect(self.get_lower_slider_value)
+        self.qt_self.upper_ampl_limit_slider.valueChanged.connect(self.get_upper_slider_value)
 
     def set_device_connected(self) -> None:
         if self.radar_param.mon.chip_version_digital_id != '' and \
@@ -483,7 +500,6 @@ class MIRA_GUI_CTRL():
         if self.tab_index_main_instance_window == 0:
             logger.debug(f"Switch to Tab: Time - Index: {self.tab_index_main_instance_window}")
             self.tab_name_main_instance_window = 'Time'
-            self.radar_param.sys.curr_plot_ampl_limit = 0 
 
             if self.tab_index_time == 0:
                 logger.debug("Switch to Tab: Time Raw Data")
@@ -538,8 +554,12 @@ class MIRA_GUI_CTRL():
             self.radar_param.sys.curr_plot_ampl_limit = 4 
 
         self.graph_update_flag = False
-        self.get_lower_ampl_limit(value=self.radar_param.sys.plot_ampl_limit_min[self.radar_param.sys.curr_plot_ampl_limit], index=self.radar_param.sys.curr_plot_ampl_limit)
-        self.get_upper_ampl_limit(value=self.radar_param.sys.plot_ampl_limit_max[self.radar_param.sys.curr_plot_ampl_limit], index=self.radar_param.sys.curr_plot_ampl_limit)
+        self.reinit_sliders()
+        self.get_lower_ampl_limit(value=self.radar_param.sys.plot_ampl_limit_min[self.radar_param.sys.curr_plot_ampl_limit], 
+                                  index=self.radar_param.sys.curr_plot_ampl_limit)
+        
+        self.get_upper_ampl_limit(value=self.radar_param.sys.plot_ampl_limit_max[self.radar_param.sys.curr_plot_ampl_limit], 
+                                  index=self.radar_param.sys.curr_plot_ampl_limit)
         self.get_axis_x()
                 
     def get_axis_x(self):
@@ -566,8 +586,6 @@ class MIRA_GUI_CTRL():
                 
             self.fft_axis = self.mira_plotter.calc_plot_axis()['range_axis'] 
             self.get_max_axis_x()
-            # self.qt_self.plot_spectrum.setYRange(self.radar_param.sys.plot_ampl_limit_min[self.radar_param.sys.curr_plot_ampl_limit],
-                                                #  self.radar_param.sys.plot_ampl_limit_max[self.radar_param.sys.curr_plot_ampl_limit])
             
     def get_max_axis_x(self):
         self.curr_select_axis_x = self.qt_self.combo_box_select_axis_x.currentText()
@@ -666,57 +684,31 @@ class MIRA_GUI_CTRL():
             recording_n_frames_text = 0
         self.radar_param.meas.recording_n_frames = int(recording_n_frames_text)
     
+    def get_lower_slider_value(self, value):
+        self.radar_param.sys.plot_ampl_limit_min[self.radar_param.sys.curr_plot_ampl_limit] = int(value)
+        self.set_color_bar_graphics()
+        self.get_axis_x()
+
     def get_lower_ampl_limit(self, value, index: int=-1) -> None:
-        try:
-            self.qt_self.lower_ampl_limit_slider.valueChanged.disconnect(self.get_lower_ampl_limit)
-        except: 
-            pass
-        
-        if index == -1:
-            try:
-                self.radar_param.sys.plot_ampl_limit_min[self.radar_param.sys.curr_plot_ampl_limit] = int(value)
-            except ValueError as e:
-                self.radar_param.sys.plot_ampl_limit_min[self.radar_param.sys.curr_plot_ampl_limit] = 20
-            self.reinit_sliders()
-            self.qt_self.lower_ampl_limit_slider.setValue(self.radar_param.sys.plot_ampl_limit_min[self.radar_param.sys.curr_plot_ampl_limit])
-            self.set_color_bar_graphics()
-            self.get_axis_x()
-        else:
-            try:
-                self.radar_param.sys.plot_ampl_limit_min[index] = int(value)
-            except ValueError as e:
-                self.radar_param.sys.plot_ampl_limit_min[index] = 20
-            self.reinit_sliders()
+        self.radar_param.sys.plot_ampl_limit_min[index] = int(value)
+        print(self.radar_param.sys.plot_ampl_limit_min, int(value))
+        if index != -1:
             self.qt_self.lower_ampl_limit_slider.setValue(self.radar_param.sys.plot_ampl_limit_min[index])
             self.set_color_bar_graphics()
             self.get_axis_x()
-        self.qt_self.lower_ampl_limit_slider.valueChanged.connect(self.get_lower_ampl_limit)
         
-                
+    def get_upper_slider_value(self, value):
+        self.radar_param.sys.plot_ampl_limit_max[self.radar_param.sys.curr_plot_ampl_limit] = int(value)
+        self.set_color_bar_graphics()
+        self.get_axis_x()
+
     def get_upper_ampl_limit(self, value: int, index: int=-1):
-        try:
-            self.qt_self.upper_ampl_limit_slider.valueChanged.disconnect(self.get_upper_ampl_limit)
-        except:
-            pass
-        if index == -1:
-            try:
-                self.radar_param.sys.plot_ampl_limit_max[self.radar_param.sys.curr_plot_ampl_limit] = int(value)
-            except ValueError as e:
-                self.radar_param.sys.plot_ampl_limit_max[self.radar_param.sys.curr_plot_ampl_limit] = -100 
-            self.reinit_sliders()
-            self.qt_self.upper_ampl_limit_slider.setValue(self.radar_param.sys.plot_ampl_limit_max[self.radar_param.sys.curr_plot_ampl_limit])
-            self.set_color_bar_graphics()
-            self.get_axis_x()
-        else:
-            try:
-                self.radar_param.sys.plot_ampl_limit_max[index] = int(value) 
-            except ValueError as e:
-                self.radar_param.sys.plot_ampl_limit_max[index] = -100 
-            self.reinit_sliders()
+        self.radar_param.sys.plot_ampl_limit_max[index] = int(value)
+        print(self.radar_param.sys.plot_ampl_limit_max, int(value))
+        if index != -1:
             self.qt_self.upper_ampl_limit_slider.setValue(self.radar_param.sys.plot_ampl_limit_max[index])
             self.set_color_bar_graphics()
             self.get_axis_x() 
-        self.qt_self.upper_ampl_limit_slider.valueChanged.connect(self.get_upper_ampl_limit)
                        
 
     def get_waterfall_time(self) -> None:
