@@ -206,28 +206,23 @@ class MIRA_USB_SPI_BRIDGE():
         current_process.nice(MIRA_PROCESS_PRIO)
         setproctitle.setproctitle("Sykno - MiRa Eval GUI - Data Acquisition Process")
 
-        USB_SPI_BRIDGE_TIMEOUT = np.uint32(self.config.get("MIRA_USB_SPI_BRIDGE", 
-                                                           "USB_SPI_BRIDGE_TIMEOUT"))
         USB_SPI_BRIDGE_DATA_ALLOCATION = np.uint32(self.config.get("MIRA_USB_SPI_BRIDGE", 
                                                                    "USB_SPI_BRIDGE_DATA_ALLOCATION")) 
         DATA_ALLOCATION = np.uint32(USB_SPI_BRIDGE_DATA_ALLOCATION+self.radar_param.sys.n_fifo_overhead*9)
 
         raw_data = np.zeros(1,)
         while not process_stop_event.is_set():
-            # self.usb_device_available.get_lock().acquire(block=False)
             usb.util.release_interface(self.device, self.interface)
             try:
-                raw_data = np.array(self.endpoint_in.read(DATA_ALLOCATION, 
+                raw_data = np.asarray(self.endpoint_in.read(DATA_ALLOCATION, 
                                                       timeout=0),
                                                       dtype=np.uint8)
             except:
                 continue
-            
             usb.util.release_interface(self.device, self.interface)
 
             if raw_data.shape == (DATA_ALLOCATION,):
                 usb_extraction_data_queue.put(raw_data)
-            # self.usb_device_available.get_lock().release()
 
 
 

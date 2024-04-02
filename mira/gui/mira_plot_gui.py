@@ -492,23 +492,19 @@ class RANGE_AZIMUTH_PLOTTER():
         self.plotlines[f'{index}'] = plotline        
         self.plots[f"{index}"] = plot
 
-
     def configure_axis(self, plot):
-        for axis_position in ["bottom", "left"]:
-            axis = plot.getAxis(axis_position)
-            axis.label.setFont(self.plot_config.axis_numbers_font)
-            axis.setPen(self.plot_config.plot_text_color)
-            axis.setTextPen(self.plot_config.plot_text_color)
-            axis.setTickFont(self.plot_config.axis_numbers_font)
-            axis.setStyle(tickTextOffset=self.plot_config.axis_label_offset)
-
-        plot.setLabels(bottom="Azimuth Angle in Degree")
+        # Hide the left axis entirely
+        plot.hideAxis('left')
         
-        if self.radar_param.sys.curr_select_axis_unit == 'freq':
-            plot.setLabel("left", "Frequency in kHz")
-        else:
-            plot.setLabel("left", "Range in m")
-            
+        # Configure only the bottom axis
+        axis = plot.getAxis("bottom")
+        axis.label.setFont(self.plot_config.axis_numbers_font)
+        axis.setPen(self.plot_config.plot_text_color)
+        axis.setTextPen(self.plot_config.plot_text_color)
+        axis.setTickFont(self.plot_config.axis_numbers_font)
+        axis.setStyle(tickTextOffset=self.plot_config.axis_label_offset)
+        plot.setLabels(bottom="Azimuth Angle in Degree")
+
     def set_plot_limits(self,
                         x_min_max: tuple,
                         y_min_max: tuple,
@@ -541,3 +537,4 @@ class RANGE_AZIMUTH_PLOTTER():
             self.plotlines[f"{index}"].clear()
             self.plots[f"{index}"].clear()
             self.create_range_azimuth_plot(plot, title, index)
+

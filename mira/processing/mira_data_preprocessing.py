@@ -1,5 +1,6 @@
 import __init__
 import numpy as np
+from numba import jit, njit, vectorize
 from scipy.signal import butter, filtfilt, sosfiltfilt
 from mira.radar_system.mira_radar_sys import MIRA_RADAR_PARAMETER
 
@@ -58,7 +59,7 @@ class MIRA_DATA_PREPROCESSOR():
             window = np.ones(num_samples)
             
         self.window = np.array(window, dtype=np.float32)
-
+    
     def _window_channels(self, ch_data: np.ndarray) -> np.ndarray:
         reshaped_window = self.window.reshape((-1,) + (1,) * (ch_data.ndim - 1))
         return np.array(ch_data * reshaped_window, dtype=np.float32)
@@ -87,6 +88,7 @@ class MIRA_DATA_PREPROCESSOR():
             return filtfilt(self.dsp_hp_b_coef, self.dsp_hp_a_coef, ch_data, axis=0).astype(np.float32)
         elif self.hp_filtering_flag == 'sos':
             return sosfiltfilt(self.dsp_hp_sos_coef, ch_data, axis=0).astype(np.float32)
+
 
     def preprocess_channels(self, ch_data: np.ndarray) -> np.ndarray:
         scaled_data = np.array(np.divide(ch_data, (np.power(2, 12)-1))*1200, dtype=np.float32)

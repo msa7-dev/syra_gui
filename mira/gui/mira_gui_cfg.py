@@ -153,7 +153,7 @@ class MIRA_WIDGET_VALUES():
                                  '1200 kHz', '1200 kHz', '1300 kHz',
                                  '1400 kHz', '1500 kHz']
         
-        self.rf_antenna_combo_box_list = ['RF-Antenna Type 1', 'RF-Antenna Type 2']
+        self.rf_antenna_combo_box_list = ['Antenna type 1', 'Antenna type 2']
         
         self.gui_fps_list = ['10', '1', '5', '10', '15', '20', '25',
                              '30', '35', '40', '45', '50', '55', '60']

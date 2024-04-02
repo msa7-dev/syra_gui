@@ -7,7 +7,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>2046</width>
+    <width>1920</width>
     <height>1717</height>
    </rect>
   </property>
@@ -638,7 +638,7 @@
          </font>
         </property>
         <property name="currentIndex">
-         <number>2</number>
+         <number>1</number>
         </property>
         <widget class="QWidget" name="tab_6">
          <attribute name="title">
@@ -2104,6 +2104,12 @@
                   <verstretch>0</verstretch>
                  </sizepolicy>
                 </property>
+                <property name="maximumSize">
+                 <size>
+                  <width>75</width>
+                  <height>25</height>
+                 </size>
+                </property>
                 <property name="font">
                  <font>
                   <pointsize>6</pointsize>
@@ -2111,6 +2117,12 @@
                 </property>
                 <property name="text">
                  <string>RX1</string>
+                </property>
+                <property name="iconSize">
+                 <size>
+                  <width>2</width>
+                  <height>2</height>
+                 </size>
                 </property>
                </widget>
               </item>
@@ -2140,6 +2152,12 @@
                   <verstretch>0</verstretch>
                  </sizepolicy>
                 </property>
+                <property name="maximumSize">
+                 <size>
+                  <width>75</width>
+                  <height>25</height>
+                 </size>
+                </property>
                 <property name="font">
                  <font>
                   <pointsize>6</pointsize>
@@ -2147,6 +2165,12 @@
                 </property>
                 <property name="text">
                  <string>RX2</string>
+                </property>
+                <property name="iconSize">
+                 <size>
+                  <width>2</width>
+                  <height>2</height>
+                 </size>
                 </property>
                </widget>
               </item>
@@ -2180,6 +2204,12 @@
                   <verstretch>0</verstretch>
                  </sizepolicy>
                 </property>
+                <property name="maximumSize">
+                 <size>
+                  <width>75</width>
+                  <height>25</height>
+                 </size>
+                </property>
                 <property name="font">
                  <font>
                   <pointsize>6</pointsize>
@@ -2187,6 +2217,12 @@
                 </property>
                 <property name="text">
                  <string>RX3</string>
+                </property>
+                <property name="iconSize">
+                 <size>
+                  <width>2</width>
+                  <height>2</height>
+                 </size>
                 </property>
                </widget>
               </item>
@@ -2216,6 +2252,12 @@
                   <verstretch>0</verstretch>
                  </sizepolicy>
                 </property>
+                <property name="maximumSize">
+                 <size>
+                  <width>75</width>
+                  <height>25</height>
+                 </size>
+                </property>
                 <property name="font">
                  <font>
                   <pointsize>6</pointsize>
@@ -2223,6 +2265,12 @@
                 </property>
                 <property name="text">
                  <string>RX4</string>
+                </property>
+                <property name="iconSize">
+                 <size>
+                  <width>2</width>
+                  <height>2</height>
+                 </size>
                 </property>
                </widget>
               </item>
@@ -2256,6 +2304,12 @@
                   <verstretch>0</verstretch>
                  </sizepolicy>
                 </property>
+                <property name="maximumSize">
+                 <size>
+                  <width>75</width>
+                  <height>25</height>
+                 </size>
+                </property>
                 <property name="font">
                  <font>
                   <pointsize>6</pointsize>
@@ -2263,6 +2317,12 @@
                 </property>
                 <property name="text">
                  <string>TX1</string>
+                </property>
+                <property name="iconSize">
+                 <size>
+                  <width>2</width>
+                  <height>2</height>
+                 </size>
                 </property>
                </widget>
               </item>
@@ -2292,6 +2352,12 @@
                   <verstretch>0</verstretch>
                  </sizepolicy>
                 </property>
+                <property name="maximumSize">
+                 <size>
+                  <width>75</width>
+                  <height>25</height>
+                 </size>
+                </property>
                 <property name="font">
                  <font>
                   <pointsize>6</pointsize>
@@ -2299,6 +2365,12 @@
                 </property>
                 <property name="text">
                  <string>TX2</string>
+                </property>
+                <property name="iconSize">
+                 <size>
+                  <width>2</width>
+                  <height>2</height>
+                 </size>
                 </property>
                </widget>
               </item>
@@ -3330,7 +3402,7 @@
             <item>
              <widget class="QLabel" name="label_49">
               <property name="text">
-               <string>Select Antenna Type:</string>
+               <string>Select antenna type:</string>
               </property>
              </widget>
             </item>

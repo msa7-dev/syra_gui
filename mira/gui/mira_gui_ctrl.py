@@ -6,7 +6,7 @@ import configparser
 import pyqtgraph as pg
 from pathlib import Path
 from loguru import logger
-from PyQt5 import QtWidgets, QtCore
+from PyQt5 import QtWidgets, QtCore, QtGui
 from PyQt5.QtCore import Qt, QSize
 from PyQt5.QtGui import QPalette, QColor
 from PyQt5.QtWidgets import QApplication, QGraphicsView, QGraphicsScene, QGraphicsRectItem, QGraphicsTextItem
@@ -292,6 +292,8 @@ class MIRA_GUI_CTRL():
             self.qt_self.combo_box_recording_n_frames.setDisabled(True)
             self.qt_self.combo_box_repeat_recording_n.setDisabled(True)
             self.qt_self.headless_recording_check_box.setDisabled(True)
+            self.radar_param.meas.measurement_flag = 0
+            self.radar_param.rply.replay_flag = 0
     
     def handle_usb_auto_connect_state(self) -> None:
         if self.qt_self.usb_auto_connect_checkBox.isChecked():
@@ -847,7 +849,7 @@ class MIRA_GUI_CTRL():
         self.update_processing_parameters()
     
     def get_rf_antenna(self) -> None:
-        self.radar_param.sys.rf_antenna = int(self.qt_self.combo_box_rf_antenna.currentText().split('Type ')[1]) - 1
+        self.radar_param.sys.rf_antenna = int(self.qt_self.combo_box_rf_antenna.currentText().split(' ')[2]) - 1
         self.update_processing_parameters()
     
     def update_processing_parameters(self):
@@ -973,20 +975,41 @@ def init_gui_qtwidgets() -> None:
     pg.setConfigOptions(useOpenGL=True, antialias=True)
     QtWidgets.QApplication.setAttribute(Qt.AA_EnableHighDpiScaling, True)  # Enable high-DPI scaling
     QtWidgets.QApplication.setAttribute(Qt.AA_UseHighDpiPixmaps, True)  # Use high-DPI icons    
-    QtWidgets.QApplication.setHighDpiScaleFactorRoundingPolicy(
-        QtCore.Qt.HighDpiScaleFactorRoundingPolicy.PassThrough,)
+    # QtWidgets.QApplication.setHighDpiScaleFactorRoundingPolicy(
+        # QtCore.Qt.HighDpiScaleFactorRoundingPolicy.PassThrough,)
     
 def init_gui_window(app_instance, main_instance) -> QtWidgets.QApplication:
+    app = app_instance
+    base_font = QtGui.QFont("Arial", 20)  # Example: Arial, 10pt
+    app.setFont(base_font)
     config = configparser.ConfigParser()
     config.read(__init__.MIRA_SYS_CONFIG_PATH)
     
-    app = app_instance
     screen = app.primaryScreen()
     rect = screen.geometry()
     width = rect.width()
+    
+    checkbox_style = "QCheckBox::indicator { width: 0px; height: 0px; }"
+    # Iterate over all widgets in the application
+    for widget in app_instance.findChildren(QtWidgets.QWidget):
+        # Check if the widget is a checkbox
+        if isinstance(widget, QtWidgets.QCheckBox):
+            # Apply the CSS style to the checkbox
+            widget.setStyleSheet(checkbox_style)
+    
+    available_styles = QtWidgets.QStyleFactory.keys()
+    # app.setStyle("Fusion")
+    
+    MIRA_GUI_COLOR_PALETTE_PATH = config.get("MIRA_6024_EVAL_GUI", 
+                                         "MIRA_GUI_COLOR_PALETTE_PATH")
+    
+    json_palette = load_palette_from_json(Path(MIRA_GUI_COLOR_PALETTE_PATH))
+    palette = create_palette_from_json(json_palette)
+    app.setPalette(palette)
+    
 
     # Define font offset based on screen width
-    font_offset = 4 if width <= 2000 else 4
+    font_offset = 1 if width <= 2000 else 4
 
     # Mapping of Qt Widgets to their respective font size offsets
     widget_font_offsets = {
@@ -1002,15 +1025,7 @@ def init_gui_window(app_instance, main_instance) -> QtWidgets.QApplication:
         current_font_size = current_font.pointSize() if current_font.pointSize() > 0 else current_font.pixelSize()
         new_font_size = current_font_size + offset
         app.setStyleSheet(f".{widget} {{ font-size: {new_font_size}pt; }}")
-        
-    MIRA_GUI_COLOR_PALETTE_PATH = config.get("MIRA_6024_EVAL_GUI", 
-                                             "MIRA_GUI_COLOR_PALETTE_PATH")
-    available_styles = QtWidgets.QStyleFactory.keys()
-    app.setStyle("Fusion")
-    json_palette = load_palette_from_json(Path(MIRA_GUI_COLOR_PALETTE_PATH))
-    palette = create_palette_from_json(json_palette)
-    app.setPalette(palette)
-    
+            
     MIRA_GUI_SCREEN_SIZE_MIN = config.get("MIRA_6024_EVAL_GUI", 
                                         "MIRA_GUI_SCREEN_SIZE_MIN")
     MIRA_GUI_SCREEN_SIZE_MIN = tuple(int(part.strip()) 

@@ -6,6 +6,7 @@ import numpy as np
 import configparser
 import setproctitle
 import multiprocessing
+from numba import jit, njit, vectorize
 from pathlib import Path
 from typing import Any, Callable, Dict, List
 from scipy.interpolate import griddata
@@ -35,7 +36,8 @@ class MIRA_DATA_PROCESSOR():
                                       self._prepare_time_output_format,
                                       self._move_data_to_gui_queue],
             'Spectrum':              [self.data_preprocessor.preprocess_channels,
-                                      self._calc_rfft_channels,
+                                    #   self._calc_rfft_channels,
+                                      self._calc_rfft_channels_njit_wrapper,
                                       self._prepare_spectrum_output_format,
                                       self._move_data_to_gui_queue],
             'Waterfall Spectrogram': [self.data_preprocessor.preprocess_channels, 
@@ -109,7 +111,7 @@ class MIRA_DATA_PROCESSOR():
         self.rf_antenna = MIRA6024_RF_ANTENNA()
         while not process_stop_event.is_set():
             if not extracted_processing_data_queue.empty():
-                radar_data = np.array(extracted_processing_data_queue.get(), dtype=np.uint16)
+                radar_data = np.asarray(extracted_processing_data_queue.get(), dtype=np.uint16)
             else:
                 time.sleep(750e-6) # wait 250us << processing time of data_extracting()
                 continue
@@ -156,25 +158,24 @@ class MIRA_DATA_PROCESSOR():
                        preprocessing: bool=False,
                        output_mean: bool=False) -> np.ndarray:
         if preprocessing and output_mean:
-            return np.mean(np.array(self.data_preprocessor.preprocess_channels(raw_radar_data_cube), 
+            return np.mean(np.asarray(self.data_preprocessor.preprocess_channels(raw_radar_data_cube), 
                                     dtype=np.float32),
                            axis=3, dtype=np.float32)
         elif preprocessing and not output_mean:
-            return np.array(self.data_preprocessor.preprocess_channels(raw_radar_data_cube), dtype=np.float32)
+            return np.asarray(self.data_preprocessor.preprocess_channels(raw_radar_data_cube), dtype=np.float32)
         elif not preprocessing and output_mean:
-            return np.mean(np.array((np.divide(raw_radar_data_cube, np.power(2, 12)-1) * 1200), dtype=np.float32), axis=3, dtype=np.float32)
+            return np.mean(np.asarray((np.divide(raw_radar_data_cube, np.power(2, 12)-1) * 1200), dtype=np.float32), axis=3, dtype=np.float32)
         elif not preprocessing and not output_mean:
-            return np.array((np.divide(raw_radar_data_cube, np.power(2, 12)-1) * 1200), dtype=np.float32)
+            return np.asarray((np.divide(raw_radar_data_cube, np.power(2, 12)-1) * 1200), dtype=np.float32)
     
     def _scale_raw_data(self, raw_radar_data_cube: np.ndarray) -> np.ndarray:
         if self.time_tab_index == 'DSP Output':
-            return np.mean(np.array(self.data_preprocessor.preprocess_channels(raw_radar_data_cube), 
+            return np.mean(np.asarray(self.data_preprocessor.preprocess_channels(raw_radar_data_cube), 
                                     dtype=np.float32),
                            axis=2, dtype=np.float32)
         elif self.time_tab_index == 'Raw Data':
-            return np.array((np.divide(raw_radar_data_cube, np.power(2, 12)-1) * 1200), dtype=np.float32)[:,:,0]
+            return np.asarray((np.divide(raw_radar_data_cube, np.power(2, 12)-1) * 1200), dtype=np.float32)[:,:,0]
 
-            
     def _prepare_time_output_format(self, data: np.ndarray) ->  dict:
         if sum(self.radar_param.sys.n_active_shape) == 1:
             return {'Channel 1': data[:, 0:4],
@@ -183,12 +184,15 @@ class MIRA_DATA_PROCESSOR():
             return {'Channel 1': data[:, 0:4],
                     'Channel 2': data[:, 4:8]}
 
+    def _calc_rfft_channels_njit_wrapper(self, ch_data: np.ndarray) -> np.ndarray:
+        return _calc_rfft_channels_njit(ch_data, self.padding_len)
+        
     def _calc_rfft_channels(self, ch_data: np.ndarray) -> np.ndarray:
-        return np.array(20*np.log10(np.abs(
+        return np.asarray(20*np.log10(np.abs(
                          np.fft.rfft(ch_data*1e-3,
                               n=(ch_data.shape[0]+self.padding_len)-1,
                               axis=0)) + np.finfo(float).eps), dtype=np.float32)
-        
+    
     def _prepare_spectrum_output_format(self, ch_data: np.ndarray) -> dict:
         if sum(self.radar_param.sys.n_active_shape) == 1:
             return {'Channel 1': np.mean(ch_data[:, 0:4,:], axis=2, dtype=np.float32),
@@ -234,12 +238,12 @@ class MIRA_DATA_PROCESSOR():
                                               self.spectogram_map[0:self.n_frames_spectrogram-1,:,:]),
                                              axis=0, dtype=np.float32) 
 
-        return np.array(self.spectogram_map, dtype=np.float32)
+        return np.asarray(self.spectogram_map, dtype=np.float32)
 
     def _prepare_spectrogram_output_format(self, ch_data: np.ndarray) -> dict:
         if self.main_tab_index == 'Waterfall Spectrogram':
             return {'Channel 1': ch_data[:,:], 'Channel 2': np.zeros((1,1,1), dtype=np.float32)}
-        
+    
     def _calc_range_doppler(self, ch_data: np.ndarray) -> np.ndarray:
         ch_data = ch_data.transpose(2, 0, 1)
         if self.range_doppler_tab_index == 'TX1' or \
@@ -249,7 +253,7 @@ class MIRA_DATA_PROCESSOR():
             ch_data = ch_data[:,:,4:8]
         
         n_samples = ch_data.shape[1]
-        ch_fft_range = np.fft.rfft(ch_data, n=n_samples+self.padding_len-1, axis=1)
+        ch_fft_range = np.fft.rfft(ch_data, n=n_samples+self.padding_len-1, axis=1)    
         
         hanning_window = np.hanning(ch_data.shape[0])
 
@@ -261,7 +265,7 @@ class MIRA_DATA_PROCESSOR():
 
         range_doppler =  (20*np.log10(np.abs(np.fft.fftshift(ch_fft_distance, axes=0)) \
                         + np.finfo(float).eps)).astype(np.float32)
-        
+            
         if self.max_value_type == 'range':
             self.range_doppler_map = (range_doppler[0:range_doppler.shape[0],
                                                     0:int(self.max_value/(self.radar_param.sys.max_range
@@ -269,16 +273,16 @@ class MIRA_DATA_PROCESSOR():
         elif self.max_value_type == 'freq':
             self.range_doppler_map = (range_doppler[0:range_doppler.shape[0],:,:])
                 
-        return np.array(self.range_doppler_map, dtype=np.float32)
+        return np.asarray(self.range_doppler_map, dtype=np.float32)
     
     def _prepare_range_doppler_output_format(self, ch_data: np.ndarray) -> dict:
         if self.main_tab_index == 'Range Doppler':
             return {'Channel 1': ch_data, 'Channel 2': np.zeros((1,1,1), dtype=np.float32)}
 
-    def transform_range_azimuth_to_half_circle(self, range_azimuth_map):
+    def transform_range_azimuth_to_half_circle(self, range_azimuth_map, data_cube_shape):
         
-        num_ranges, num_azimuths = range_azimuth_map.shape
-        if self.prev_range_azimuth_shape != range_azimuth_map.shape:
+        if self.prev_range_azimuth_shape != data_cube_shape:
+            num_ranges, num_azimuths = range_azimuth_map.shape
             ranges = np.linspace(0, 1, num_ranges)  # Normalize range to [0, 1] for simplicity
             azimuths = np.linspace(-90, 90, num_azimuths)  # Azimuth angles from -90 to 90 degrees
             # Create a grid in polar coordinates
@@ -289,38 +293,38 @@ class MIRA_DATA_PROCESSOR():
             x = r * np.sin(az)
             y = r * np.cos(az)  # This will orient the half-circle with the flat side up
             # Create the Cartesian output grid
-            grid_x, grid_y = np.mgrid[
+            self.grid_x, self.grid_y = np.mgrid[
                 np.min(x):np.max(x):complex(num_ranges), 
                 np.min(y):np.max(y):complex(num_azimuths)
             ]
-
-        # Flatten the arrays for interpolation
-        points = np.vstack((x.flatten(), y.flatten())).T
+            # Flatten the arrays for interpolation
+            self.points = np.vstack((x.flatten(), y.flatten())).T
+            self.prev_range_azimuth_shape = data_cube_shape
+            
         values = range_azimuth_map.flatten()
         # Interpolate the data onto the Cartesian grid
-        cartesian_map = griddata(points, values, (grid_x, grid_y), method='nearest', fill_value=0)
+        cartesian_map = griddata(self.points, values, (self.grid_x, self.grid_y), method='linear', fill_value=np.nan)
 
         return cartesian_map 
 
-    
     def _calc_range_azimuth(self, processed_data_cube: np.ndarray) -> np.ndarray:
         processed_data_cube_fft = np.fft.rfft(processed_data_cube, n=processed_data_cube.shape[0]+self.padding_len-1, axis=0)
-        data_cube = np.array(np.mean(processed_data_cube_fft, axis=2), dtype=np.complex64)
+        data_cube = np.asarray(np.mean(processed_data_cube_fft, axis=2), dtype=np.complex64)
         
         if self.prev_range_azimuth_shape != data_cube.shape:
-            az = np.deg2rad(np.linspace(-90,90,int(18*4+1)))
-            k = 2 * np.pi / self.radar_param.sys.lambda_freq[0]
-            lambda0 = self.radar_param.sys.lambda_freq[0]
+            self.az = np.deg2rad(np.linspace(-90,90,int(18*4+1)))
+            self.k = 2 * np.pi / self.radar_param.sys.lambda_freq[0]
+            self.lambda0 = self.radar_param.sys.lambda_freq[0]
             
-            self.virtuel_array = np.empty((len(az), 8), dtype=np.cdouble)
-            for m in range(len(az)):
+            self.virtuel_array = np.empty((len(self.az), 8), dtype=np.cdouble)
+            for m in range(len(self.az)):
                 for k in range(8):
-                    self.virtuel_array[m,k] = np.exp(-1j*2*np.pi/lambda0*(self.rf_antenna.antenna_spacing[self.rf_aperature_select][k]* \
-                                                     np.sin(az[m])))*np.exp(1j*self.rf_antenna.phase_calibration[self.rf_aperature_select][k])
+                    self.virtuel_array[m,k] = np.exp(-1j*2*np.pi/self.lambda0*(self.rf_antenna.antenna_spacing[self.rf_aperature_select][k]* \
+                                                     np.sin(self.az[m])))*np.exp(1j*self.rf_antenna.phase_calibration[self.rf_aperature_select][k])
         
-        self.range_azimuth_map = np.zeros((len(az), data_cube.shape[0]), dtype = np.float32)
+        self.range_azimuth_map = np.zeros((len(self.az), data_cube.shape[0]), dtype = np.float32)
         
-        for m in range(len(az)):
+        for m in range(len(self.az)):
             self.range_azimuth_map[m,:] = np.abs(np.sum(data_cube * self.virtuel_array[m,:], axis=1)).astype(np.float32)
 
         if self.max_value_type == 'range':
@@ -331,8 +335,8 @@ class MIRA_DATA_PROCESSOR():
             self.range_azimuth_map = self.range_azimuth_map[0:self.range_azimuth_map.shape[0],
                                                             0:int(self.max_value/(self.radar_param.sys.max_dsp_freq * 1e-3
                                                                                 /self.range_azimuth_map.shape[1]))]
-        # self.range_azimuth_map = self.transform_range_azimuth_to_half_circle(self.range_azimuth_map.transpose((1,0)))
-        return np.array(self.range_azimuth_map, dtype=np.float32)
+        self.range_azimuth_map = self.transform_range_azimuth_to_half_circle(self.range_azimuth_map.transpose((1,0)), data_cube.shape)
+        return np.asarray(self.range_azimuth_map, dtype=np.float32)
 
     def _prepare_range_azimuth_output_format(self, ch_data: np.ndarray) -> dict:
         if self.main_tab_index == 'Range Azimuth':
@@ -349,3 +353,9 @@ class MIRA_DATA_PROCESSOR():
         return {'Channel 1': range_azimuth_map, 'Channel 2': range_doppler_map}
     
     
+@njit(fastmath=True)
+def _calc_rfft_channels_njit(ch_data: np.ndarray, padding_len) -> np.ndarray:
+    return (20*np.log10(np.abs(
+                     np.fft.rfft(ch_data*1e-3,
+                          n=(ch_data.shape[0]+padding_len)-1,
+                          axis=0)) + np.finfo(np.float32).eps))
