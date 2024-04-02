@@ -146,12 +146,12 @@ class MIRA_GUI_CTRL():
         
         # Range Labels
         self.qt_self.label_range_resolution.setText(f'{round(float(self.radar_param.sys.resolution_range*1e3), 2)} mm')
-        self.qt_self.label_min_range.setText(f'{round(float(self.radar_param.sys.min_range), 2)} m')
+        self.qt_self.label_min_range.setText(f'{round(float(self.radar_param.sys.min_range), 2)} / {round(float(self.radar_param.sys.max_range), 2)} m')
         # self.qt_self.label_max_range.setText(f'{round(float(self.radar_param.sys.max_range), 2)} m')
         
         # Velocity Labels
         self.qt_self.label_velocity_resolution.setText(f'{round(float(self.radar_param.sys.resolution_velocity[0]), 2)} m/s')
-        self.qt_self.label_min_velocity.setText(f'{round(float(-self.radar_param.sys.max_velocity[0]), 2)} m/s')
+        self.qt_self.label_min_velocity.setText(f'+/- {round(float(self.radar_param.sys.max_velocity[0]), 2)} m/s')
         # self.qt_self.label_max_velocity.setText(f'{round(float(self.radar_param.sys.max_velocity[0]), 2)} m/s')
         self.qt_self.sensor_id_plainTextEdit.setPlainText(f'{self.radar_param.mon.chip_id}')
         # self.qt_self.sensor_id_plainTextEdit.setDisabled(True)
@@ -906,7 +906,7 @@ class MIRA_GUI_CTRL():
         scene.addItem(rect_item)
         
         # Add a linear scale below the color bar
-        font = QFont("Arial", 14)  # Define font for the scale
+        font = QFont("Arial", 20)  # Define font for the scale
         scale_height = 20  # Height of the scale area
         for i, position in enumerate(pos):
             # Calculate the horizontal position for each label
@@ -980,8 +980,8 @@ def init_gui_qtwidgets() -> None:
     
 def init_gui_window(app_instance, main_instance) -> QtWidgets.QApplication:
     app = app_instance
-    base_font = QtGui.QFont("Arial", 20)  # Example: Arial, 10pt
-    app.setFont(base_font)
+    #base_font = QtGui.QFont("Arial", 20)  # Example: Arial, 10pt
+    #app.setFont(base_font)
     config = configparser.ConfigParser()
     config.read(__init__.MIRA_SYS_CONFIG_PATH)
     
@@ -989,16 +989,9 @@ def init_gui_window(app_instance, main_instance) -> QtWidgets.QApplication:
     rect = screen.geometry()
     width = rect.width()
     
-    checkbox_style = "QCheckBox::indicator { width: 0px; height: 0px; }"
-    # Iterate over all widgets in the application
-    for widget in app_instance.findChildren(QtWidgets.QWidget):
-        # Check if the widget is a checkbox
-        if isinstance(widget, QtWidgets.QCheckBox):
-            # Apply the CSS style to the checkbox
-            widget.setStyleSheet(checkbox_style)
     
     available_styles = QtWidgets.QStyleFactory.keys()
-    # app.setStyle("Fusion")
+    app.setStyle("Fusion")
     
     MIRA_GUI_COLOR_PALETTE_PATH = config.get("MIRA_6024_EVAL_GUI", 
                                          "MIRA_GUI_COLOR_PALETTE_PATH")
@@ -1008,23 +1001,23 @@ def init_gui_window(app_instance, main_instance) -> QtWidgets.QApplication:
     app.setPalette(palette)
     
 
-    # Define font offset based on screen width
-    font_offset = 1 if width <= 2000 else 4
-
-    # Mapping of Qt Widgets to their respective font size offsets
-    widget_font_offsets = {
-        "QWidget": font_offset,
-        "QLabel": font_offset + 4,
-        "QTab": font_offset + 2,
-        "QPushButton": font_offset-3,
-        # Add other widgets and their offsets as needed
-    }
-
-    for widget, offset in widget_font_offsets.items():
-        current_font = getattr(main_instance, 'label_18', QtWidgets.QLabel()).font()  # Fallback to QLabel if 'label_18' is not found
-        current_font_size = current_font.pointSize() if current_font.pointSize() > 0 else current_font.pixelSize()
-        new_font_size = current_font_size + offset
-        app.setStyleSheet(f".{widget} {{ font-size: {new_font_size}pt; }}")
+    ## Define font offset based on screen width
+    #font_offset = 1 if width <= 2000 else 4
+#
+    ## Mapping of Qt Widgets to their respective font size offsets
+    #widget_font_offsets = {
+    #    "QWidget": font_offset,
+    #    "QLabel": font_offset + 4,
+    #    "QTab": font_offset + 2,
+    #    "QPushButton": font_offset-3,
+    #    # Add other widgets and their offsets as needed
+    #}
+#
+    #for widget, offset in widget_font_offsets.items():
+    #    current_font = getattr(main_instance, 'label_18', QtWidgets.QLabel()).font()  # Fallback to QLabel if 'label_18' is not found
+    #    current_font_size = current_font.pointSize() if current_font.pointSize() > 0 else current_font.pixelSize()
+    #    new_font_size = current_font_size + offset
+    #    app.setStyleSheet(f".{widget} {{ font-size: {new_font_size}pt; }}")
             
     MIRA_GUI_SCREEN_SIZE_MIN = config.get("MIRA_6024_EVAL_GUI", 
                                         "MIRA_GUI_SCREEN_SIZE_MIN")
