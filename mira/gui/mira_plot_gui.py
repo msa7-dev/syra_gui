@@ -590,7 +590,7 @@ class CustomAxis(AxisItem):
         new_strings = []
         for val in values:
             # Assuming you want to display the absolute value
-            new_string = str(abs(int(val)))
+            new_string = str(abs(round(float(val), 2)))
             new_strings.append(new_string)
         return new_strings
     

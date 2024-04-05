@@ -28,7 +28,9 @@ class MIRA_DEVICE:
             register_instance.CONVERT
         
         self.mira_bridge.init_fifo_overhead()
-        print(self.mira_bridge.spi_read_n_reg(0x00, 60))
+        for i in range(60):
+            print(self.mira_bridge.spi_read_reg(i))
+            
         generate_register_to_txt(self, save_to_file=True)
         generate_register_to_readable_txt(self, save_to_file=True)
         for reg in self.pll_1_shape_regs:
