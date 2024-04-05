@@ -4,11 +4,11 @@ sykno_env
 poetry.lock
 .vscode
 .ipynb_checkpoints
-mira/meas/hdf5/*
-!mira/meas/hdf5/.gitkeep
-mira/meas/npy/*
-!mira/meas/npy/.gitkeep
-mira/meas/animation/*
-!mira/meas/animation/.gitkeep
+mira/measurement/hdf5/*
+!mira/measurement/hdf5/.gitkeep
+mira/measurement/npy/*
+!mira/measurement/npy/.gitkeep
+mira/measurement/animation/*
+!mira/measurement/animation/.gitkeep
 **/__pycache__
 __pycache__
