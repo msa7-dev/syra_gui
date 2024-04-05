@@ -28,8 +28,6 @@ class MIRA_DEVICE:
             register_instance.CONVERT
         
         self.mira_bridge.init_fifo_overhead()
-        for i in range(60):
-            print(self.mira_bridge.spi_read_reg(i))
             
         generate_register_to_txt(self, save_to_file=True)
         generate_register_to_readable_txt(self, save_to_file=True)
@@ -221,7 +219,7 @@ class MIRA_DEVICE:
                                             ((const_timings_each_chirp + chirp_timings[1]) * self.radar_param.sys.shape_repetition[1])) * self.radar_param.sys.shape_set_repetition
         self.radar_param.sys.frames_per_second = (1/self.radar_param.sys.frame_duration)
  
-        self.radar_param.sys.pulse_repetition_time = chirp_timings[0] + const_timings_each_chirp + self.radar_param.sys.t_sed[0]
+        self.radar_param.sys.pulse_repetition_time = 2*(chirp_timings[0] + const_timings_each_chirp + self.radar_param.sys.t_sed[0] )
         self.radar_param.sys.coherent_pulse_interval = self.radar_param.sys.pulse_repetition_time + chirp_timings[1] + const_timings_each_chirp + chirp_timings[0] + const_timings_each_chirp + self.radar_param.sys.t_sed[1]
         # self.radar_param.sys.ramp_bandwidth = self.radar_param.sys.ramp_slope * self.radar_param.sys.ramp_time
         
@@ -231,6 +229,7 @@ class MIRA_DEVICE:
 
         self.radar_param.sys.max_velocity = np.float32(self.radar_param.sys.lambda_freq[0] \
                                                         / (4 * self.radar_param.sys.pulse_repetition_time))
+        
         
         self.radar_param.sys.resolution_velocity = \
             np.float32(self.radar_param.sys.lambda_freq[0] \
