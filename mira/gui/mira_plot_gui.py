@@ -3,6 +3,7 @@ import numpy as np
 import configparser
 import pyqtgraph as pg
 from PyQt5 import QtGui
+from pyqtgraph import AxisItem
 from PyQt5.QtGui import QColor
 from mira.radar_system.mira_radar_sys import MIRA_RADAR_PARAMETER
 
@@ -158,7 +159,7 @@ class TIME_SIGNAL_PLOTTER():
         x_axis.setTextPen(self.plot_config.plot_text_color)
         x_axis.setTickFont(self.plot_config.axis_numbers_font)
         x_axis.setStyle(tickTextOffset=self.plot_config.axis_label_offset)
-        plot.setLabel("bottom", "Time in us")  
+        plot.setLabel("bottom", "Time in µs")  
 
         # Y-Axis
         y_axis= plot.getAxis("left")
@@ -484,10 +485,15 @@ class RANGE_AZIMUTH_PLOTTER():
         plot.addItem(plotline)
         plot.setBackground(self.plot_config.plot_background)
         plot.setTitle(title, size=self.plot_config.plot_title_font)
-
+        
         self.configure_axis(plot)
-
+        # Create the custom axis and set it for the plot
+        self.custom_axis = CustomAxis(plot_config=self.plot_config, radar_param=self.radar_param, orientation='bottom')
+        plot.setAxisItems({'bottom': self.custom_axis})
+        plot.hideAxis('left')
+        
         plotline.getViewBox().setAutoVisible(x=False, y=False)
+        plotline.getViewBox().setAspectLocked(False, ratio=1)
         plotline.setLevels((-40, 40))
         self.plotlines[f'{index}'] = plotline        
         self.plots[f"{index}"] = plot
@@ -503,14 +509,17 @@ class RANGE_AZIMUTH_PLOTTER():
         axis.setTextPen(self.plot_config.plot_text_color)
         axis.setTickFont(self.plot_config.axis_numbers_font)
         axis.setStyle(tickTextOffset=self.plot_config.axis_label_offset)
-        plot.setLabels(bottom="Azimuth Angle in Degree")
+        if self.radar_param.sys.curr_select_axis_unit == 'freq':
+            plot.setLabel("bottom", "Frequency in kHz")
+        else:
+            plot.setLabel("bottom", "Range in m")
 
     def set_plot_limits(self,
                         x_min_max: tuple,
                         y_min_max: tuple,
                         z_min_max: tuple):
         for plot in self.plot_range_azimuth_list:
-            plot.setXRange(*x_min_max)
+            # plot.setXRange(*x_min_max)
             plot.setYRange(*y_min_max)
 
         for _, plotline in self.plotlines.items():
@@ -522,19 +531,67 @@ class RANGE_AZIMUTH_PLOTTER():
                       z_min_max: tuple,
                       range_azimuth_map_shape: tuple):
         self.set_plot_limits(x_min_max, y_min_max, z_min_max)
+                 
         scale_x = (x_min_max[1] - x_min_max[0]) / range_azimuth_map_shape[0]
         scale_y = (y_min_max[1] - y_min_max[0]) / range_azimuth_map_shape[1]
         tr = QtGui.QTransform()
         tr.scale(scale_x, scale_y)
         tr.translate(x_min_max[0] / (scale_x + np.finfo(float).eps), 
                      y_min_max[0] / (scale_y + np.finfo(float).eps))
-
+        
         for _, plotline in self.plotlines.items():
             plotline.setTransform(tr)
+
 
     def clear_plot(self):
         for plot, index, title in zip(self.plot_range_azimuth_list, self.indexs, self.titles):
             self.plotlines[f"{index}"].clear()
             self.plots[f"{index}"].clear()
             self.create_range_azimuth_plot(plot, title, index)
+            
+
+
+
+from pyqtgraph import AxisItem
+from PyQt5.QtGui import QFont
+
+class CustomAxis(AxisItem):
+    def __init__(self, plot_config=None, radar_param=None, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.plot_config = plot_config
+        self.radar_param = radar_param
+
+        self.setPen(self.plot_config.plot_text_color)
+        self.setTextPen(self.plot_config.plot_text_color)
+        self.setTickFont(self.plot_config.axis_numbers_font)
+        self.setStyle(tickTextOffset=self.plot_config.axis_label_offset)
+        self.label.setFont(self.plot_config.axis_numbers_font)
+        
+        # Set the label for the axis
+        if self.radar_param is not None:
+            if self.radar_param.sys.curr_select_axis_unit == 'freq':
+                self.setLabel(text="Frequency in kHz", units=None)
+            else:
+                self.setLabel(text="Range in m", units=None)
+
+    def setTickFont(self, font):
+        """Set the font used for axis tick labels."""
+        if isinstance(font, QFont):
+            # Set the font for the tick text
+            self.tickFont = font
+            # You must call this to update the view after changing the font
+            self.setStyle(tickFont=font)
+        else:
+            raise ValueError("Font must be a QFont instance")
+
+    def tickStrings(self, values, scale, spacing):
+        """Generate the list of strings for each tick."""
+        # This is an example implementation and might be different based on your requirement
+        new_strings = []
+        for val in values:
+            # Assuming you want to display the absolute value
+            new_string = str(abs(int(val)))
+            new_strings.append(new_string)
+        return new_strings
+    
 

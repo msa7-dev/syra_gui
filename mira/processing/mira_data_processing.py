@@ -278,9 +278,9 @@ class MIRA_DATA_PROCESSOR():
     def _prepare_range_doppler_output_format(self, ch_data: np.ndarray) -> dict:
         if self.main_tab_index == 'Range Doppler':
             return {'Channel 1': ch_data, 'Channel 2': np.zeros((1,1,1), dtype=np.float32)}
-
-    def transform_range_azimuth_to_half_circle(self, range_azimuth_map, data_cube_shape):
-        
+    
+    
+    def transform_range_azimuth_to_half_circle(self, range_azimuth_map, data_cube_shape):    
         if self.prev_range_azimuth_shape != data_cube_shape:
             num_ranges, num_azimuths = range_azimuth_map.shape
             ranges = np.linspace(0, 1, num_ranges)  # Normalize range to [0, 1] for simplicity
@@ -294,16 +294,32 @@ class MIRA_DATA_PROCESSOR():
             y = r * np.cos(az)  # This will orient the half-circle with the flat side up
             # Create the Cartesian output grid
             self.grid_x, self.grid_y = np.mgrid[
-                np.min(x):np.max(x):complex(num_ranges), 
-                np.min(y):np.max(y):complex(num_azimuths)
+                np.min(x):np.max(x):complex(500),  #complex(num_ranges),  # size of the grid can be adjusted arbitrarily!
+                np.min(y):np.max(y):complex(500)   #complex(num_azimuths)
             ]
             # Flatten the arrays for interpolation
             self.points = np.vstack((x.flatten(), y.flatten())).T
             self.prev_range_azimuth_shape = data_cube_shape
             
-        values = range_azimuth_map.flatten()
+        values = range_azimuth_map.T.flatten()
         # Interpolate the data onto the Cartesian grid
-        cartesian_map = griddata(self.points, values, (self.grid_x, self.grid_y), method='linear', fill_value=np.nan)
+        cartesian_map = griddata(self.points, values, (self.grid_x, self.grid_y), method='nearest', fill_value=np.nan)
+
+        #prüfe für jeden Punkt Abstand vom Nullpunkt; wenn größer als halbe Achsenlänge -> nan; nur nötig bei "nearest"
+
+        # dim0 = cartesian_map.shape[0]
+        # dim1 = cartesian_map.shape[1]
+        # for m in range(dim0):
+        #     for n in range(dim1):
+        #         curr_r = np.sqrt((m-dim0/2)**2+(n/dim1*dim0/2-0)**2) # vereinfachbar, wenn Plot quadratisch ist (dim1/dim0=1)
+                
+        #         if curr_r>dim0/2:
+        #             cartesian_map[m,n]=np.nan
+
+        rows, cols = cartesian_map.shape
+        m, n = np.ogrid[:rows, :cols]
+        curr_r = np.sqrt((m - rows / 2) ** 2 + (n / cols * rows / 2 - 0) ** 2)
+        cartesian_map[curr_r > rows / 2] = np.nan
 
         return cartesian_map 
 
@@ -312,7 +328,7 @@ class MIRA_DATA_PROCESSOR():
         data_cube = np.asarray(np.mean(processed_data_cube_fft, axis=2), dtype=np.complex64)
         
         if self.prev_range_azimuth_shape != data_cube.shape:
-            self.az = np.deg2rad(np.linspace(-90,90,int(18*4+1)))
+            self.az = np.deg2rad(np.linspace(-90,90,int(18*10+1)))
             self.k = 2 * np.pi / self.radar_param.sys.lambda_freq[0]
             self.lambda0 = self.radar_param.sys.lambda_freq[0]
             
@@ -335,7 +351,7 @@ class MIRA_DATA_PROCESSOR():
             self.range_azimuth_map = self.range_azimuth_map[0:self.range_azimuth_map.shape[0],
                                                             0:int(self.max_value/(self.radar_param.sys.max_dsp_freq * 1e-3
                                                                                 /self.range_azimuth_map.shape[1]))]
-        self.range_azimuth_map = self.transform_range_azimuth_to_half_circle(self.range_azimuth_map.transpose((1,0)), data_cube.shape)
+        self.range_azimuth_map = self.transform_range_azimuth_to_half_circle(self.range_azimuth_map.T, data_cube.shape)
         return np.asarray(self.range_azimuth_map, dtype=np.float32)
 
     def _prepare_range_azimuth_output_format(self, ch_data: np.ndarray) -> dict:

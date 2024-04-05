@@ -2100,19 +2100,27 @@ class BGT_PLLX_6:
         }
         index = reg_adr_to_index.get(self.REG_ADR)
 
-        if index is not None:
+        if index is None:
             return
         
         self.radar_param.sys.ramp_time[index] = np.float32(self._RTD * 8 * 12.5e-9)
-        self.radar_param.sys.ramp_bandwidth[index] = np.float32(self._RTD * 8 * (640e6 / 2**20) \
-                                                                * self.radar_param.sys.ramp_steps[index]) # BGT Datasheet see page 32ff 
-    
-        self.radar_param.sys.end_frequency[index] = np.float32(self.radar_param.sys.start_frequency[index]
-                                                               + self.radar_param.sys.ramp_bandwidth[index])
+        self.radar_param.sys.ramp_time = np.nan_to_num(self.radar_param.sys.ramp_time)
         
-        self.radar_param.sys.ramp_slope[index] = np.float32(self.radar_param.sys.ramp_bandwidth[index] \
-                                                            // self.radar_param.sys.ramp_time[index] 
-                                                            + np.finfo(np.float32).eps) 
+        self.radar_param.sys.ramp_bandwidth[index] = np.float32(self._RTD * 8 * (640e6 / 2**20) 
+                                                                * self.radar_param.sys.ramp_steps[index]) # BGT Datasheet see page 32ff 
+        self.radar_param.sys.ramp_bandwidth = np.nan_to_num(self.radar_param.sys.ramp_bandwidth)
+    
+        self.radar_param.sys.end_frequency[index] = np.float32(self.radar_param.sys.start_frequency[index] +  
+                                                               self.radar_param.sys.ramp_bandwidth[index])
+        self.radar_param.sys.end_frequency = np.nan_to_num(self.radar_param.sys.end_frequency)
+        
+        self.radar_param.sys.ramp_slope[index] = np.float32(self.radar_param.sys.ramp_bandwidth[index] 
+                                                            / (self.radar_param.sys.ramp_time[index] 
+                                                            + np.finfo(np.float32).eps)) 
+        self.radar_param.sys.ramp_slope = np.nan_to_num(self.radar_param.sys.ramp_slope)
+        
+        # print(self.radar_param.sys.ramp_bandwidth, self.radar_param.sys.start_frequency, self.radar_param.sys.end_frequency, self.radar_param.sys.ramp_slope)
+    
     @property
     def TR_EDD(self):
         return self._TR_EDD

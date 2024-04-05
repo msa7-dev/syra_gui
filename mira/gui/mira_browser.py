@@ -56,23 +56,30 @@ class MIRA_BROWSER():
     def reinit(self, mira_project: str) -> None:
         MIRA_MEASUREMENT_PATH = self.config.get("MIRA_SAVE_MEASUREMENT", 
                                                 "MIRA_MEASUREMENT_PATH")
+        MIRA_MEAS_PROJECT_NAME = self.config.get("MIRA_SAVE_MEASUREMENT",
+                                                 "MIRA_MEAS_PROJECT_NAME")
+        MIRA_SESSION_LABEL_NAME = self.config.get("MIRA_SAVE_MEASUREMENT", 
+                                                 "MIRA_SESSION_LABEL_NAME")
+        self.qt_self.mira_project_plainTextEdit.setPlainText(MIRA_MEAS_PROJECT_NAME+f"{self.radar_param.mon.sykno_product_name}")
+        self.qt_self.session_label_plainTextEdit.setPlainText(MIRA_SESSION_LABEL_NAME)
+
         if self.browser_type == "bgt_reg_browser":
             caption=f"Select BGT-Register for {self.radar_param.mon.sykno_product_name}"
             default_dir = f"./mira/config/register_hex_files/" 
             filter = "Text Files (*.txt)"
-            file_path = f"{default_dir}/{mira_project}.txt"
+            file_path = f"{default_dir}/{MIRA_MEAS_PROJECT_NAME}{mira_project}.txt"
             direcotry = "./"
             
         elif self.browser_type == "mira_meas_out_browser":
             caption=f"Select Measurement Dicretory {self.radar_param.mon.sykno_product_name}"
-            default_dir = f"{MIRA_MEASUREMENT_PATH}/{mira_project}"
+            default_dir = f"{MIRA_MEASUREMENT_PATH}/{MIRA_MEAS_PROJECT_NAME}{mira_project}"
             filter = None
             file_path = "./mira/measurement/hdf5/"
             direcotry = "./mira/measurement/hdf5/"
             
         elif self.browser_type == "mira_meas_in_browser":
             caption=f"Select {self.radar_param.mon.sykno_product_name} Measurement File"
-            default_dir = f"{MIRA_MEASUREMENT_PATH}/{mira_project}"
+            default_dir = f"{MIRA_MEASUREMENT_PATH}/{MIRA_MEAS_PROJECT_NAME}{mira_project}"
             filter = "Text Files (*.hdf5)"
             file_path = f"./mira/measurement/hdf5/{mira_project}.hdf5"
             direcotry = f"./mira/measurement/hdf5/{mira_project}.hdf5"

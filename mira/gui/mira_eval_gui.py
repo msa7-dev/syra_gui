@@ -67,7 +67,7 @@ class MIRA_MAIN_GUI(QtWidgets.QMainWindow):
         self.gui_controller.update_radar_params()
         self.start_auto_connect()
         self.gui_version = self.config.get("DEFAULT", "VERSION")
-        self.mira_gui_main_window_down_label.setText(f"Embedded Radar GUI (v{self.gui_version}) | Sykno GmbH")
+        self.mira_gui_main_window_down_label.setText(f"Radar Eval GUI (v{self.gui_version}) | Sykno GmbH")
             
     def mira_gui_main() -> None:
         init_gui_qtwidgets()
@@ -96,7 +96,6 @@ class MIRA_MAIN_GUI(QtWidgets.QMainWindow):
                 return
             else:
                 self.button_startstop.setText("Stop")
-            
             self.mira_processor = MIRA_MULTIPROCESSOR(self.mira_controller)
             
             self.gui_controller.get_axis_x()
@@ -145,6 +144,9 @@ class MIRA_MAIN_GUI(QtWidgets.QMainWindow):
         if self.mira_controller.mira_device.mira_bridge.device is None:
             self.mira_controller = None
             return
+        self.gui_controller.bgt_reg_browser.reinit(f"{self.radar_param.mon.sykno_product_name}")
+        self.gui_controller.meas_in_path_browser.reinit(f"{self.radar_param.mon.sykno_product_name}")
+        self.gui_controller.meas_out_path_browser.reinit(f"{self.radar_param.mon.sykno_product_name}")
         self.connect_timer.stop()
         self.connect_timer.timeout.disconnect()
         self.gui_controller.set_device_connected()
@@ -356,14 +358,14 @@ class MIRA_MAIN_GUI(QtWidgets.QMainWindow):
         if self.running == True and self.graph_update_flag:
             self.gui_controller.mira_plotter.range_azimuth.plotlines[
                 self.gui_controller.tab_name_main_instance_window].setImage(
-                np.abs(self.processed_radar_data['Channel 1']), autoLevels=True)
+                self.processed_radar_data['Channel 1'], autoLevels=False)
         return dummy
         
     def set_waterfall_azimtuh(self, dummy: None) -> None:
         if self.running == True and self.graph_update_flag:
             self.gui_controller.mira_plotter.range_azimuth.plotlines[
                 self.gui_controller.tab_name_main_instance_window].setImage(
-                self.processed_radar_data['Channel 1'], autoLevels=True)
+                self.processed_radar_data['Channel 1'], autoLevels=False)
             self.gui_controller.mira_plotter.spectrogram.plotlines[
                 'Waterfall Spectrogram RX1_TX1'].setImage(
                 np.transpose(np.flip(self.processed_radar_data['Channel 2'], axis=0),
@@ -374,7 +376,7 @@ class MIRA_MAIN_GUI(QtWidgets.QMainWindow):
         if self.running == True and self.graph_update_flag:
             self.gui_controller.mira_plotter.range_azimuth.plotlines[
                 self.gui_controller.tab_name_main_instance_window].setImage(
-                self.processed_radar_data['Channel 1'], autoLevels=True)
+                self.processed_radar_data['Channel 1'], autoLevels=False)
             
             self.gui_controller.mira_plotter.range_doppler.plotlines[
                 'Range Doppler RX1_TX1'].setImage(

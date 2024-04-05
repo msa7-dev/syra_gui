@@ -28,7 +28,7 @@ class MIRA_DEVICE:
             register_instance.CONVERT
         
         self.mira_bridge.init_fifo_overhead()
-
+        print(self.mira_bridge.spi_read_n_reg(0x00, 60))
         generate_register_to_txt(self, save_to_file=True)
         generate_register_to_readable_txt(self, save_to_file=True)
         for reg in self.pll_1_shape_regs:
@@ -196,9 +196,6 @@ class MIRA_DEVICE:
     def init_radar_system_parameters(self) -> None:
         self.radar_param.sys.n_frames_range_doppler = 1
         self.radar_param.sys.sampling_interval_time = 1/self.radar_param.sys.sampling_frequency
-        self.radar_param.sys.mid_frequency = self.radar_param.sys.start_frequency \
-                                             + (self.radar_param.sys.ramp_bandwidth / 2)
-        self.radar_param.sys.lambda_freq = c / self.radar_param.sys.mid_frequency
 
         self.delta_range = np.float32(c / ((2 * self.radar_param.sys.ramp_bandwidth[0])+np.finfo(float).eps))
         self.radar_param.sys.max_dsp_freq = self.radar_param.sys.sampling_frequency / 2  # Nyquist Frequency 
@@ -224,6 +221,11 @@ class MIRA_DEVICE:
  
         self.radar_param.sys.pulse_repetition_time = chirp_timings[0] + const_timings_each_chirp + self.radar_param.sys.t_sed[0]
         self.radar_param.sys.coherent_pulse_interval = self.radar_param.sys.pulse_repetition_time + chirp_timings[1] + const_timings_each_chirp + chirp_timings[0] + const_timings_each_chirp + self.radar_param.sys.t_sed[1]
+        # self.radar_param.sys.ramp_bandwidth = self.radar_param.sys.ramp_slope * self.radar_param.sys.ramp_time
+        
+        self.radar_param.sys.mid_frequency = self.radar_param.sys.start_frequency \
+                                             + (self.radar_param.sys.ramp_bandwidth / 2)
+        self.radar_param.sys.lambda_freq = c / self.radar_param.sys.mid_frequency
 
         self.radar_param.sys.max_velocity = np.float32(self.radar_param.sys.lambda_freq[0] \
                                                         / (4 * self.radar_param.sys.pulse_repetition_time))

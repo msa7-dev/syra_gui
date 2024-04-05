@@ -74,6 +74,7 @@ class MIRA_RADAR_SYS_PARAMETER():
         
         self.max_velocity = np.zeros((4,), dtype=np.float32)
         self.resolution_velocity = np.zeros((4,), dtype=np.float32)
+        self.rtu = np.zeros((8,), dtype=np.float32)
         
         self.min_angle = np.float32(0)
         self.max_angle = np.float32(0)

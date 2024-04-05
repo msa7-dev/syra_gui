@@ -93,14 +93,15 @@ class MIRA_USB_SPI_BRIDGE():
         self.send_usb_payload(bytearray([self.mcu_commands.stm_rst_cmd]))
         self.init_stm = False
     
-    def spi_activate_boot_mode(self) -> None:
+    def spi_activate_boot_mode(self, product_name: str='MiRa6024I1A', firmware_name: str='') -> None:
         self.send_usb_payload(bytearray([self.mcu_commands.flash_cmd]))
         self.deinit_stm_usb_device()
         time.sleep(2)  # Delay to ensure the device is ready for programming
+        firmware = product_name if firmware_name == '' else firmware_name
         command = [
             './tools/programmer/bin/STM32_Programmer_CLI',
             '-c', 'port=/dev/ttyUSB0', 'br=115200',
-            '-w', './mira/setup/mcu_firmware/MiRa_IFX_60GHz.bin', '0x08000000',
+            '-w', f'./mira/setup/mcu_firmware/{firmware}.bin', '0x08000000',
             '-v',
             '-g 0x00000000'
         ]
@@ -403,13 +404,15 @@ class MIRA_USB_SPI_BRIDGE():
     def get_default_bgt_register_values(self) -> bytearray:
         mira_reg_dir_path = Path(self.config.get("MIRA_BGT_SETTINGS",
                                                  "MIRA_SENS_CONF_DIR_PATH")).resolve()
+        print(self.radar_param.gui.project_name )
+        self.radar_param.gui.project_name = self.radar_param.gui.project_name if self.radar_param.gui.project_name == ' ' else 'Default_'
         file_path = Path(f"{mira_reg_dir_path}/{self.radar_param.gui.project_name}{self.radar_param.mon.sykno_product_name}.txt")
         
         file = open(file_path, 'r')
         content = file.read()
         lines = content.splitlines()
-        raw_reg_val = []
         
+        raw_reg_val = []
         for line in lines:
             raw_reg_val.append(str(line).replace('reg ', ''))
         file.close()

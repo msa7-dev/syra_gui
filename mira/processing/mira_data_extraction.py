@@ -40,7 +40,6 @@ class MIRA_DATA_EXTRACTOR():
         mira_data_extraction_process.nice(MIRA_PROCESS_PRIO)
         distribute_cores_to_process(mira_data_extraction_process, 1)
         setproctitle.setproctitle("Sykno - MiRa Eval GUI - Extraction Process")
-        
         radar_data_cube_build_buffer = np.zeros((self.radar_param.sys.n_samples_per_chirp[0], # Dim 1 - Samples
                                                 int(self.radar_param.sys.rx_active_antennas[0]), # Dim. 2 - Number RX Antennas
                                                 int(sum(self.radar_param.sys.tx_active_antennas)), # Dim. 3 - Number Chirps per Shape
@@ -103,7 +102,6 @@ class MIRA_DATA_EXTRACTOR():
                     raw_data_slice,
                     raw_data_slice.shape[0],
                     self.radar_param.sys.rx_active_antennas[0]), dtype=np.uint16)
-                
                 if curr_frame_cnt > self.radar_param.sys.max_frame_cnt:
                     frame_cnt = np.mod(curr_frame_cnt, self.radar_param.sys.max_frame_cnt)
                 else:
