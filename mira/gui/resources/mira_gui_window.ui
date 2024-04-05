@@ -603,7 +603,7 @@
            </font>
           </property>
           <property name="text">
-           <string>MiRa Sykno GmbH </string>
+           <string>Sykno GmbH </string>
           </property>
           <property name="textFormat">
            <enum>Qt::AutoText</enum>
@@ -650,7 +650,7 @@
          </font>
         </property>
         <property name="currentIndex">
-         <number>2</number>
+         <number>1</number>
         </property>
         <widget class="QWidget" name="tab_6">
          <attribute name="title">
@@ -2512,7 +2512,7 @@
               </property>
               <property name="minimumSize">
                <size>
-                <width>120</width>
+                <width>150</width>
                 <height>20</height>
                </size>
               </property>
