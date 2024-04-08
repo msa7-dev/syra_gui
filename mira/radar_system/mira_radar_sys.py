@@ -56,6 +56,7 @@ class MIRA_RADAR_MON_PARAMETER():
 # ==============================================================================
 class MIRA_RADAR_SYS_PARAMETER():
     def __init__(self) -> None:
+        self.allocation_factor = np.float16(3)
         self.rx_active_antennas = np.zeros((8), dtype=np.uint8)
         self.tx_active_antennas = np.zeros((8), dtype=np.uint8)
         self.tx_power = np.zeros((8,2), dtype=np.uint8)

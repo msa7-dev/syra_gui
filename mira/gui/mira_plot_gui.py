@@ -120,6 +120,7 @@ class MIRA_PLOT_CONFIG():
 # ==============================================================================
 class TIME_SIGNAL_PLOTTER():
     def __init__(self, qt_self):
+        self.qt_self = qt_self
         self.plot_config = MIRA_PLOT_CONFIG(qt_self)
         self.plot_time_list = [qt_self.plot_time_raw_data, 
                                qt_self.plot_time_dsp_output]
@@ -129,12 +130,20 @@ class TIME_SIGNAL_PLOTTER():
         self.plotlines = {}
         titles = ['Raw Data', 'DSP Output']
         for i, plot_time in enumerate(self.plot_time_list):
+            plot_time.clear()
             self.create_spectrogram_plot(plot_time, titles[i])
              
     def create_spectrogram_plot(self, plot, title):
-        names = ['RX1 TX1', 'RX1 TX2', 'RX2 TX1', 'RX2 TX2',
-                 'RX3 TX1', 'RX3 TX2', 'RX4 TX1', 'RX4 TX2']
-        
+        if self.qt_self.radar_param.mon.sykno_product_name == 'MiRa6024I1A':
+            names = ['RX1 TX1', 'RX1 TX2', 'RX2 TX1', 'RX2 TX2',
+                     'RX3 TX1', 'RX3 TX2', 'RX4 TX1', 'RX4 TX2']
+        elif self.qt_self.radar_param.mon.sykno_product_name == 'SY60I13':
+            names = ['RX1 TX1', 'RX2 TX1', 'RX3 TX1']
+        elif self.qt_self.radar_param.mon.sykno_product_name == 'SY60I11':
+            names = ['RX1 TX1']
+        else:
+            names = ['RX1 TX1']
+            
         for name, pen in zip(names, self.plot_config.plot_pens):
             plotline = pg.PlotDataItem(name=name, pen=pen)
             plot.addLegend()
@@ -188,6 +197,7 @@ class TIME_SIGNAL_PLOTTER():
 # ==============================================================================
 class SPECTRUM_PLOTTER():
     def __init__(self, qt_self):
+        self.qt_self = qt_self
         self.plot_config = MIRA_PLOT_CONFIG(qt_self)
         self.plot_spectrum = qt_self.plot_spectrum
         self.radar_param = qt_self.radar_param
@@ -195,8 +205,17 @@ class SPECTRUM_PLOTTER():
 
     def init_plot_parameters(self):
         self.plotlines = {}
-        names = ['RX1 TX1', 'RX1 TX2', 'RX2 TX1', 'RX2 TX2', 
-                 'RX3 TX1', 'RX3 TX2', 'RX4 TX1', 'RX4 TX2']
+        if self.qt_self.radar_param.mon.sykno_product_name == 'MiRa6024I1A':
+            names = ['RX1 TX1', 'RX1 TX2', 'RX2 TX1', 'RX2 TX2',
+                     'RX3 TX1', 'RX3 TX2', 'RX4 TX1', 'RX4 TX2']
+        elif self.qt_self.radar_param.mon.sykno_product_name == 'SY60I13':
+            names = ['RX1 TX1', 'RX2 TX1', 'RX3 TX1']
+        elif self.qt_self.radar_param.mon.sykno_product_name == 'SY60I11':
+            names = ['RX1 TX1']
+        else:
+            names = ['RX1 TX1']
+        
+        self.plot_spectrum.clear()
         for name, pen in zip(names, self.plot_config.plot_pens):
             plotline = pg.PlotDataItem(name=name, pen=pen)
             self.plot_spectrum.addLegend()

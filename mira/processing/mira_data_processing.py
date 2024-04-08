@@ -36,8 +36,8 @@ class MIRA_DATA_PROCESSOR():
                                       self._prepare_time_output_format,
                                       self._move_data_to_gui_queue],
             'Spectrum':              [self.data_preprocessor.preprocess_channels,
-                                    #   self._calc_rfft_channels,
-                                      self._calc_rfft_channels_njit_wrapper,
+                                      self._calc_rfft_channels,
+                                    #   self._calc_rfft_channels_njit_wrapper,
                                       self._prepare_spectrum_output_format,
                                       self._move_data_to_gui_queue],
             'Waterfall Spectrogram': [self.data_preprocessor.preprocess_channels, 
@@ -117,7 +117,8 @@ class MIRA_DATA_PROCESSOR():
                 continue
 
             radar_data_cube[:, 0:self.radar_param.sys.rx_active_antennas[0], :] = radar_data[:, :, 0, :]
-            radar_data_cube[:, 4:4+self.radar_param.sys.rx_active_antennas[0], :] = radar_data[:, :, 1, :]
+            if self.radar_param.mon.sykno_product_name == 'MiRa6024I1A':
+                radar_data_cube[:, 4:4+self.radar_param.sys.rx_active_antennas[0], :] = radar_data[:, :, 1, :]
             
             if not self.gui_parameter_queue.empty():
                 self._update_gui_parameter()

@@ -46,21 +46,21 @@ class MIRA_DATA_EXTRACTOR():
                                                 int(self.radar_param.sys.shape_set_repetition), # Dim. 4 - Shape Set Repetition
                                                  self.radar_param.sys.max_frame_cnt), # Dim. 5
                                                 dtype=np.uint16)
-
-        USB_SPI_BRIDGE_DATA_ALLOCATION = np.uint32(
-                self.config.get("MIRA_USB_SPI_BRIDGE", "USB_SPI_BRIDGE_DATA_ALLOCATION"))
+        print(radar_data_cube_build_buffer.shape)
+        USB_SPI_BRIDGE_DATA_ALLOCATION = np.uint32(self.config.get("MIRA_USB_SPI_BRIDGE", 
+                                                                   f"USB_SPI_BRIDGE_DATA_ALLOCATION_{self.radar_param.mon.sykno_product_name}"))
         DATA_ALLOCATION = np.uint32(USB_SPI_BRIDGE_DATA_ALLOCATION+self.radar_param.sys.n_fifo_overhead*9)
 
         self.package_chirp_header_index_distance = np.uint32(
             self.radar_param.sys.n_samples_per_chirp[0] * \
             (self.radar_param.sys.rx_active_antennas[0] / \
-             sum(self.radar_param.sys.tx_active_antennas)) * 3 + 9)
-        
+             sum(self.radar_param.sys.tx_active_antennas)) * self.radar_param.sys.allocation_factor + 9)
+
         header_matches = list()
         for n_headers in range(np.uint32(DATA_ALLOCATION/self.package_chirp_header_index_distance)):
             header_matches.append(self.package_chirp_header_index_distance*n_headers)
         
-        self.data_values = []
+        self.data_values = list()
         start_time = time.time()
         self.prev_frame_cnt = np.uint16(0)
         while not process_stop_event.is_set():
@@ -73,7 +73,7 @@ class MIRA_DATA_EXTRACTOR():
                 continue
             # Append the data rate to the array
             self.data_values.append((raw_fifo_data.shape[0] * 8) / (time.time() - start_time))
-
+            
             # Keep only the last 16 values in the array
             self.data_values = self.data_values[-256:]
             start_time = time.time()
@@ -81,7 +81,7 @@ class MIRA_DATA_EXTRACTOR():
             for header_match in header_matches:
                 header_values = np.asarray(mira_extract_raw_data.prefix_header_cy(
                                            raw_fifo_data[header_match : header_match + 9]), np.uint32)
-
+                
                 # Map the array indices back to your original dictionary keys
                 self.header_dict = {
                     'sync_word1': header_values[0],
@@ -97,7 +97,7 @@ class MIRA_DATA_EXTRACTOR():
                 self._update_header_dict_to_gui()
                 curr_frame_cnt = np.uint16(self.header_dict['frame_cnt'])
                 
-                raw_data_slice = raw_fifo_data[header_match + 9 : header_match + self.package_chirp_header_index_distance].astype(np.uint8)
+                raw_data_slice = raw_fifo_data[header_match + 9 : header_match + self.package_chirp_header_index_distance]
                 data_field = np.asarray(mira_extract_raw_data.extract_raw_data_cy(
                     raw_data_slice,
                     raw_data_slice.shape[0],
@@ -108,10 +108,12 @@ class MIRA_DATA_EXTRACTOR():
                     frame_cnt = curr_frame_cnt
 
                 shape_grp_cnt = self.header_dict['shape_grp_cnt']
+                
                 total_active_antennas = sum(self.radar_param.sys.tx_active_antennas)
                 grp_dim_index = np.uint16(shape_grp_cnt / total_active_antennas)
 
                 radar_data_cube_build_buffer[:,:, self.header_dict['cs'], grp_dim_index, frame_cnt] = data_field[:,:]
+                # radar_data_cube_build_buffer[:,:, 1, grp_dim_index, frame_cnt] = data_field[:,:]
 
                 # if np.all(radar_data_cube_build_buffer[:,:, self.header_dict['cs'], 
                 #           np.uint16(self.header_dict['shape_grp_cnt']/sum(self.radar_param.sys.tx_active_antennas)),
@@ -158,7 +160,10 @@ class MIRA_DATA_EXTRACTOR():
         self.radar_param.mon.sadc_gain = 1
         if self.radar_param.mon.sadc_output_mode == 0:
             # Temperature Conversion BGT60ATR24 Datasheet: p. 92
-            return np.float32(round((((sadc_val/2**10)*1.21 * self.radar_param.mon.sadc_gain)-0.7989)/0.00297, 2))
+            if sadc_val == 0:
+                return 35.13
+            else:
+                return np.float32(round((((sadc_val/2**10)*1.21 * self.radar_param.mon.sadc_gain)-0.7989)/0.00297, 2))
         elif self.radar_param.mon.sadc_output_mode == 1:
             pass
         else: 

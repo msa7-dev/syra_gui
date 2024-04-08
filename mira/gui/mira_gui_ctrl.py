@@ -71,8 +71,16 @@ class MIRA_GUI_CTRL():
         self.set_value_labels()
         self.update_processing_parameters()
         
+    def update_gui_sensor_detected(self) -> None:
+        self.bgt_reg_browser.reinit(f"{self.radar_param.mon.sykno_product_name}")
+        self.meas_in_path_browser.reinit(f"{self.radar_param.mon.sykno_product_name}")
+        self.meas_out_path_browser.reinit(f"{self.radar_param.mon.sykno_product_name}")
+        self.mira_plotter = MIRA_PLOTTER(self.qt_self)
+        self.handle_sensor_state()
+
+    
+
     def init_connect_buttons(self):
-        
         self.qt_self.button_startstop.clicked.connect(self.qt_self.start_stop)
         self.qt_self.browse_register_path_button.clicked.connect(self.bgt_reg_browser.open_path_browser)
         self.qt_self.browse_meas_in_path_button.clicked.connect(self.meas_in_path_browser.open_path_browser)
@@ -154,7 +162,7 @@ class MIRA_GUI_CTRL():
         self.qt_self.label_bandwidth.setText(f'{round(float(self.radar_param.sys.ramp_bandwidth[0] * 1e-9))} GHz')
         self.qt_self.label_ramp_slope.setText(f'{round(float(self.radar_param.sys.ramp_slope[0] * 1e-12), 2)} MHz/µs')
         # self.qt_self.label_chirp_time.setText(f'{round(float(self.radar_param.sys.chirp_time[0]), 2)} ms')
-        self.qt_self.label_frame_duration.setText(f'{round(float(self.radar_param.sys.frame_duration)*1e3, 2)} ms ' +  \
+        self.qt_self.label_frame_duration.setText(f'{round(float(self.radar_param.sys.frame_duration)*1e3)} ms ' +  \
                                                   f'| {round(float(self.radar_param.sys.frames_per_second))} fps')
         
         # Range Labels
@@ -223,13 +231,13 @@ class MIRA_GUI_CTRL():
         self.qt_self.check_box_hp_rx3.setChecked(True)
         self.qt_self.check_box_hp_rx4.setChecked(True)
         
-        self.qt_self.check_box_spectrum_tx1.setChecked(True)
-        self.qt_self.check_box_spectrum_tx2.setChecked(True)
+        self.qt_self.check_box_spectrum_tx1.setChecked(False)
+        self.qt_self.check_box_spectrum_tx2.setChecked(False)
         
-        self.qt_self.check_box_spectrum_rx1.setChecked(True)
-        self.qt_self.check_box_spectrum_rx2.setChecked(True)
-        self.qt_self.check_box_spectrum_rx3.setChecked(True)
-        self.qt_self.check_box_spectrum_rx4.setChecked(True)
+        self.qt_self.check_box_spectrum_rx1.setChecked(False)
+        self.qt_self.check_box_spectrum_rx2.setChecked(False)
+        self.qt_self.check_box_spectrum_rx3.setChecked(False)
+        self.qt_self.check_box_spectrum_rx4.setChecked(False)
         
         self.qt_self.check_box_rf_test_en.setChecked(False)
         self.qt_self.check_box_rf_test_en_rx1.setChecked(False)
@@ -280,6 +288,77 @@ class MIRA_GUI_CTRL():
         
         return [self.lower_value, self.upper_value]
     
+    def handle_sensor_state(self) -> None:
+        if self.radar_param.mon.sykno_product_name == 'MiRa6024I1A':
+            self.qt_self.check_box_spectrum_tx1.setDisabled(False)
+            self.qt_self.check_box_spectrum_tx1.setChecked(True)
+
+            self.qt_self.check_box_spectrum_tx2.setDisabled(False)
+            self.qt_self.check_box_spectrum_tx2.setChecked(True)
+            
+            self.qt_self.check_box_spectrum_rx1.setDisabled(False)
+            self.qt_self.check_box_spectrum_rx1.setChecked(True)
+            self.qt_self.check_box_spectrum_rx2.setDisabled(False)
+            self.qt_self.check_box_spectrum_rx2.setChecked(True)
+            self.qt_self.check_box_spectrum_rx3.setDisabled(False)
+            self.qt_self.check_box_spectrum_rx3.setChecked(True)
+            self.qt_self.check_box_spectrum_rx4.setDisabled(False)
+            self.qt_self.check_box_spectrum_rx4.setChecked(True)
+
+        elif self.radar_param.mon.sykno_product_name == 'SY60I13':
+            self.qt_self.check_box_spectrum_tx1.setDisabled(False)
+            self.qt_self.check_box_spectrum_tx1.setChecked(True)
+
+            self.qt_self.check_box_spectrum_tx2.setDisabled(True)
+            self.qt_self.check_box_spectrum_tx2.setChecked(False)
+            
+            self.qt_self.check_box_spectrum_rx1.setDisabled(False)
+            self.qt_self.check_box_spectrum_rx1.setChecked(True)
+            self.qt_self.check_box_spectrum_rx2.setDisabled(False)
+            self.qt_self.check_box_spectrum_rx2.setChecked(True)
+            self.qt_self.check_box_spectrum_rx3.setDisabled(False)
+            self.qt_self.check_box_spectrum_rx3.setChecked(True)
+            self.qt_self.check_box_spectrum_rx4.setDisabled(True)
+            self.qt_self.check_box_spectrum_rx4.setChecked(False)
+
+            self.qt_self.tab_plots.setTabEnabled(4, False)
+            self.qt_self.tab_plots.setTabEnabled(5, False)
+            self.qt_self.tab_plots.setTabEnabled(6, False)
+            
+        elif self.radar_param.mon.sykno_product_name == 'SY60I11':
+            self.qt_self.check_box_spectrum_tx1.setDisabled(False)
+            self.qt_self.check_box_spectrum_tx1.setChecked(True)
+
+            self.qt_self.check_box_spectrum_tx2.setDisabled(True)
+            self.qt_self.check_box_spectrum_tx2.setChecked(False)
+            
+            self.qt_self.check_box_spectrum_rx1.setDisabled(False)
+            self.qt_self.check_box_spectrum_rx1.setChecked(True)
+            self.qt_self.check_box_spectrum_rx2.setDisabled(True)
+            self.qt_self.check_box_spectrum_rx2.setChecked(False)
+            self.qt_self.check_box_spectrum_rx3.setDisabled(True)
+            self.qt_self.check_box_spectrum_rx3.setChecked(False)
+            self.qt_self.check_box_spectrum_rx4.setDisabled(True)
+            self.qt_self.check_box_spectrum_rx4.setChecked(False)
+            
+            self.qt_self.tab_plots.setTabEnabled(4, False)
+            self.qt_self.tab_plots.setTabEnabled(5, False)
+            self.qt_self.tab_plots.setTabEnabled(6, False)
+        else:
+            self.qt_self.check_box_spectrum_tx1.setDisabled(False)
+            self.qt_self.check_box_spectrum_tx1.setChecked(True)
+
+            self.qt_self.check_box_spectrum_tx2.setDisabled(True)
+            self.qt_self.check_box_spectrum_tx2.setChecked(False)
+            
+            self.qt_self.check_box_spectrum_rx1.setDisabled(False)
+            self.qt_self.check_box_spectrum_rx1.setChecked(True)
+            self.qt_self.check_box_spectrum_rx2.setDisabled(True)
+            self.qt_self.check_box_spectrum_rx2.setChecked(False)
+            self.qt_self.check_box_spectrum_rx3.setDisabled(True)
+            self.qt_self.check_box_spectrum_rx3.setChecked(False)
+            self.qt_self.check_box_spectrum_rx4.setDisabled(True)
+            self.qt_self.check_box_spectrum_rx4.setChecked(False)
     
     def handle_replay_state(self) -> None:
         if self.qt_self.check_box_replay.isChecked():
@@ -398,7 +477,7 @@ class MIRA_GUI_CTRL():
     def set_device_connected(self) -> None:
         if self.radar_param.mon.chip_version_digital_id != '' and \
            self.radar_param.mon.chip_version_rf_id != '':
-            self.qt_self.usb_device_connected_label.setText(f'{self.radar_param.mon.chip_version_digital_id} | ' + \
+            self.qt_self.usb_device_connected_label.setText(f'{self.radar_param.mon.sykno_product_name} | ' + \
                                                             f'{self.radar_param.mon.chip_version_rf_id}')
         else:
             self.qt_self.usb_device_connected_label.setText(f'No Device')
