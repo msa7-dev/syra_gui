@@ -39,7 +39,7 @@
   </property>
   <property name="windowIcon">
    <iconset>
-    <normaloff>pics/icon_Sykno.png</normaloff>pics/icon_Sykno.png</iconset>
+    <normaloff>../../../../../../../.designer/backup/pics/icon_Sykno.png</normaloff>../../../../../../../.designer/backup/pics/icon_Sykno.png</iconset>
   </property>
   <widget class="QWidget" name="centralwidget">
    <property name="sizePolicy">
@@ -213,6 +213,9 @@
             <property name="pixmap">
              <pixmap>pics/Logo_Sykno_white.svg</pixmap>
             </property>
+            <property name="scaledContents">
+             <bool>true</bool>
+            </property>
            </widget>
           </item>
           <item row="0" column="0">
@@ -254,7 +257,7 @@
              </font>
             </property>
             <property name="currentIndex">
-             <number>0</number>
+             <number>6</number>
             </property>
             <widget class="QWidget" name="tab_0">
              <attribute name="title">

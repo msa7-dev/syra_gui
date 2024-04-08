@@ -15,7 +15,6 @@ class MIRA_DEVICE:
         self.init = True
         self.mira_bridge = MIRA_USB_SPI_BRIDGE(self)
 
-
         if self.mira_bridge.device is None:
             self.init = False
             return 

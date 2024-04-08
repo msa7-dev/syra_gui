@@ -55,9 +55,6 @@ class MIRA_MAIN_GUI(QtWidgets.QMainWindow):
         self.processed_radar_data = {'Channel 1': np.zeros((1,1,1), dtype=np.float32),
                                      'Channel 2': np.zeros((1,1,1), dtype=np.float32)}
         
-        self.plot_channel_order_list = ['RX1 TX1', 'RX2 TX1', 'RX3 TX1', 'RX4 TX1',
-                                        'RX1 TX2', 'RX2 TX2', 'RX3 TX2', 'RX4 TX2']
-
     def set_updates_per_sec(self, timer: QtCore.QTimer, fps: int) -> None:
         timer.start(int(1000 / fps))  # Interval in milliseconds
 
@@ -81,6 +78,16 @@ class MIRA_MAIN_GUI(QtWidgets.QMainWindow):
     # Start and stop processing threads
     def start_stop(self) -> None:
         if not self.running:
+            if self.radar_param.mon.sykno_product_name == 'MiRa6024I1A':
+                self.plot_channel_order_list = ['RX1 TX1', 'RX2 TX1', 'RX3 TX1', 'RX4 TX1',
+                                                'RX1 TX2', 'RX2 TX2', 'RX3 TX2', 'RX4 TX2']
+            elif self.radar_param.mon.sykno_product_name == 'SY60I13':
+                self.plot_channel_order_list = ['RX1 TX1', 'RX2 TX1', 'RX3 TX1']
+            elif self.radar_param.mon.sykno_product_name == 'SY60I11':
+                self.plot_channel_order_list = ['RX1 TX1']
+            else:
+                self.plot_channel_order_list = ['RX1 TX1']
+            
             self.button_startstop.clicked.disconnect()
             self.button_startstop.clicked.connect(self.start_stop)
             self.prev_time = 0
@@ -96,6 +103,8 @@ class MIRA_MAIN_GUI(QtWidgets.QMainWindow):
                 return
             else:
                 self.button_startstop.setText("Stop")
+            self.gui_controller.update_gui_sensor_detected()
+
             self.mira_processor = MIRA_MULTIPROCESSOR(self.mira_controller)
             
             self.gui_controller.get_axis_x()
@@ -140,13 +149,10 @@ class MIRA_MAIN_GUI(QtWidgets.QMainWindow):
     def auto_connect_device(self) -> None:
         if self.mira_controller is None:
             self.mira_controller = MIRA_CTRL_GUI(self.radar_param)
-            # self.firmware_version_label.setText(f"{self.radar_param.mon.product_usb.split('(')[1].replace(') |', '')}")
+            self.firmware_version_label.setText(f"{self.radar_param.mon.product_usb.split('(')[1].replace(') |', '')}")
         if self.mira_controller.mira_device.mira_bridge.device is None:
             self.mira_controller = None
             return
-        self.gui_controller.bgt_reg_browser.reinit(f"{self.radar_param.mon.sykno_product_name}")
-        self.gui_controller.meas_in_path_browser.reinit(f"{self.radar_param.mon.sykno_product_name}")
-        self.gui_controller.meas_out_path_browser.reinit(f"{self.radar_param.mon.sykno_product_name}")
         self.connect_timer.stop()
         self.connect_timer.timeout.disconnect()
         self.gui_controller.set_device_connected()
@@ -283,7 +289,7 @@ class MIRA_MAIN_GUI(QtWidgets.QMainWindow):
             for plot_counter, channel in enumerate(self.plot_channel_order_list):
                 if self.radar_param.gui.active_tx[0] \
                     and 'Channel 1' in self.processed_radar_data \
-                        and plot_counter <= 3:
+                    and plot_counter <= 3:
                     if  self.radar_param.gui.active_rx[plot_counter]:
                         self.gui_controller.mira_plotter.time_signal.plotlines[
                             f"{self.gui_controller.tab_name_time} {channel}"].setData(
@@ -292,7 +298,8 @@ class MIRA_MAIN_GUI(QtWidgets.QMainWindow):
 
                 if self.radar_param.gui.active_tx[1] \
                     and 'Channel 2' in self.processed_radar_data \
-                    and plot_counter > 3:
+                    and plot_counter > 3 \
+                    and self.radar_param.mon.sykno_product_name == 'MiRa6024I1A':
                     if  self.radar_param.gui.active_rx[plot_counter-4]:
                         self.gui_controller.mira_plotter.time_signal.plotlines[
                             f"{self.gui_controller.tab_name_time} {channel}"].setData(
@@ -314,7 +321,8 @@ class MIRA_MAIN_GUI(QtWidgets.QMainWindow):
 
                 if self.radar_param.gui.active_tx[1] \
                    and 'Channel 2' in self.processed_radar_data \
-                   and plot_counter > 3:
+                   and plot_counter > 3 \
+                   and self.radar_param.mon.sykno_product_name == 'MiRa6024I1A':
                     if  self.radar_param.gui.active_rx[plot_counter-4]:
                         self.gui_controller.mira_plotter.spectrum.plotlines[
                             f"{self.gui_controller.tab_name_main_instance_window} {channel}"].setData(

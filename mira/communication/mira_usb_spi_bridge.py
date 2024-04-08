@@ -27,6 +27,9 @@ class MIRA_USB_SPI_BRIDGE():
         self.config = configparser.ConfigParser()
         self.config.read(__init__.MIRA_SYS_CONFIG_PATH)
         
+        self.read_counter = 0
+        self.write_counter = 0
+        
         self.mira_device = mira_device
         self.mcu_usb_def = MIRA_MCU_USB_DEF()
         self.mcu_commands = MIRA_MCU_COMMANDS()
@@ -45,9 +48,9 @@ class MIRA_USB_SPI_BRIDGE():
             return
 
         self.spi_init_bgt()
+        
         logger.debug('Finished BGT Device Init')
-        self.read_counter = 0
-        self.write_counter = 0
+
         
     def send_usb_payload(self, usb_payload: bytearray) -> None:
         try:
@@ -71,6 +74,7 @@ class MIRA_USB_SPI_BRIDGE():
     def spi_init_bgt(self) -> None:
         self.spi_get_chip_id()
         user_reg_vals = self.get_default_bgt_register_values()
+
         self.spi_set_dummy_cref(user_reg_vals)
         usb_payload = bytearray([self.mcu_commands.init_bgt_cmd]) + user_reg_vals
         self.send_usb_payload(usb_payload)
@@ -103,9 +107,7 @@ class MIRA_USB_SPI_BRIDGE():
             '-c', 'port=/dev/ttyUSB0', 'br=115200',
             '-w', f'./mira/setup/mcu_firmware/{firmware}.bin', '0x08000000',
             '-v',
-            '-g 0x00000000'
-        ]
-
+            '-g 0x00000000']
         success_message = "  Address:      : 0x0"
 
         # Start the subprocess and obtain handles to its stdout and stderr
@@ -131,14 +133,16 @@ class MIRA_USB_SPI_BRIDGE():
 
     def init_fifo_overhead(self):
         USB_SPI_BRIDGE_DATA_ALLOCATION = int(self.config.get("MIRA_USB_SPI_BRIDGE", 
-                                                             "USB_SPI_BRIDGE_DATA_ALLOCATION")) 
-        self.radar_param.sys.n_fifo_overhead = np.uint8(USB_SPI_BRIDGE_DATA_ALLOCATION/ \
-            (self.radar_param.sys.n_samples_per_chirp[0]*3* \
-        (self.radar_param.sys.rx_active_antennas[0]/sum(self.radar_param.sys.tx_active_antennas))))
+                                                            f"USB_SPI_BRIDGE_DATA_ALLOCATION_{self.radar_param.mon.sykno_product_name}")) 
+        self.radar_param.sys.n_fifo_overhead = np.uint8(USB_SPI_BRIDGE_DATA_ALLOCATION \
+            / (self.radar_param.sys.n_samples_per_chirp[0] * self.radar_param.sys.allocation_factor  \
+            * (self.radar_param.sys.rx_active_antennas[0] / sum(self.radar_param.sys.tx_active_antennas))))
+
         self.spi_set_n_fifo_overhead(self.radar_param.sys.n_fifo_overhead)
       
     def spi_set_n_fifo_overhead(self, n_fifo_overhead: np.uint8) -> None:
         self.n_fifo_overhead = n_fifo_overhead
+        print(self.n_fifo_overhead)
         usb_payload = bytearray([self.mcu_commands.set_fifo_overhead_cmd, self.n_fifo_overhead])
         self.send_usb_payload(usb_payload)
         
@@ -166,16 +170,19 @@ class MIRA_USB_SPI_BRIDGE():
             self.radar_param.mon.chip_version_digital_id = str("BGT60ATR24C")
             self.radar_param.mon.chip_version_rf_id = str("2 Tx, 4 Rx")
             self.radar_param.mon.sykno_product_name = str("MiRa6024I1A")
+            self.radar_param.sys.allocation_factor = 3
         elif chip_rf_id == 3 and chip_digital_id == 3:
             self.radar_param.mon.chip_version_digital_id = str("BGT60TR13C")
             self.radar_param.mon.chip_version_rf_id = str("1 Tx, 3 Rx")
             self.radar_param.mon.sykno_product_name = str("SY60I13")
+            self.radar_param.sys.allocation_factor = 1.5
         elif chip_rf_id == 12 and chip_digital_id == 7:
             self.radar_param.mon.chip_version_digital_id = str("BGT60UTR11AIP")
             self.radar_param.mon.chip_version_rf_id = str("1 Tx, 1 Rx")
             self.radar_param.mon.sykno_product_name = str("SY60I11")
+            self.radar_param.sys.allocation_factor = 1.5
             
-        logger.debug(f"\nConnected to {product_name} device, which is using {self.radar_param.mon.chip_version_digital_id} with {self.radar_param.mon.chip_version_rf_id} Antenns")
+        logger.debug(f"\nConnected to {product_name} device, equipped with {self.radar_param.mon.chip_version_digital_id} radar sensor with {self.radar_param.mon.chip_version_rf_id} antenns")
 
     def spi_set_dummy_cref(self, user_reg_vals: bytearray) -> None:
         index = 0
@@ -208,20 +215,19 @@ class MIRA_USB_SPI_BRIDGE():
         setproctitle.setproctitle("Sykno - MiRa Eval GUI - Data Acquisition Process")
 
         USB_SPI_BRIDGE_DATA_ALLOCATION = np.uint32(self.config.get("MIRA_USB_SPI_BRIDGE", 
-                                                                   "USB_SPI_BRIDGE_DATA_ALLOCATION")) 
+                                                                   f"USB_SPI_BRIDGE_DATA_ALLOCATION_{self.radar_param.mon.sykno_product_name}")) 
         DATA_ALLOCATION = np.uint32(USB_SPI_BRIDGE_DATA_ALLOCATION+self.radar_param.sys.n_fifo_overhead*9)
-
+        
         raw_data = np.zeros(1,)
         while not process_stop_event.is_set():
             usb.util.release_interface(self.device, self.interface)
             try:
                 raw_data = np.asarray(self.endpoint_in.read(DATA_ALLOCATION, 
-                                                      timeout=0),
-                                                      dtype=np.uint8)
+                                                            timeout=0),
+                                                            dtype=np.uint8)
             except:
                 continue
             usb.util.release_interface(self.device, self.interface)
-
             if raw_data.shape == (DATA_ALLOCATION,):
                 usb_extraction_data_queue.put(raw_data)
 
@@ -347,8 +353,8 @@ class MIRA_USB_SPI_BRIDGE():
                         if endpoint.bEndpointAddress == 0x1:  # Endpoint 0x1 (OUT)
                             self.endpoint_out = endpoint
                     if self.endpoint_out is not None and self.endpoint_in is not None:
-                        self.radar_param.mon.serial_usb = usb.util.get_string(self.device, self.device.iProduct)
-                        self.radar_param.mon.product_usb = usb.util.get_string(self.device, self.device.iSerialNumber)
+                        self.radar_param.mon.product_usb = usb.util.get_string(self.device, self.device.iProduct)
+                        self.radar_param.mon.serial_usb = usb.util.get_string(self.device, self.device.iSerialNumber)
                         self.radar_param.mon.manufacturer_usb = usb.util.get_string(self.device, self.device.iManufacturer)
                         break
 
@@ -404,7 +410,6 @@ class MIRA_USB_SPI_BRIDGE():
     def get_default_bgt_register_values(self) -> bytearray:
         mira_reg_dir_path = Path(self.config.get("MIRA_BGT_SETTINGS",
                                                  "MIRA_SENS_CONF_DIR_PATH")).resolve()
-        print(self.radar_param.gui.project_name )
         self.radar_param.gui.project_name = self.radar_param.gui.project_name if self.radar_param.gui.project_name == ' ' else 'Default_'
         file_path = Path(f"{mira_reg_dir_path}/{self.radar_param.gui.project_name}{self.radar_param.mon.sykno_product_name}.txt")
         
