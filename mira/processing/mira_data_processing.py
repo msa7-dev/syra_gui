@@ -256,7 +256,9 @@ class MIRA_DATA_PROCESSOR():
             ch_data = ch_data[:,:,0:4]
         elif self.range_doppler_tab_index == 'TX2':
             ch_data = ch_data[:,:,4:8]
-
+        elif self.main_tab_index == 'Range Doppler Azimuth':
+            pass
+        
         # simple static target oppression 
         ch_data -= np.mean(ch_data, axis=0, keepdims=True)
         
@@ -281,6 +283,9 @@ class MIRA_DATA_PROCESSOR():
         elif self.max_value_type == 'freq':
             self.range_doppler_map = (range_doppler[0:range_doppler.shape[0],:,:])
 
+        if self.main_tab_index == 'Range Doppler Azimuth':
+            self.range_doppler_map = np.mean(self.range_doppler_map, axis=2, keepdims=True)
+        
         return np.asarray(self.range_doppler_map, dtype=np.float32)
     
     

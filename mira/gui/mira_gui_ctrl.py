@@ -705,8 +705,12 @@ class MIRA_GUI_CTRL():
     
     def get_bgt_vga_gain(self):
         curr_bgt_vga_gain = self.qt_self.combo_box_bgt_vga_gain.currentText()        
-        self.radar_param.sys.bgt_vga_gain[0] = int(int(curr_bgt_vga_gain.split(' ')[0])/5)
+        self.radar_param.sys.bgt_vga_gain[0] = int(curr_bgt_vga_gain.split(' ')[0])
         self.update_bgt_hp_filter()
+        
+    # encode dB value to index value
+    def encode_bgt_vga_gain(self, vga_gain_value: np.uint8) -> np.uint8:
+        return np.uint8(vga_gain_value/5)
 
     def get_bgt_hp_gain(self):
         curr_bgt_hp_gain = self.qt_self.combo_box_bgt_hp_gain.currentText()
@@ -714,12 +718,16 @@ class MIRA_GUI_CTRL():
 
         # encode register value - see REG CSX_2 
         # BGT Datasheet p. 51ff 
-        if bgt_hp_gain == 18:
-            self.radar_param.sys.bgt_hp_gain[0] = 1
-        elif bgt_hp_gain == 30:
-            self.radar_param.sys.bgt_hp_gain[0] = 0
+        self.radar_param.sys.bgt_hp_gain[0] = bgt_hp_gain
 
         self.update_bgt_hp_filter()
+    
+    # encode dB value to index value
+    def encode_bgt_hp_gain(self, hp_gain_value) -> np.uint8:
+        if hp_gain_value == 18:
+            return 0
+        elif hp_gain_value == 30:
+            return 1
         
     def get_bgt_hp_fc(self):
         curr_bgt_hp_fc = self.qt_self.combo_box_bgt_hp_fc.currentText()
@@ -727,16 +735,21 @@ class MIRA_GUI_CTRL():
 
         # encode register value - see REG CSX_2 
         # BGT Datasheet p. 51ff
-        if bgt_hp_fc == 20:
-            self.radar_param.sys.bgt_hp_fc[0] = 0
-        elif bgt_hp_fc == 45:
-            self.radar_param.sys.bgt_hp_fc[0] = 1
-        elif bgt_hp_fc == 70:
-            self.radar_param.sys.bgt_hp_fc[0] = 2
-        elif bgt_hp_fc == 80:
-            self.radar_param.sys.bgt_hp_fc[0] = 3
+        self.radar_param.sys.bgt_hp_fc[0] = bgt_hp_fc
+
         self.update_bgt_hp_filter()
         
+    # encode kHz value to index value
+    def encode_bgt_hp_fc(self, hp_fc_value) -> np.uint8:
+        if hp_fc_value == 20:
+            return 0
+        elif hp_fc_value == 45:
+            return 1
+        elif hp_fc_value == 70:
+            return 2
+        elif hp_fc_value == 80:
+            return 3            
+            
     def get_measurement_duration(self) -> None:
         measurement_duration_text = self.qt_self.combo_box_measurement_duration.currentText()
         measurement_duration_unit = 's'
@@ -817,30 +830,30 @@ class MIRA_GUI_CTRL():
 
     def update_bgt_hp_filter(self):
         if self.radar_param.gui.hp_ch_rx[0]:
-            self.set_hp_filter(self.radar_param.sys.bgt_vga_gain[0],
-                               self.radar_param.sys.bgt_hp_gain[0],
-                               self.radar_param.sys.bgt_hp_fc[0], 1)
+            self.set_hp_filter(self.encode_bgt_vga_gain(self.radar_param.sys.bgt_vga_gain[0]),
+                               self.encode_bgt_hp_gain(self.radar_param.sys.bgt_hp_gain[0]),
+                               self.encode_bgt_hp_fc(self.radar_param.sys.bgt_hp_fc[0]), 1)
         else:
             self.set_hp_filter(0, 0, 0, 1)
    
         if self.radar_param.gui.hp_ch_rx[1]:
-            self.set_hp_filter(self.radar_param.sys.bgt_vga_gain[0],
-                               self.radar_param.sys.bgt_hp_gain[0],
-                               self.radar_param.sys.bgt_hp_fc[0], 2)
+            self.set_hp_filter(self.encode_bgt_vga_gain(self.radar_param.sys.bgt_vga_gain[0]),
+                               self.encode_bgt_hp_gain(self.radar_param.sys.bgt_hp_gain[0]),
+                               self.encode_bgt_hp_fc(self.radar_param.sys.bgt_hp_fc[0]), 2)
         else:
             self.set_hp_filter(0, 0, 0, 2)
 
         if self.radar_param.gui.hp_ch_rx[2]:
-            self.set_hp_filter(self.radar_param.sys.bgt_vga_gain[0],
-                               self.radar_param.sys.bgt_hp_gain[0],
-                               self.radar_param.sys.bgt_hp_fc[0], 3)
+            self.set_hp_filter(self.encode_bgt_vga_gain(self.radar_param.sys.bgt_vga_gain[0]),
+                               self.encode_bgt_hp_gain(self.radar_param.sys.bgt_hp_gain[0]),
+                               self.encode_bgt_hp_fc(self.radar_param.sys.bgt_hp_fc[0]), 3)
         else:
             self.set_hp_filter(0, 0, 0, 3)
 
         if self.radar_param.gui.hp_ch_rx[3]:
-            self.set_hp_filter(self.radar_param.sys.bgt_vga_gain[0],
-                               self.radar_param.sys.bgt_hp_gain[0],
-                               self.radar_param.sys.bgt_hp_fc[0], 4)
+            self.set_hp_filter(self.encode_bgt_vga_gain(self.radar_param.sys.bgt_vga_gain[0]),
+                               self.encode_bgt_hp_gain(self.radar_param.sys.bgt_hp_gain[0]),
+                               self.encode_bgt_hp_fc(self.radar_param.sys.bgt_hp_fc[0]), 4)
         else:            
             self.set_hp_filter(0, 0, 0, 4)
             

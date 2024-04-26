@@ -384,7 +384,7 @@ class RANGE_DOPPLER_PLOTTER():
                                         qt_self.plot_range_doppler_5, 
                                         qt_self.plot_range_doppler_6,
                                         qt_self.plot_range_doppler_7, 
-                                        qt_self.plot_range_doppler_8, 
+                                        qt_self.plot_range_doppler_8,
                                         qt_self.plot_range_doppler_azimuth_range_doppler] 
         self.radar_param = qt_self.radar_param
         self.init_plot_parameters()
