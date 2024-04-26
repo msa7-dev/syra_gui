@@ -1,5 +1,5 @@
 MAIN (0x0):
-Register Value:  0x1c0e20
+Register Value:  0x1c4f70
 Register Symbol  | Value (dec)  | Value (hex)  | Value (bin) 
 _____________________________________________________________
 LDO_MODE         |      0       |     0x0      |     0b0     
@@ -7,8 +7,8 @@ LOAD_STRENGTH    |      0       |     0x0      |     0b0
 MADC_BG_CLK_DIV  |      3       |     0x3      |     0b11    
 SADC_BG_CLK_DIV  |      2       |     0x2      |     0b10    
 CW_MODE          |      0       |     0x0      |     0b0     
-TR_WKUP_MUL      |      0       |     0x0      |     0b0     
-TR_WKUP          |     226      |     0xe2     |  0b11100010 
+TR_WKUP_MUL      |      4       |     0x4      |    0b100    
+TR_WKUP          |     247      |     0xf7     |  0b11110111 
 FIFO_RESET       |      0       |     0x0      |     0b0     
 FSM_RESET        |      0       |     0x0      |     0b0     
 SW_RESET         |      0       |     0x0      |     0b0     
@@ -31,11 +31,11 @@ STC              |      0       |     0x0      |     0b0
 _____________________________________________________________
 
 CHIP_VERSION (0x2):
-Register Value:  0x70c
+Register Value:  0x504
 Register Symbol  | Value (dec)  | Value (hex)  | Value (bin) 
 _____________________________________________________________
-DIGITAL_ID       |      7       |     0x7      |    0b111    
-RF_ID            |      12      |     0xc      |    0b1100   
+DIGITAL_ID       |      5       |     0x5      |    0b101    
+RF_ID            |      4       |     0x4      |    0b100    
 _____________________________________________________________
 
 STAT1 (0x3):
@@ -81,33 +81,33 @@ DIVSET           |      20      |     0x14     |   0b10100
 _____________________________________________________________
 
 SFCTL (0x6):
-Register Value:  0x1003ff
+Register Value:  0x102fff
 Register Symbol  | Value (dec)  | Value (hex)  | Value (bin) 
 _____________________________________________________________
 PREFIX_EN        |      0       |     0x0      |     0b0     
 MISO_HS_RD       |      0       |     0x0      |     0b0     
-FIFO_LP_MODE     |      0       |     0x0      |     0b0     
+FIFO_LP_MODE     |      1       |     0x1      |     0b1     
 LFSR_EN          |      0       |     0x0      |     0b0     
 QSPI_WT          |      1       |     0x1      |     0b1     
-FIFO_CREF        |     1023     |    0x3ff     | 0b1111111111
+FIFO_CREF        |     4095     |    0xfff     | 0b111111111111
 _____________________________________________________________
 
 SADC_CTRL (0x7):
-Register Value:  0x0
+Register Value:  0x109c0
 Register Symbol  | Value (dec)  | Value (hex)  | Value (bin) 
 _____________________________________________________________
-TC_TRIM          |      0       |     0x0      |     0b0     
+TC_TRIM          |      4       |     0x4      |    0b100    
 DSCAL            |      0       |     0x0      |     0b0     
 LVGAIN           |      0       |     0x0      |     0b0     
-SESP             |      0       |     0x0      |     0b0     
-SD_EN            |      0       |     0x0      |     0b0     
-SADC_CLK_DIV     |      0       |     0x0      |     0b0     
+SESP             |      1       |     0x1      |     0b1     
+SD_EN            |      1       |     0x1      |     0b1     
+SADC_CLK_DIV     |      3       |     0x3      |     0b11    
 SADC_START       |      0       |     0x0      |     0b0     
 SADC_CHSEL       |      0       |     0x0      |     0b0     
 _____________________________________________________________
 
 CSI_0 (0x8):
-Register Value:  0x0
+Register Value:  0x50
 Register Symbol  | Value (dec)  | Value (hex)  | Value (bin) 
 _____________________________________________________________
 BBCHGLOB_EN      |      0       |     0x0      |     0b0     
@@ -121,9 +121,9 @@ RX1MIX_EN        |      0       |     0x0      |     0b0
 RX1LOBUF_EN      |      0       |     0x0      |     0b0     
 LO_DIST1_EN      |      0       |     0x0      |     0b0     
 LO_DIST2_EN      |      0       |     0x0      |     0b0     
-FDIV_EN          |      0       |     0x0      |     0b0     
+FDIV_EN          |      1       |     0x1      |     0b1     
 TEST_DIV_EN      |      0       |     0x0      |     0b0     
-VCO_EN           |      0       |     0x0      |     0b0     
+VCO_EN           |      1       |     0x1      |     0b1     
 PD2_EN           |      0       |     0x0      |     0b0     
 TX2_EN           |      0       |     0x0      |     0b0     
 PD1_EN           |      0       |     0x0      |     0b0     
@@ -131,7 +131,7 @@ TX1_EN           |      0       |     0x0      |     0b0
 _____________________________________________________________
 
 CSDS_0 (0xc):
-Register Value:  0x0
+Register Value:  0x50
 Register Symbol  | Value (dec)  | Value (hex)  | Value (bin) 
 _____________________________________________________________
 BBCHGLOB_EN      |      0       |     0x0      |     0b0     
@@ -145,9 +145,9 @@ RX1MIX_EN        |      0       |     0x0      |     0b0
 RX1LOBUF_EN      |      0       |     0x0      |     0b0     
 LO_DIST1_EN      |      0       |     0x0      |     0b0     
 LO_DIST2_EN      |      0       |     0x0      |     0b0     
-FDIV_EN          |      0       |     0x0      |     0b0     
+FDIV_EN          |      1       |     0x1      |     0b1     
 TEST_DIV_EN      |      0       |     0x0      |     0b0     
-VCO_EN           |      0       |     0x0      |     0b0     
+VCO_EN           |      1       |     0x1      |     0b1     
 PD2_EN           |      0       |     0x0      |     0b0     
 TX2_EN           |      0       |     0x0      |     0b0     
 PD1_EN           |      0       |     0x0      |     0b0     
@@ -155,22 +155,22 @@ TX1_EN           |      0       |     0x0      |     0b0
 _____________________________________________________________
 
 CSU1_0 (0x10):
-Register Value:  0x3c71
+Register Value:  0x1ffc51
 Register Symbol  | Value (dec)  | Value (hex)  | Value (bin) 
 _____________________________________________________________
-BBCHGLOB_EN      |      0       |     0x0      |     0b0     
-RX4MIX_EN        |      0       |     0x0      |     0b0     
-RX4LOBUF_EN      |      0       |     0x0      |     0b0     
-RX3MIX_EN        |      0       |     0x0      |     0b0     
-RX3LOBUF_EN      |      0       |     0x0      |     0b0     
-RX2MIX_EN        |      0       |     0x0      |     0b0     
-RX2LOBUF_EN      |      0       |     0x0      |     0b0     
+BBCHGLOB_EN      |      1       |     0x1      |     0b1     
+RX4MIX_EN        |      1       |     0x1      |     0b1     
+RX4LOBUF_EN      |      1       |     0x1      |     0b1     
+RX3MIX_EN        |      1       |     0x1      |     0b1     
+RX3LOBUF_EN      |      1       |     0x1      |     0b1     
+RX2MIX_EN        |      1       |     0x1      |     0b1     
+RX2LOBUF_EN      |      1       |     0x1      |     0b1     
 RX1MIX_EN        |      1       |     0x1      |     0b1     
 RX1LOBUF_EN      |      1       |     0x1      |     0b1     
 LO_DIST1_EN      |      1       |     0x1      |     0b1     
 LO_DIST2_EN      |      1       |     0x1      |     0b1     
 FDIV_EN          |      1       |     0x1      |     0b1     
-TEST_DIV_EN      |      1       |     0x1      |     0b1     
+TEST_DIV_EN      |      0       |     0x0      |     0b0     
 VCO_EN           |      1       |     0x1      |     0b1     
 PD2_EN           |      0       |     0x0      |     0b0     
 TX2_EN           |      0       |     0x0      |     0b0     
@@ -203,25 +203,25 @@ TX1_EN           |      0       |     0x0      |     0b0
 _____________________________________________________________
 
 CSU2_0 (0x17):
-Register Value:  0x0
+Register Value:  0x1ffc54
 Register Symbol  | Value (dec)  | Value (hex)  | Value (bin) 
 _____________________________________________________________
-BBCHGLOB_EN      |      0       |     0x0      |     0b0     
-RX4MIX_EN        |      0       |     0x0      |     0b0     
-RX4LOBUF_EN      |      0       |     0x0      |     0b0     
-RX3MIX_EN        |      0       |     0x0      |     0b0     
-RX3LOBUF_EN      |      0       |     0x0      |     0b0     
-RX2MIX_EN        |      0       |     0x0      |     0b0     
-RX2LOBUF_EN      |      0       |     0x0      |     0b0     
-RX1MIX_EN        |      0       |     0x0      |     0b0     
-RX1LOBUF_EN      |      0       |     0x0      |     0b0     
-LO_DIST1_EN      |      0       |     0x0      |     0b0     
-LO_DIST2_EN      |      0       |     0x0      |     0b0     
-FDIV_EN          |      0       |     0x0      |     0b0     
+BBCHGLOB_EN      |      1       |     0x1      |     0b1     
+RX4MIX_EN        |      1       |     0x1      |     0b1     
+RX4LOBUF_EN      |      1       |     0x1      |     0b1     
+RX3MIX_EN        |      1       |     0x1      |     0b1     
+RX3LOBUF_EN      |      1       |     0x1      |     0b1     
+RX2MIX_EN        |      1       |     0x1      |     0b1     
+RX2LOBUF_EN      |      1       |     0x1      |     0b1     
+RX1MIX_EN        |      1       |     0x1      |     0b1     
+RX1LOBUF_EN      |      1       |     0x1      |     0b1     
+LO_DIST1_EN      |      1       |     0x1      |     0b1     
+LO_DIST2_EN      |      1       |     0x1      |     0b1     
+FDIV_EN          |      1       |     0x1      |     0b1     
 TEST_DIV_EN      |      0       |     0x0      |     0b0     
-VCO_EN           |      0       |     0x0      |     0b0     
+VCO_EN           |      1       |     0x1      |     0b1     
 PD2_EN           |      0       |     0x0      |     0b0     
-TX2_EN           |      0       |     0x0      |     0b0     
+TX2_EN           |      1       |     0x1      |     0b1     
 PD1_EN           |      0       |     0x0      |     0b0     
 TX1_EN           |      0       |     0x0      |     0b0     
 _____________________________________________________________
@@ -371,12 +371,12 @@ TX1_DAC          |      0       |     0x0      |     0b0
 _____________________________________________________________
 
 CSU1_1 (0x11):
-Register Value:  0x13c41f
+Register Value:  0xff141f
 Register Symbol  | Value (dec)  | Value (hex)  | Value (bin) 
 _____________________________________________________________
-BBCH_SEL         |      1       |     0x1      |     0b1     
-BB_RSTCNT        |      30      |     0x1e     |   0b11110   
-TEMP_MEAS_EN     |      0       |     0x0      |     0b0     
+BBCH_SEL         |      15      |     0xf      |    0b1111   
+BB_RSTCNT        |     120      |     0x78     |  0b1111000  
+TEMP_MEAS_EN     |      1       |     0x1      |     0b1     
 MADC_EN          |      1       |     0x1      |     0b1     
 TX2_DAC          |      0       |     0x0      |     0b0     
 TX1_DAC          |      31      |     0x1f     |   0b11111   
@@ -395,14 +395,14 @@ TX1_DAC          |      0       |     0x0      |     0b0
 _____________________________________________________________
 
 CSU2_1 (0x18):
-Register Value:  0x0
+Register Value:  0xff17e0
 Register Symbol  | Value (dec)  | Value (hex)  | Value (bin) 
 _____________________________________________________________
-BBCH_SEL         |      0       |     0x0      |     0b0     
-BB_RSTCNT        |      0       |     0x0      |     0b0     
-TEMP_MEAS_EN     |      0       |     0x0      |     0b0     
-MADC_EN          |      0       |     0x0      |     0b0     
-TX2_DAC          |      0       |     0x0      |     0b0     
+BBCH_SEL         |      15      |     0xf      |    0b1111   
+BB_RSTCNT        |     120      |     0x78     |  0b1111000  
+TEMP_MEAS_EN     |      1       |     0x1      |     0b1     
+MADC_EN          |      1       |     0x1      |     0b1     
+TX2_DAC          |      31      |     0x1f     |   0b11111   
 TX1_DAC          |      0       |     0x0      |     0b0     
 _____________________________________________________________
 
@@ -497,17 +497,17 @@ HPF_SEL1         |      0       |     0x0      |     0b0
 _____________________________________________________________
 
 CSU1_2 (0x12):
-Register Value:  0x6b
+Register Value:  0xf9ce73
 Register Symbol  | Value (dec)  | Value (hex)  | Value (bin) 
 _____________________________________________________________
-HP_GAIN          |      0       |     0x0      |     0b0     
-VGA_GAIN4        |      0       |     0x0      |     0b0     
-HPF_SEL4         |      0       |     0x0      |     0b0     
-VGA_GAIN3        |      0       |     0x0      |     0b0     
-HPF_SEL3         |      0       |     0x0      |     0b0     
-VGA_GAIN2        |      0       |     0x0      |     0b0     
+HP_GAIN          |      15      |     0xf      |    0b1111   
+VGA_GAIN4        |      4       |     0x4      |    0b100    
+HPF_SEL4         |      3       |     0x3      |     0b11    
+VGA_GAIN3        |      4       |     0x4      |    0b100    
+HPF_SEL3         |      3       |     0x3      |     0b11    
+VGA_GAIN2        |      4       |     0x4      |    0b100    
 HPF_SEL2         |      3       |     0x3      |     0b11    
-VGA_GAIN1        |      2       |     0x2      |     0b10    
+VGA_GAIN1        |      4       |     0x4      |    0b100    
 HPF_SEL1         |      3       |     0x3      |     0b11    
 _____________________________________________________________
 
@@ -527,18 +527,18 @@ HPF_SEL1         |      0       |     0x0      |     0b0
 _____________________________________________________________
 
 CSU2_2 (0x19):
-Register Value:  0x0
+Register Value:  0xf9ce73
 Register Symbol  | Value (dec)  | Value (hex)  | Value (bin) 
 _____________________________________________________________
-HP_GAIN          |      0       |     0x0      |     0b0     
-VGA_GAIN4        |      0       |     0x0      |     0b0     
-HPF_SEL4         |      0       |     0x0      |     0b0     
-VGA_GAIN3        |      0       |     0x0      |     0b0     
-HPF_SEL3         |      0       |     0x0      |     0b0     
-VGA_GAIN2        |      0       |     0x0      |     0b0     
-HPF_SEL2         |      0       |     0x0      |     0b0     
-VGA_GAIN1        |      0       |     0x0      |     0b0     
-HPF_SEL1         |      0       |     0x0      |     0b0     
+HP_GAIN          |      15      |     0xf      |    0b1111   
+VGA_GAIN4        |      4       |     0x4      |    0b100    
+HPF_SEL4         |      3       |     0x3      |     0b11    
+VGA_GAIN3        |      4       |     0x4      |    0b100    
+HPF_SEL3         |      3       |     0x3      |     0b11    
+VGA_GAIN2        |      4       |     0x4      |    0b100    
+HPF_SEL2         |      3       |     0x3      |     0b11    
+VGA_GAIN1        |      4       |     0x4      |    0b100    
+HPF_SEL1         |      3       |     0x3      |     0b11    
 _____________________________________________________________
 
 CSD2_2 (0x1c):
@@ -617,31 +617,31 @@ HPF_SEL1         |      0       |     0x0      |     0b0
 _____________________________________________________________
 
 CSCI (0xb):
-Register Value:  0x9e0
+Register Value:  0x80
 Register Symbol  | Value (dec)  | Value (hex)  | Value (bin) 
 _____________________________________________________________
-PLL_ISOPD        |      1       |     0x1      |     0b1     
+PLL_ISOPD        |      0       |     0x0      |     0b0     
 BG_TMRF_EN       |      0       |     0x0      |     0b0     
 SADC_ISOPD       |      0       |     0x0      |     0b0     
-MADC_ISOPD       |      1       |     0x1      |     0b1     
+MADC_ISOPD       |      0       |     0x0      |     0b0     
 BG_EN            |      1       |     0x1      |     0b1     
-RF_ISOPD         |      1       |     0x1      |     0b1     
-ABB_ISOPD        |      1       |     0x1      |     0b1     
+RF_ISOPD         |      0       |     0x0      |     0b0     
+ABB_ISOPD        |      0       |     0x0      |     0b0     
 CS_EN            |      0       |     0x0      |     0b0     
 REPC             |      0       |     0x0      |     0b0     
 _____________________________________________________________
 
 CSCDS (0xf):
-Register Value:  0x960
+Register Value:  0x80
 Register Symbol  | Value (dec)  | Value (hex)  | Value (bin) 
 _____________________________________________________________
-PLL_ISOPD        |      1       |     0x1      |     0b1     
+PLL_ISOPD        |      0       |     0x0      |     0b0     
 BG_TMRF_EN       |      0       |     0x0      |     0b0     
 SADC_ISOPD       |      0       |     0x0      |     0b0     
-MADC_ISOPD       |      1       |     0x1      |     0b1     
-BG_EN            |      0       |     0x0      |     0b0     
-RF_ISOPD         |      1       |     0x1      |     0b1     
-ABB_ISOPD        |      1       |     0x1      |     0b1     
+MADC_ISOPD       |      0       |     0x0      |     0b0     
+BG_EN            |      1       |     0x1      |     0b1     
+RF_ISOPD         |      0       |     0x0      |     0b0     
+ABB_ISOPD        |      0       |     0x0      |     0b0     
 CS_EN            |      0       |     0x0      |     0b0     
 REPC             |      0       |     0x0      |     0b0     
 _____________________________________________________________
@@ -662,7 +662,7 @@ REPC             |      0       |     0x0      |     0b0
 _____________________________________________________________
 
 CSC2 (0x1d):
-Register Value:  0x80
+Register Value:  0x90
 Register Symbol  | Value (dec)  | Value (hex)  | Value (bin) 
 _____________________________________________________________
 PLL_ISOPD        |      0       |     0x0      |     0b0     
@@ -672,7 +672,7 @@ MADC_ISOPD       |      0       |     0x0      |     0b0
 BG_EN            |      1       |     0x1      |     0b1     
 RF_ISOPD         |      0       |     0x0      |     0b0     
 ABB_ISOPD        |      0       |     0x0      |     0b0     
-CS_EN            |      0       |     0x0      |     0b0     
+CS_EN            |      1       |     0x1      |     0b1     
 REPC             |      0       |     0x0      |     0b0     
 _____________________________________________________________
 
@@ -707,56 +707,56 @@ REPC             |      0       |     0x0      |     0b0
 _____________________________________________________________
 
 CCR0 (0x2c):
-Register Value:  0x11be0e
+Register Value:  0x367e8e
 Register Symbol  | Value (dec)  | Value (hex)  | Value (bin) 
 _____________________________________________________________
-TR_END           |      14      |     0xe      |    0b1110   
+TR_END           |     142      |     0x8e     |  0b10001110 
 CONT_MODE        |      1       |     0x1      |     0b1     
 REPT             |      15      |     0xf      |    0b1111   
-TR_INIT1         |      70      |     0x46     |  0b1000110  
+TR_INIT1         |     217      |     0xd9     |  0b11011001 
 TR_INIT1_MUL     |      0       |     0x0      |     0b0     
 _____________________________________________________________
 
 CCR1 (0x2d):
-Register Value:  0x40a
+Register Value:  0x24fc49
 Register Symbol  | Value (dec)  | Value (hex)  | Value (bin) 
 _____________________________________________________________
-TR_START         |      10      |     0xa      |    0b1010   
+TR_START         |      73      |     0x49     |  0b1001001  
 PD_MODE          |      2       |     0x2      |     0b10    
-TR_FED           |      0       |     0x0      |     0b0     
-TR_FED_MUL       |      0       |     0x0      |     0b0     
+TR_FED           |     159      |     0x9f     |  0b10011111 
+TR_FED_MUL       |      4       |     0x4      |    0b100    
 _____________________________________________________________
 
 CCR2 (0x2e):
-Register Value:  0x3f000
+Register Value:  0xff000
 Register Symbol  | Value (dec)  | Value (hex)  | Value (bin) 
 _____________________________________________________________
 MAX_FRAME_CNT    |      0       |     0x0      |     0b0     
-FRAME_LEN        |      63      |     0x3f     |   0b111111  
+FRAME_LEN        |     255      |     0xff     |  0b11111111 
 _____________________________________________________________
 
 CCR3 (0x2f):
-Register Value:  0xbf3e1e
+Register Value:  0x985a9d
 Register Symbol  | Value (dec)  | Value (hex)  | Value (bin) 
 _____________________________________________________________
-TR_PAEN          |      30      |     0x1e     |   0b11110   
-TR_SSTART        |      31      |     0x1f     |   0b11111   
-TR_INIT0         |     252      |     0xfc     |  0b11111100 
+TR_PAEN          |     157      |     0x9d     |  0b10011101 
+TR_SSTART        |      13      |     0xd      |    0b1101   
+TR_INIT0         |      97      |     0x61     |  0b1100001  
 TR_INIT0_MUL     |      2       |     0x2      |     0b10    
 _____________________________________________________________
 
 PLL1_0 (0x30):
-Register Value:  0xa8b74a
+Register Value:  0xa4409a
 Register Symbol  | Value (dec)  | Value (hex)  | Value (bin) 
 _____________________________________________________________
-FSU              |   11056970   |   0xa8b74a   | 0b101010001011011101001010
+FSU              |   10764442   |   0xa4409a   | 0b101001000100000010011010
 _____________________________________________________________
 
 PLL2_0 (0x38):
-Register Value:  0x0
+Register Value:  0xa4409a
 Register Symbol  | Value (dec)  | Value (hex)  | Value (bin) 
 _____________________________________________________________
-FSU              |      0       |     0x0      |     0b0     
+FSU              |   10764442   |   0xa4409a   | 0b101001000100000010011010
 _____________________________________________________________
 
 PLL3_0 (0x40):
@@ -774,17 +774,17 @@ FSU              |      0       |     0x0      |     0b0
 _____________________________________________________________
 
 PLL1_1 (0x31):
-Register Value:  0x231
+Register Value:  0x239
 Register Symbol  | Value (dec)  | Value (hex)  | Value (bin) 
 _____________________________________________________________
-RSU              |     561      |    0x231     | 0b1000110001
+RSU              |     569      |    0x239     | 0b1000111001
 _____________________________________________________________
 
 PLL2_1 (0x39):
-Register Value:  0x0
+Register Value:  0x239
 Register Symbol  | Value (dec)  | Value (hex)  | Value (bin) 
 _____________________________________________________________
-RSU              |      0       |     0x0      |     0b0     
+RSU              |     569      |    0x239     | 0b1000111001
 _____________________________________________________________
 
 PLL3_1 (0x41):
@@ -802,19 +802,19 @@ RSU              |      0       |     0x0      |     0b0
 _____________________________________________________________
 
 PLL1_2 (0x32):
-Register Value:  0x30732
+Register Value:  0xff0760
 Register Symbol  | Value (dec)  | Value (hex)  | Value (bin) 
 _____________________________________________________________
-RTU              |     1842     |    0x732     | 0b11100110010
-TR_EDU           |      3       |     0x3      |     0b11    
+RTU              |     1888     |    0x760     | 0b11101100000
+TR_EDU           |     255      |     0xff     |  0b11111111 
 _____________________________________________________________
 
 PLL2_2 (0x3a):
-Register Value:  0x0
+Register Value:  0xff0760
 Register Symbol  | Value (dec)  | Value (hex)  | Value (bin) 
 _____________________________________________________________
-RTU              |      0       |     0x0      |     0b0     
-TR_EDU           |      0       |     0x0      |     0b0     
+RTU              |     1888     |    0x760     | 0b11101100000
+TR_EDU           |     255      |     0xff     |  0b11111111 
 _____________________________________________________________
 
 PLL3_2 (0x42):
@@ -842,10 +842,10 @@ APD              |      0       |     0x0      |     0b0
 _____________________________________________________________
 
 PLL2_3 (0x3b):
-Register Value:  0x0
+Register Value:  0x200
 Register Symbol  | Value (dec)  | Value (hex)  | Value (bin) 
 _____________________________________________________________
-APU              |      0       |     0x0      |     0b0     
+APU              |     512      |    0x200     | 0b1000000000
 APD              |      0       |     0x0      |     0b0     
 _____________________________________________________________
 
@@ -954,27 +954,27 @@ TR_EDD           |      0       |     0x0      |     0b0
 _____________________________________________________________
 
 PLL1_7 (0x37):
-Register Value:  0x110
+Register Value:  0x290910
 Register Symbol  | Value (dec)  | Value (hex)  | Value (bin) 
 _____________________________________________________________
 REPS             |      0       |     0x0      |     0b0     
 SH_EN            |      1       |     0x1      |     0b1     
 CONT_MODE        |      1       |     0x1      |     0b1     
 PD_MODE          |      0       |     0x0      |     0b0     
-TR_SED           |      0       |     0x0      |     0b0     
-TR_SED_MUL       |      0       |     0x0      |     0b0     
+TR_SED           |      33      |     0x21     |   0b100001  
+TR_SED_MUL       |      5       |     0x5      |    0b101    
 _____________________________________________________________
 
 PLL2_7 (0x3f):
-Register Value:  0x393b00
+Register Value:  0x290910
 Register Symbol  | Value (dec)  | Value (hex)  | Value (bin) 
 _____________________________________________________________
 REPS             |      0       |     0x0      |     0b0     
-SH_EN            |      0       |     0x0      |     0b0     
+SH_EN            |      1       |     0x1      |     0b1     
 CONT_MODE        |      1       |     0x1      |     0b1     
-PD_MODE          |      1       |     0x1      |     0b1     
-TR_SED           |      39      |     0x27     |   0b100111  
-TR_SED_MUL       |      7       |     0x7      |    0b111    
+PD_MODE          |      0       |     0x0      |     0b0     
+TR_SED           |      33      |     0x21     |   0b100001  
+TR_SED_MUL       |      5       |     0x5      |    0b101    
 _____________________________________________________________
 
 PLL3_7 (0x47):
@@ -1014,11 +1014,11 @@ RFTSIGCLK_DIV_EN |      0       |     0x0      |     0b0
 _____________________________________________________________
 
 DFT0 (0x57):
-Register Value:  0x0
+Register Value:  0x10
 Register Symbol  | Value (dec)  | Value (hex)  | Value (bin) 
 _____________________________________________________________
 EFUSE_SENSE      |      0       |     0x0      |     0b0     
-EFUSE_EN         |      0       |     0x0      |     0b0     
+EFUSE_EN         |      1       |     0x1      |     0b1     
 _____________________________________________________________
 
 DFT1 (0x58):
@@ -1051,39 +1051,39 @@ SADC_RDY         |      1       |     0x1      |     0b1
 _____________________________________________________________
 
 SADC_RESULT (0x5e):
-Register Value:  0x7c07c
-Register Symbol  | Value (dec)  | Value (hex)  | Value (bin) 
-_____________________________________________________________
-SADC_RAW         |     124      |     0x7c     |  0b1111100  
-SADC_BUSY        |     124      |     0x7c     |  0b1111100  
-SADC_RESULT      |     124      |     0x7c     |  0b1111100  
-_____________________________________________________________
-
-FSTAT (0x5f):
-Register Value:  0x400
-Register Symbol  | Value (dec)  | Value (hex)  | Value (bin) 
-_____________________________________________________________
-FOF_ERR          |     1024     |    0x400     | 0b10000000000
-FULL             |     1024     |    0x400     | 0b10000000000
-CREF             |     1024     |    0x400     | 0b10000000000
-EMPTY            |     1024     |    0x400     | 0b10000000000
-FUF_ERR          |     1024     |    0x400     | 0b10000000000
-BURST_ERR        |     1024     |    0x400     | 0b10000000000
-CLK_NUM_ERR      |     1024     |    0x400     | 0b10000000000
-FILL_STATUS      |     1024     |    0x400     | 0b10000000000
-_____________________________________________________________
-
-CHIP_ID_1 (0x60):
 Register Value:  0x0
 Register Symbol  | Value (dec)  | Value (hex)  | Value (bin) 
 _____________________________________________________________
-CHIP_ID_1        |      0       |     0x0      |     0b0     
+SADC_RAW         |      0       |     0x0      |     0b0     
+SADC_BUSY        |      0       |     0x0      |     0b0     
+SADC_RESULT      |      0       |     0x0      |     0b0     
+_____________________________________________________________
+
+FSTAT (0x5f):
+Register Value:  0x0
+Register Symbol  | Value (dec)  | Value (hex)  | Value (bin) 
+_____________________________________________________________
+FOF_ERR          |      0       |     0x0      |     0b0     
+FULL             |      0       |     0x0      |     0b0     
+CREF             |      0       |     0x0      |     0b0     
+EMPTY            |      0       |     0x0      |     0b0     
+FUF_ERR          |      0       |     0x0      |     0b0     
+BURST_ERR        |      0       |     0x0      |     0b0     
+CLK_NUM_ERR      |      0       |     0x0      |     0b0     
+FILL_STATUS      |      0       |     0x0      |     0b0     
+_____________________________________________________________
+
+CHIP_ID_1 (0x60):
+Register Value:  0x3020e6
+Register Symbol  | Value (dec)  | Value (hex)  | Value (bin) 
+_____________________________________________________________
+CHIP_ID_1        |   3154150    |   0x3020e6   | 0b1100000010000011100110
 _____________________________________________________________
 
 CHIP_ID_2 (0x61):
-Register Value:  0xa8
+Register Value:  0x2c605c
 Register Symbol  | Value (dec)  | Value (hex)  | Value (bin) 
 _____________________________________________________________
-CHIP_ID_2        |     168      |     0xa8     |  0b10101000 
+CHIP_ID_2        |   2908252    |   0x2c605c   | 0b1011000110000001011100
 _____________________________________________________________
 

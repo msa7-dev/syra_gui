@@ -70,6 +70,8 @@ class MIRA_DATA_PROCESSOR():
         self.prev_range_azimuth_shape = (0,0,0)
         self.range_azimuth_map = np.zeros((1,1,1), dtype=np.float32)
         self.ch_range_doppler_buf = np.zeros((1,1,1), dtype=np.float32)
+        self.prev_range_doppler_map = np.zeros((1,1,1), dtype=np.float32)
+        self.prev_range_doppler_mean = np.zeros((1,1,1), dtype=np.float32)
         
 
     def _create_callable_pipeline(self, functions: List[Function]) -> Callable[[Any], Any]:
@@ -247,11 +249,16 @@ class MIRA_DATA_PROCESSOR():
     
     def _calc_range_doppler(self, ch_data: np.ndarray) -> np.ndarray:
         ch_data = ch_data.transpose(2, 0, 1)
+        
+        # data splitting for TX selection
         if self.range_doppler_tab_index == 'TX1' or \
            self.main_tab_index == 'Range Doppler Azimuth':
             ch_data = ch_data[:,:,0:4]
         elif self.range_doppler_tab_index == 'TX2':
             ch_data = ch_data[:,:,4:8]
+
+        # simple static target oppression 
+        ch_data -= np.mean(ch_data, axis=0, keepdims=True)
         
         n_samples = ch_data.shape[1]
         ch_fft_range = np.fft.rfft(ch_data, n=n_samples+self.padding_len-1, axis=1)    
@@ -273,8 +280,9 @@ class MIRA_DATA_PROCESSOR():
                                                                         / range_doppler.shape[1])),:])
         elif self.max_value_type == 'freq':
             self.range_doppler_map = (range_doppler[0:range_doppler.shape[0],:,:])
-                
+
         return np.asarray(self.range_doppler_map, dtype=np.float32)
+    
     
     def _prepare_range_doppler_output_format(self, ch_data: np.ndarray) -> dict:
         if self.main_tab_index == 'Range Doppler':
@@ -326,7 +334,7 @@ class MIRA_DATA_PROCESSOR():
 
     def _calc_range_azimuth(self, processed_data_cube: np.ndarray) -> np.ndarray:
         processed_data_cube_fft = np.fft.rfft(processed_data_cube, n=processed_data_cube.shape[0]+self.padding_len-1, axis=0)
-        data_cube = np.asarray(np.mean(processed_data_cube_fft, axis=2), dtype=np.complex64)
+        data_cube = np.asarray(processed_data_cube_fft[:,:,0], dtype=np.complex64)
         
         if self.prev_range_azimuth_shape != data_cube.shape:
             self.az = np.deg2rad(np.linspace(-90,90,int(18*10+1)))
