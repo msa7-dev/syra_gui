@@ -97,6 +97,7 @@ class MIRA_MAIN_GUI(QtWidgets.QMainWindow):
             if self.mira_controller is None:
                 self.mira_controller = MIRA_CTRL_GUI(self.radar_param)
 
+
             if self.mira_controller.mira_device.mira_bridge.device is None:
                 self.mira_controller = None
                 self.button_startstop.setText("Start")
@@ -110,6 +111,8 @@ class MIRA_MAIN_GUI(QtWidgets.QMainWindow):
             self.gui_controller.get_axis_x()
             self.gui_controller.update_bgt_hp_filter()
             self.gui_controller.update_radar_params()
+            self.gui_controller.update_radar_params()
+            self.gui_controller.update_sensor_settings()
             self.mira_controller.mira_device.activate_rf_test_mode()
             self.mira_controller.mira_device.init_mira_frame_generation()
             self.mira_processor.start_processes()
@@ -155,6 +158,7 @@ class MIRA_MAIN_GUI(QtWidgets.QMainWindow):
             return
         self.connect_timer.stop()
         self.connect_timer.timeout.disconnect()
+        
         self.gui_controller.set_device_connected()
         self.gui_controller.update_radar_params()
         

@@ -158,34 +158,39 @@ class MIRA_WIDGET_VALUES():
         self.gui_fps_list = ['10', '1', '5', '10', '15', '20', '25',
                              '30', '35', '40', '45', '50', '55', '60']
         
-        self.set_tx_power_list = ['31 dBm', '25 dBm', '7 dBm', '13 dBm', '19 dBm' ,  '1 dBm',]
-        self.set_sample_rate_list = ['2.00000 MHz', '2.10526 MHz',
+        
+        self.set_sample_rate_list = ['1.00000 MHz', '2.00000 MHz', '2.10526 MHz',
                                      '2.22222 MHz', '2.28571 MHz',
                                      '2.42424 MHz', '2.50000 MHz',
                                      '2.58065 MHz', '2.66667 MHz', 
                                      '2.75862 MHz', '2.85714 MHz']
         
-        self.set_bandwidth_lower_list = ['58.00 GHz', '58,25 GHz', '58,50 GHz', '58,75 GHz',
-                                         '59.00 GHz', '59,25 GHz', '59,50 GHz', '59,75 GHz',
-                                         '60.00 GHz', '60,25 GHz', '60,50 GHz', '60,75 GHz',
-                                         '61.00 GHz', '61,25 GHz', '61,50 GHz', '61,75 GHz',
-                                         '62.00 GHz', '62,25 GHz', '62,50 GHz', '62,75 GHz',]
+        self.set_bandwidth_lower_list = ['58.00 GHz', '58.25 GHz', '58.50 GHz', '58.75 GHz',
+                                         '59.00 GHz', '59.25 GHz', '59.50 GHz', '59.75 GHz',
+                                         '60.00 GHz', '60.25 GHz', '60.50 GHz', '60.75 GHz',
+                                         '61.00 GHz', '61.25 GHz', '61.50 GHz', '61.75 GHz',
+                                         '62.00 GHz', '62.25 GHz', '62.50 GHz', '62.75 GHz',]
         
-        self.set_bandwidth_upper_list = ['63.00 GHz', '62,75 GHz', '62,50 GHz', '62,25 GHz',  
-                                         '62.00 GHz', '61,75 GHz', '61,50 GHz', '61,25 GHz',  
-                                         '61.00 GHz', '60,75 GHz', '60,50 GHz', '60,25 GHz',  
-                                         '60.00 GHz', '59,75 GHz', '59,50 GHz', '59,25 GHz', 
-                                         '59.00 GHz', '58,75 GHz', '58,50 GHz', '58,25 GHz', ] 
+        self.set_bandwidth_upper_list = ['63.00 GHz', '62.75 GHz', '62.50 GHz', '62.25 GHz',  
+                                         '62.00 GHz', '61.75 GHz', '61.50 GHz', '61.25 GHz',  
+                                         '61.00 GHz', '60.75 GHz', '60.50 GHz', '60.25 GHz',  
+                                         '60.00 GHz', '59.75 GHz', '59.50 GHz', '59.25 GHz', 
+                                         '59.00 GHz', '58.75 GHz', '58.50 GHz', '58.25 GHz', ] 
 
         self.set_chirp_samples_list = ['64', '128', '256', '512', '1024', '2048']
+        
         self.set_chirp_end_delay_list = ['10.0375 µs', '25.0375 µs', '50.0500 µs', '100.0620 µs', 
                                          '249.7120 µs', '499.3250 µs', '748.9130 µs', '998.538 µs']
+        
         self.set_shape_repetition_list = ['1', '2', '4', '8', '16', '32', 
                                           '64', '128', '256', '512', '1024']
+        
         self.set_shape_end_delay_list = ['10.0375 µs', '25.0375 µs', '50.0500 µs', '100.0620 µs', 
                                          '249.7120 µs', '499.3250 µs', '748.9130 µs', '998.538 µs']
+        
         self.set_shape_set_repetition_list = ['1', '2', '4', '8', '16', '32', 
                                               '64', '128', '256', '512', '1024']
+        
         self.set_shape_set_end_delay_list = ['249.7120 µs', '499.3250 µs', '748.9130 µs', '998.538 µs',
                                              '1.49772 ms', '2.49613 ms', '4.99214 ms', '7.47536 ms',
                                              '9.98415 ms']

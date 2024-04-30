@@ -61,6 +61,10 @@ class MIRA_GUI_CTRL():
         self.get_bgt_hp_gain()
         self.get_bgt_vga_gain()
         self.get_gui_fps()
+
+        self.get_tx_power()
+        self.get_sample_rate()
+
         self.handle_usb_auto_connect_state()
         self.set_mira_session_label()
         self.set_mira_project()
@@ -110,7 +114,7 @@ class MIRA_GUI_CTRL():
         self.qt_self.combo_box_rf_antenna.addItems(self.widget_values.rf_antenna_combo_box_list)
         self.qt_self.combo_box_gui_fps.addItems(self.widget_values.gui_fps_list)
         
-        self.qt_self.combo_box_set_tx_power.addItems(self.widget_values.set_tx_power_list)
+        # self.qt_self.combo_box_set_tx_power.addItems(self.widget_values.set_tx_power_list)
         self.qt_self.combo_box_set_sample_rate.addItems(self.widget_values.set_sample_rate_list)
         self.qt_self.combo_box_set_bandwidth_lower.addItems(self.widget_values.set_bandwidth_lower_list)
         self.qt_self.combo_box_set_bandwidth_upper.addItems(self.widget_values.set_bandwidth_upper_list)
@@ -138,6 +142,17 @@ class MIRA_GUI_CTRL():
         self.qt_self.combo_box_if_test_ton.currentTextChanged.connect(self.get_rf_test_mode)
         self.qt_self.combo_box_gui_fps.currentTextChanged.connect(self.get_gui_fps)
         
+        self.qt_self.spin_box_set_tx_power.valueChanged.connect(self.get_tx_power)
+        self.qt_self.combo_box_set_sample_rate.currentTextChanged.connect(self.get_sample_rate)
+        self.qt_self.combo_box_set_bandwidth_lower.currentTextChanged.connect(self.get_bandwidth_lower)
+        self.qt_self.combo_box_set_bandwidth_upper.currentTextChanged.connect(self.get_bandwidth_upper)
+        self.qt_self.combo_box_set_chirp_samples.currentTextChanged.connect(self.get_chirp_samples)
+        self.qt_self.combo_box_set_chirp_end_delay.currentTextChanged.connect(self.get_chirp_end_delay)
+        self.qt_self.combo_box_set_shape_repetition.currentTextChanged.connect(self.get_shape_repetition)
+        self.qt_self.combo_box_set_shape_end_delay.currentTextChanged.connect(self.get_shape_end_delay)
+        self.qt_self.combo_box_set_shape_set_repetition.currentTextChanged.connect(self.get_shape_set_repetition)
+        self.qt_self.combo_box_set_shape_set_end_delay.currentTextChanged.connect(self.get_shape_set_end_delay)
+        
     def init_connect_tab(self):
         self.qt_self.tab_plots.currentChanged.connect(self.identify_tab)
         self.qt_self.tab_time.currentChanged.connect(self.identify_tab)
@@ -153,7 +168,7 @@ class MIRA_GUI_CTRL():
         self.qt_self.label_shape_repetition.setText(f'{int(self.radar_param.sys.shape_set_repetition)}')
         self.qt_self.label_rx_tx_mode.setText(f'{int(self.radar_param.sys.rx_active_antennas[0])} / ' +
                                               f'{int(sum(self.radar_param.sys.tx_active_antennas))}')
-        self.qt_self.label_tx_power.setText(f'{int(self.radar_param.sys.tx_power[0][0])} / {int(self.radar_param.sys.tx_power[1][1])} dBm')
+        self.qt_self.label_tx_power.setText(f'{int(self.radar_param.sens.tx_power)} / {int(self.radar_param.sens.tx_power) if int(sum(self.radar_param.sys.tx_active_antennas)) > 1 else ""} dBm')
         self.qt_self.label_sampling_frequency.setText(f'{round(float(self.radar_param.sys.sampling_frequency*1e-6), 4)} MHz')
         self.qt_self.label_chrip_sample.setText(str(int(self.radar_param.sys.n_samples_per_chirp[0])))
         self.qt_self.label_frequency.setText(f'{round(float(self.radar_param.sys.start_frequency[0] * 1e-9))} - '+
@@ -895,6 +910,111 @@ class MIRA_GUI_CTRL():
         self.radar_param.remt.client_ssh_pwd = \
             self.qt_self.client_ssh_pwd_plainTextEdit.toPlainText()
     
+    def get_tx_power(self) -> None:
+        tx_power = self.qt_self.spin_box_set_tx_power.value()
+        tx_power = np.uint8(tx_power)
+        self.radar_param.sens.tx_power = tx_power
+        self.update_sensor_settings()
+        
+    def set_tx_power(self) -> None:
+        if self.qt_self.running == True or self.qt_self.mira_controller is None:
+            return
+        self.qt_self.mira_controller.mira_device._csu1_1_reg.set_tx_power(self.radar_param.sens.tx_power, 2)
+        self.qt_self.mira_controller.mira_device._csd1_1_reg.set_tx_power(self.radar_param.sens.tx_power, 2)
+        self.qt_self.mira_controller.mira_device._csu2_1_reg.set_tx_power(self.radar_param.sens.tx_power, 2)
+        self.qt_self.mira_controller.mira_device._csd2_1_reg.set_tx_power(self.radar_param.sens.tx_power, 2)
+        self.qt_self.mira_controller.mira_device._csu3_1_reg.set_tx_power(self.radar_param.sens.tx_power, 2)
+        self.qt_self.mira_controller.mira_device._csd3_1_reg.set_tx_power(self.radar_param.sens.tx_power, 2)
+        self.qt_self.mira_controller.mira_device._csu4_1_reg.set_tx_power(self.radar_param.sens.tx_power, 2)
+        self.qt_self.mira_controller.mira_device._csd4_1_reg.set_tx_power(self.radar_param.sens.tx_power, 2)
+
+
+    def get_sample_rate(self) -> None:
+        sample_rate = self.qt_self.combo_box_set_sample_rate.currentText()
+        sample_rate = np.float32(sample_rate.split(' ')[0]) * 1e6
+        self.radar_param.sens.sample_rate = sample_rate
+        self.radar_param.sys.sampling_frequency = sample_rate
+        self.update_sensor_settings()
+        
+    def set_sample_rate(self) -> None:
+        if self.qt_self.running == True or self.qt_self.mira_controller is None:
+            return
+        self.qt_self.mira_controller.mira_device._pll1_2.set_ramp_time(self.radar_param.sens.sample_rate)
+        self.qt_self.mira_controller.mira_device._pll2_2.set_ramp_time(self.radar_param.sens.sample_rate)
+        self.qt_self.mira_controller.mira_device._pll3_2.set_ramp_time(self.radar_param.sens.sample_rate)
+        self.qt_self.mira_controller.mira_device._pll4_2.set_ramp_time(self.radar_param.sens.sample_rate)
+
+        self.qt_self.mira_controller.mira_device._adc0_reg.set_sampling_frequency(self.radar_param.sens.sample_rate)
+        self.qt_self.mira_controller.mira_device._pll1_1.set_ramp_steps()
+        self.qt_self.mira_controller.mira_device._pll2_1.set_ramp_steps()
+        self.qt_self.mira_controller.mira_device._pll3_1.set_ramp_steps()
+        self.qt_self.mira_controller.mira_device._pll4_1.set_ramp_steps()
+
+    def get_bandwidth_lower(self) -> None:
+        bandwitdh_lower = self.qt_self.combo_box_set_bandwidth_lower.currentText()
+        bandwitdh_lower = np.float32(bandwitdh_lower.split(' ')[0]) * 1e9
+
+        self.radar_param.sens.bandwidth_lower = bandwitdh_lower
+                
+    def get_bandwidth_upper(self) -> None:
+        bandwidth_upper = self.qt_self.combo_box_set_bandwidth_upper.currentText()
+        bandwidth_upper = np.float32(bandwidth_upper.split(' ')[0]) * 1e9        
+
+        self.radar_param.sens.bandwidth_upper = bandwidth_upper 
+                
+    def get_chirp_samples(self) -> None:
+        chirp_samples = self.qt_self.combo_box_set_chirp_samples.currentText()
+        chirp_samples = np.float32(chirp_samples.split(' ')[0])
+
+        self.radar_param.sens.chirp_samples = chirp_samples
+        
+    def get_chirp_end_delay(self) -> None:
+        chirp_end_delay = self.qt_self.combo_box_set_chirp_end_delay.currentText()
+        chirp_end_delay = np.float32(chirp_end_delay.split(' ')[0]) * 1e-6
+
+        self.radar_param.sens.chirp_end_delay = chirp_end_delay
+        
+    def get_shape_repetition(self) -> None:
+        shape_repetition = self.qt_self.combo_box_set_shape_repetition.currentText()
+        shape_repetition = np.float32(shape_repetition.split(' ')[0])
+
+        self.radar_param.sens.shape_repetition = shape_repetition
+                
+    def get_shape_end_delay(self) -> None:
+        shape_end_delay = self.qt_self.combo_box_set_shape_end_delay.currentText()
+        shape_end_delay = np.float32(shape_end_delay.split(' ')[0]) * 1e-6
+        
+        self.radar_param.sens.shape_end_delay = shape_end_delay
+        
+    def get_shape_set_repetition(self) -> None:
+        shape_set_repetition = self.qt_self.combo_box_set_shape_set_repetition.currentText()
+        shape_set_repetition = np.float32(shape_set_repetition.split(' ')[0])
+        
+        self.radar_param.sens.shape_set_repetition = shape_set_repetition
+        
+    def get_shape_set_end_delay(self) -> None:
+        shape_set_end_delay = self.qt_self.combo_box_set_shape_set_end_delay.currentText()
+        shape_set_end_delay, unit = shape_set_end_delay.split(' ')
+        shape_set_end_delay = np.float32(shape_set_end_delay)
+        if unit == 'µs':
+            shape_set_end_delay *= 1e-6
+        elif unit == 'ms':
+            shape_set_end_delay *= 1e-3
+
+        self.radar_param.sens.shape_set_end_delay = shape_set_end_delay
+        
+    def update_sensor_settings(self) -> None:
+
+        self.set_tx_power()
+        self.set_sample_rate()
+        self.reinit_calc_radar_parameters()
+        self.reinit_qt_widget_plots()
+
+    def reinit_calc_radar_parameters(self) -> None:
+        if self.qt_self.mira_controller is not None and self.qt_self.mira_controller.mira_device is not None:
+            self.qt_self.mira_controller.mira_device.init_radar_system_parameters()
+            self.update_radar_params()
+
     def get_spectrum_rx_tx(self):
         self.radar_param.gui.active_tx[0] = self.qt_self.check_box_spectrum_tx1.isChecked()
         self.radar_param.gui.active_tx[1] = self.qt_self.check_box_spectrum_tx2.isChecked()

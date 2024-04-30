@@ -371,7 +371,7 @@ TX1_DAC          |      0       |     0x0      |     0b0
 _____________________________________________________________
 
 CSU1_1 (0x11):
-Register Value:  0xff141f
+Register Value:  0xff1400
 Register Symbol  | Value (dec)  | Value (hex)  | Value (bin) 
 _____________________________________________________________
 BBCH_SEL         |      15      |     0xf      |    0b1111   
@@ -379,7 +379,7 @@ BB_RSTCNT        |     120      |     0x78     |  0b1111000
 TEMP_MEAS_EN     |      1       |     0x1      |     0b1     
 MADC_EN          |      1       |     0x1      |     0b1     
 TX2_DAC          |      0       |     0x0      |     0b0     
-TX1_DAC          |      31      |     0x1f     |   0b11111   
+TX1_DAC          |      0       |     0x0      |     0b0     
 _____________________________________________________________
 
 CSD1_1 (0x14):
@@ -395,14 +395,14 @@ TX1_DAC          |      0       |     0x0      |     0b0
 _____________________________________________________________
 
 CSU2_1 (0x18):
-Register Value:  0xff17e0
+Register Value:  0xff1400
 Register Symbol  | Value (dec)  | Value (hex)  | Value (bin) 
 _____________________________________________________________
 BBCH_SEL         |      15      |     0xf      |    0b1111   
 BB_RSTCNT        |     120      |     0x78     |  0b1111000  
 TEMP_MEAS_EN     |      1       |     0x1      |     0b1     
 MADC_EN          |      1       |     0x1      |     0b1     
-TX2_DAC          |      31      |     0x1f     |   0b11111   
+TX2_DAC          |      0       |     0x0      |     0b0     
 TX1_DAC          |      0       |     0x0      |     0b0     
 _____________________________________________________________
 

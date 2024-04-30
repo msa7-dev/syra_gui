@@ -199,7 +199,10 @@ class BGT_ADC0:
         set_reg_val(self)
 
     def calc_sampling_frequency(self) -> None:
-        self.radar_param.sys.sampling_frequency = np.float32(80*1e6 / (self._ADC_DIV+np.finfo(float).eps)) # TODO : const clk 
+        # self.radar_param.sys.sampling_frequency = np.float32(80*1e6 / (self._ADC_DIV+np.finfo(float).eps)) # TODO : const clk 
+        pass
+    def set_sampling_frequency(self, sample_rate) -> None:
+        self.ADC_DIV = np.uint16(80*1e6/sample_rate)
         
     @property
     def BG_CHOP_EN(self):
@@ -1189,7 +1192,32 @@ class BGT_CSX_1:
         if index is not None:
             self.radar_param.sys.tx_power[index] = [np.uint8(self._TX1_DAC),
                                                     np.uint8(self._TX2_DAC)]
-
+    
+    def set_tx_power(self, tx_power: np.uint8, tx_enabled: np.uint8) -> None:
+        if tx_enabled == 1:
+            self.TX1_DAC = np.uint8(tx_power)
+        elif tx_enabled == 2:
+            self.TX1_DAC = np.uint8(tx_power)
+            self.TX2_DAC = np.uint8(tx_power)
+            
+    def set_hp_filter(self, vga_gain: int, hp_gain: int, hp_fc: int, rx_select: int) -> None:
+        if rx_select == 1:
+            self.VGA_GAIN1 = vga_gain
+            self.HP_GAIN = np.uint8(hp_gain << 0)
+            self.HPF_SEL1 = hp_fc
+        if rx_select == 2:
+            self.VGA_GAIN2 = vga_gain
+            self.HP_GAIN = np.uint8(hp_gain << 1)
+            self.HPF_SEL2 = hp_fc
+        if rx_select == 3:
+            self.VGA_GAIN3 = vga_gain
+            self.HP_GAIN = np.uint8(hp_gain << 2)
+            self.HPF_SEL3 = hp_fc
+        if rx_select == 4:
+            self.VGA_GAIN4 = vga_gain
+            self.HP_GAIN = np.uint8(hp_gain << 3)
+            self.HPF_SEL4 = hp_fc
+            
     def convert_all_values(self):
         self.get_tx_power()
         
@@ -1815,6 +1843,11 @@ class BGT_PLLX_1:
     def RSU(self, value):
         self._RSU = value
         set_reg_val(self)
+    
+    def set_ramp_steps(self) -> None:
+        rtu = np.float32((self.radar_param.sys.ramp_time[0] / 8) * 80*1e6)
+        value = self.radar_param.sys.ramp_bandwidth[0] / (8*rtu)
+        self.RSU = np.uint32(2**20*((value)/(640*1e6)))   
         
     def get_ramp_bandwidth(self) -> None:
         reg_adr_to_index = {
@@ -1861,6 +1894,14 @@ class BGT_PLLX_2:
         self._RTU = value
         set_reg_val(self)
     
+    def set_ramp_time(self, sample_rate: np.float32) -> None:
+        self.radar_param.sys.t_acqu = self.radar_param.sys.n_samples_per_chirp[0]/sample_rate
+        self.radar_param.sys.ramp_time[0] = self.radar_param.sys.t_paen + self.radar_param.sys.t_sstart + \
+                                            self.radar_param.sys.t_acqu - self.radar_param.sys.t_start
+        self.radar_param.sys.ramp_time[1] = self.radar_param.sys.ramp_time[0]
+        self.RTU = np.uint16((self.radar_param.sys.ramp_time[0] / 8) * 80*1e6)
+        print(self.radar_param.sys.ramp_time)
+        
     def get_bandwidth_slope(self) -> None:
         reg_adr_to_index = {
             BGT_REG.PLLX_2_REG.PLL1_2_ADR: 0,
@@ -1965,6 +2006,7 @@ class BGT_PLLX_3:
         elif self.REG_ADR == BGT_REG.PLLX_3_REG.PLL4_3_ADR:
             self.radar_param.sys.n_samples_per_chirp[3] = self._APU
             self.radar_param.sys.n_samples_per_chirp[7] = self._APD
+            
         
     def convert_all_values(self):
         self.get_chirp_sample_len()
@@ -2118,9 +2160,7 @@ class BGT_PLLX_6:
                                                             / (self.radar_param.sys.ramp_time[index] 
                                                             + np.finfo(np.float32).eps)) 
         self.radar_param.sys.ramp_slope = np.nan_to_num(self.radar_param.sys.ramp_slope)
-        
-        # print(self.radar_param.sys.ramp_bandwidth, self.radar_param.sys.start_frequency, self.radar_param.sys.end_frequency, self.radar_param.sys.ramp_slope)
-    
+            
     @property
     def TR_EDD(self):
         return self._TR_EDD

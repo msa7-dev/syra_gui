@@ -8,6 +8,7 @@ class MIRA_RADAR_PARAMETER():
     def __init__(self) -> None:
         self.gui  = MIRA_RADAR_GUI_PARAMETER()
         self.dsp  = MIRA_RADAR_DSP_PARAMETER()
+        self.sens = MIRA_RADAR_SENS_PARAMETER()
         self.sys  = MIRA_RADAR_SYS_PARAMETER()
         self.mon  = MIRA_RADAR_MON_PARAMETER()
         self.meas = MIRA_RADAR_MEAS_PARAMETER()
@@ -50,6 +51,23 @@ class MIRA_RADAR_MON_PARAMETER():
         self.product_usb = str('')
         self.serial_usb = str('')
         self.sykno_product_name = str('')
+        
+
+# ==============================================================================
+# Class Name: MIRA_RADAR_SENS_PARAMETER
+# ==============================================================================
+class MIRA_RADAR_SENS_PARAMETER():
+    def __init__(self) -> None:
+        self.tx_power = np.float32(0)
+        self.sample_rate = np.float32(0)
+        self.bandwidth_lower = np.float32(0)
+        self.bandwidth_upper = np.float32(0)
+        self.chirp_samples = np.float32(0)
+        self.chirp_end_delay = np.float32(0)
+        self.shape_repetition = np.float32(0)
+        self.shape_end_delay = np.float32(0)
+        self.shape_set_repetition = np.float32(0)
+        self.shape_set_end_delay = np.float32(0)
         
 # ==============================================================================
 # Class Name: MIRA_RADAR_SYS_PARAMETER
@@ -125,7 +143,7 @@ class MIRA_RADAR_SYS_PARAMETER():
         self.t_end = np.float32(0)
         self.t_paen = np.float32(0)
         self.t_sstart = np.float32(0)
-
+        self.t_acqu = np.float32(0)
         # Frame Timing - timings once each frame
         # Wake Up Time
         self.t_wkup = np.uint32(0)
