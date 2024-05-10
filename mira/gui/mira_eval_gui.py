@@ -58,14 +58,6 @@ class MIRA_MAIN_GUI(QtWidgets.QMainWindow):
     def set_updates_per_sec(self, timer: QtCore.QTimer, fps: int) -> None:
         timer.start(int(1000 / fps))  # Interval in milliseconds
 
-    def init_gui_controller(self):
-        self.radar_param = MIRA_RADAR_PARAMETER()
-        self.gui_controller = MIRA_GUI_CTRL(self, self.radar_param)
-        self.gui_controller.update_radar_params()
-        self.start_auto_connect()
-        self.gui_version = self.config.get("DEFAULT", "VERSION")
-        self.mira_gui_main_window_down_label.setText(f"Radar Eval GUI (v{self.gui_version}) | Sykno GmbH")
-            
     def mira_gui_main() -> None:
         init_gui_qtwidgets()
         app = QtWidgets.QApplication(sys.argv)
@@ -74,7 +66,38 @@ class MIRA_MAIN_GUI(QtWidgets.QMainWindow):
         main.show()
         main.init_gui_controller()
         app.exec_()
+
+    def init_gui_controller(self):
+        self.radar_param = MIRA_RADAR_PARAMETER()
+        self.gui_controller = MIRA_GUI_CTRL(self, self.radar_param)
+        self.gui_controller.update_radar_params()
+        self.start_auto_connect()
+        self.gui_version = self.config.get("DEFAULT", "VERSION")
+        self.mira_gui_main_window_down_label.setText(f"Radar Eval GUI (v{self.gui_version}) | Sykno GmbH")
+            
+    def auto_connect_device(self) -> None:
+        if self.mira_controller is None:
+            self.mira_controller = MIRA_CTRL_GUI(self.radar_param)
+            self.firmware_version_label.setText(f"{self.radar_param.mon.product_usb.split('(')[1].replace(') |', '')}")
+        if self.mira_controller.mira_device.mira_bridge.device is None:
+            self.mira_controller = None
+            return
+        self.connect_timer.stop()
+        self.connect_timer.timeout.disconnect()
         
+        self.gui_controller.set_device_connected()
+        self.gui_controller.update_radar_params()
+
+    def start_auto_connect(self) -> None:
+        if self.radar_param.gui.auto_connect_device:
+            self.connect_timer = QtCore.QTimer()
+            self.connect_timer.timeout.connect(self.auto_connect_device)
+            self.set_updates_per_sec(self.connect_timer, 1)
+            
+    def disconnect_device(self) -> None:
+        self.mira_controller.mira_device.mira_bridge.deinit_stm_usb_device()
+        self.mira_controller = None
+            
     # Start and stop processing threads
     def start_stop(self) -> None:
         if not self.running:
@@ -106,14 +129,14 @@ class MIRA_MAIN_GUI(QtWidgets.QMainWindow):
                 self.button_startstop.setText("Stop")
             self.gui_controller.update_gui_sensor_detected()
 
-            self.mira_processor = MIRA_MULTIPROCESSOR(self.mira_controller)
             
-            self.gui_controller.get_axis_x()
-            self.gui_controller.update_bgt_hp_filter()
-            self.gui_controller.update_radar_params()
-            self.gui_controller.update_radar_params()
             self.gui_controller.update_sensor_settings()
             self.mira_controller.mira_device.activate_rf_test_mode()
+            
+            self.mira_controller.reinit_controller(self.radar_param)
+            self.mira_processor = MIRA_MULTIPROCESSOR(self.mira_controller)
+            self.mira_controller.mira_device.finish_init()
+            self.gui_controller.update_radar_params()
             self.mira_controller.mira_device.init_mira_frame_generation()
             self.mira_processor.start_processes()
 
@@ -138,30 +161,7 @@ class MIRA_MAIN_GUI(QtWidgets.QMainWindow):
             self.start_auto_connect()
         else:
             return
-        
-    def start_auto_connect(self) -> None:
-        if self.radar_param.gui.auto_connect_device:
-            self.connect_timer = QtCore.QTimer()
-            self.connect_timer.timeout.connect(self.auto_connect_device)
-            self.set_updates_per_sec(self.connect_timer, 1)
-            
-    def disconnect_device(self) -> None:
-        self.mira_controller.mira_device.mira_bridge.deinit_stm_usb_device()
-        self.mira_controller = None
-            
-    def auto_connect_device(self) -> None:
-        if self.mira_controller is None:
-            self.mira_controller = MIRA_CTRL_GUI(self.radar_param)
-            self.firmware_version_label.setText(f"{self.radar_param.mon.product_usb.split('(')[1].replace(') |', '')}")
-        if self.mira_controller.mira_device.mira_bridge.device is None:
-            self.mira_controller = None
-            return
-        self.connect_timer.stop()
-        self.connect_timer.timeout.disconnect()
-        
-        self.gui_controller.set_device_connected()
-        self.gui_controller.update_radar_params()
-        
+                
     def start_gui_event_timer(self) -> None:
         if self.fps_timer is not None:
             self.fps_timer.stop()

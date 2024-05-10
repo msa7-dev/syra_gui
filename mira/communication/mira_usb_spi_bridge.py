@@ -104,8 +104,10 @@ class MIRA_USB_SPI_BRIDGE():
         firmware = product_name if firmware_name == '' else firmware_name
         command = [
             './tools/programmer/bin/STM32_Programmer_CLI',
-            '-c', 'port=/dev/ttyUSB0', 'br=115200',
-            '-w', f'./mira/setup/mcu_firmware/{firmware}.bin', '0x08000000',
+            '-c', 'port=/dev/ttyUSB0', 'br=921600',
+            '-e', 'all', 
+            # '-w', f'./mira/setup/mcu_firmware/{firmware}.bin', '0x08000000',
+            '-w', f'./mira/setup/mcu_firmware/{firmware}.elf',
             '-v',
             '-g 0x00000000']
         success_message = "  Address:      : 0x0"
@@ -120,7 +122,7 @@ class MIRA_USB_SPI_BRIDGE():
                         print("\nDetected successful execution of the run command.")
                         # Optionally do additional steps here
                         # Terminate the process if it's still running
-                        time.sleep(0.5)
+                        time.sleep(1)
                         proc.kill()  # Force-terminate if it didn't exit in time
                         return
                     

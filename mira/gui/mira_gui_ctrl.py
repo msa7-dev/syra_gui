@@ -62,9 +62,6 @@ class MIRA_GUI_CTRL():
         self.get_bgt_vga_gain()
         self.get_gui_fps()
 
-        self.get_tx_power()
-        self.get_sample_rate()
-
         self.handle_usb_auto_connect_state()
         self.set_mira_session_label()
         self.set_mira_project()
@@ -115,15 +112,15 @@ class MIRA_GUI_CTRL():
         self.qt_self.combo_box_gui_fps.addItems(self.widget_values.gui_fps_list)
         
         # self.qt_self.combo_box_set_tx_power.addItems(self.widget_values.set_tx_power_list)
-        self.qt_self.combo_box_set_sample_rate.addItems(self.widget_values.set_sample_rate_list)
-        self.qt_self.combo_box_set_bandwidth_lower.addItems(self.widget_values.set_bandwidth_lower_list)
-        self.qt_self.combo_box_set_bandwidth_upper.addItems(self.widget_values.set_bandwidth_upper_list)
+        # self.qt_self.combo_box_set_sample_rate.addItems(self.widget_values.set_sample_rate_list)
+        # self.qt_self.spin_box_set_bandwidth_lower.addItems(self.widget_values.set_bandwidth_lower_list)
+        # self.qt_self.spin_box_set_bandwidth_upper.addItems(self.widget_values.set_bandwidth_upper_list)
         self.qt_self.combo_box_set_chirp_samples.addItems(self.widget_values.set_chirp_samples_list)
-        self.qt_self.combo_box_set_chirp_end_delay.addItems(self.widget_values.set_chirp_end_delay_list)
+        # self.qt_self.spin_box_set_chirp_end_delay.addItems(self.widget_values.set_chirp_end_delay_list)
         self.qt_self.combo_box_set_shape_repetition.addItems(self.widget_values.set_shape_repetition_list)
-        self.qt_self.combo_box_set_shape_end_delay.addItems(self.widget_values.set_shape_end_delay_list)
+        # self.qt_self.spin_box_set_shape_end_delay.addItems(self.widget_values.set_shape_end_delay_list)
         self.qt_self.combo_box_set_shape_set_repetition.addItems(self.widget_values.set_shape_set_repetition_list)
-        self.qt_self.combo_box_set_shape_set_end_delay.addItems(self.widget_values.set_shape_set_end_delay_list)
+        # self.qt_self.spin_box_set_shape_set_end_delay.addItems(self.widget_values.set_shape_set_end_delay_list)
         
     def init_connect_combo_box(self):
         self.qt_self.combo_box_bgt_vga_gain.currentTextChanged.connect(self.get_bgt_vga_gain)
@@ -143,15 +140,15 @@ class MIRA_GUI_CTRL():
         self.qt_self.combo_box_gui_fps.currentTextChanged.connect(self.get_gui_fps)
         
         self.qt_self.spin_box_set_tx_power.valueChanged.connect(self.get_tx_power)
-        self.qt_self.combo_box_set_sample_rate.currentTextChanged.connect(self.get_sample_rate)
-        self.qt_self.combo_box_set_bandwidth_lower.currentTextChanged.connect(self.get_bandwidth_lower)
-        self.qt_self.combo_box_set_bandwidth_upper.currentTextChanged.connect(self.get_bandwidth_upper)
+        self.qt_self.spin_box_set_sample_rate.valueChanged.connect(self.get_sample_rate)
+        self.qt_self.spin_box_set_bandwidth_lower.valueChanged.connect(self.get_bandwidth)
+        self.qt_self.spin_box_set_bandwidth_upper.valueChanged.connect(self.get_bandwidth)
         self.qt_self.combo_box_set_chirp_samples.currentTextChanged.connect(self.get_chirp_samples)
-        self.qt_self.combo_box_set_chirp_end_delay.currentTextChanged.connect(self.get_chirp_end_delay)
+        self.qt_self.spin_box_set_chirp_end_delay.valueChanged.connect(self.get_chirp_end_delay)
         self.qt_self.combo_box_set_shape_repetition.currentTextChanged.connect(self.get_shape_repetition)
-        self.qt_self.combo_box_set_shape_end_delay.currentTextChanged.connect(self.get_shape_end_delay)
+        self.qt_self.spin_box_set_shape_end_delay.valueChanged.connect(self.get_shape_end_delay)
         self.qt_self.combo_box_set_shape_set_repetition.currentTextChanged.connect(self.get_shape_set_repetition)
-        self.qt_self.combo_box_set_shape_set_end_delay.currentTextChanged.connect(self.get_shape_set_end_delay)
+        self.qt_self.spin_box_set_shape_set_end_delay.valueChanged.connect(self.get_shape_set_end_delay)
         
     def init_connect_tab(self):
         self.qt_self.tab_plots.currentChanged.connect(self.identify_tab)
@@ -914,7 +911,7 @@ class MIRA_GUI_CTRL():
         tx_power = self.qt_self.spin_box_set_tx_power.value()
         tx_power = np.uint8(tx_power)
         self.radar_param.sens.tx_power = tx_power
-        self.update_sensor_settings()
+        self.set_tx_power()
         
     def set_tx_power(self) -> None:
         if self.qt_self.running == True or self.qt_self.mira_controller is None:
@@ -927,14 +924,15 @@ class MIRA_GUI_CTRL():
         self.qt_self.mira_controller.mira_device._csd3_1_reg.set_tx_power(self.radar_param.sens.tx_power, 2)
         self.qt_self.mira_controller.mira_device._csu4_1_reg.set_tx_power(self.radar_param.sens.tx_power, 2)
         self.qt_self.mira_controller.mira_device._csd4_1_reg.set_tx_power(self.radar_param.sens.tx_power, 2)
+        self.update_parameters_plots()
 
 
     def get_sample_rate(self) -> None:
-        sample_rate = self.qt_self.combo_box_set_sample_rate.currentText()
-        sample_rate = np.float32(sample_rate.split(' ')[0]) * 1e6
+        sample_rate = self.qt_self.spin_box_set_sample_rate.value()
+        sample_rate = np.float32(sample_rate * 1e6)
         self.radar_param.sens.sample_rate = sample_rate
         self.radar_param.sys.sampling_frequency = sample_rate
-        self.update_sensor_settings()
+        self.set_sample_rate()
         
     def set_sample_rate(self) -> None:
         if self.qt_self.running == True or self.qt_self.mira_controller is None:
@@ -949,65 +947,120 @@ class MIRA_GUI_CTRL():
         self.qt_self.mira_controller.mira_device._pll2_1.set_ramp_steps()
         self.qt_self.mira_controller.mira_device._pll3_1.set_ramp_steps()
         self.qt_self.mira_controller.mira_device._pll4_1.set_ramp_steps()
+        self.update_parameters_plots()
+    
+    def get_bandwidth(self) -> None:
+        bandwidth_upper = self.qt_self.spin_box_set_bandwidth_upper.value()
+        bandwidth_upper = np.float32(bandwidth_upper * 1e9)        
+        
+        bandwitdh_lower = self.qt_self.spin_box_set_bandwidth_lower.value()
+        bandwitdh_lower = np.float32(bandwitdh_lower * 1e9)
+        
+        if (bandwidth_upper > bandwitdh_lower):
+            self.radar_param.sens.bandwidth_upper = bandwidth_upper 
+            print(f"{bandwidth_upper=}")
+            self.radar_param.sens.bandwidth_lower = bandwitdh_lower
+            print(f"{bandwitdh_lower=}")
+            self.radar_param.sens.bandwidth = bandwidth_upper - bandwitdh_lower
+            self.set_bandwidth()
 
-    def get_bandwidth_lower(self) -> None:
-        bandwitdh_lower = self.qt_self.combo_box_set_bandwidth_lower.currentText()
-        bandwitdh_lower = np.float32(bandwitdh_lower.split(' ')[0]) * 1e9
+        else:
+            self.qt_self.spin_box_set_bandwidth_lower.setValue(bandwidth_upper*1e-9-0.25)
+            return
 
-        self.radar_param.sens.bandwidth_lower = bandwitdh_lower
-                
-    def get_bandwidth_upper(self) -> None:
-        bandwidth_upper = self.qt_self.combo_box_set_bandwidth_upper.currentText()
-        bandwidth_upper = np.float32(bandwidth_upper.split(' ')[0]) * 1e9        
+    def set_bandwidth(self) -> None:
+        if self.qt_self.running == True or self.qt_self.mira_controller is None:
+            return
+        self.update_parameters_plots()
+        pass
 
-        self.radar_param.sens.bandwidth_upper = bandwidth_upper 
-                
     def get_chirp_samples(self) -> None:
         chirp_samples = self.qt_self.combo_box_set_chirp_samples.currentText()
         chirp_samples = np.float32(chirp_samples.split(' ')[0])
 
         self.radar_param.sens.chirp_samples = chirp_samples
+        print(f"{chirp_samples=}")
+        self.set_chirp_samples()
+        
+    def set_chirp_samples(self) -> None:
+        if self.qt_self.running == True or self.qt_self.mira_controller is None:
+            return
+        self.qt_self.mira_controller.mira_device._pll1_3.set_chirp_sample_len(self.radar_param.sens.chirp_samples)
+        self.qt_self.mira_controller.mira_device._pll2_3.set_chirp_sample_len(self.radar_param.sens.chirp_samples)
+        self.qt_self.mira_controller.mira_device._pll3_3.set_chirp_sample_len(self.radar_param.sens.chirp_samples)
+        self.qt_self.mira_controller.mira_device._pll4_3.set_chirp_sample_len(self.radar_param.sens.chirp_samples)
+        self.update_parameters_plots()
         
     def get_chirp_end_delay(self) -> None:
-        chirp_end_delay = self.qt_self.combo_box_set_chirp_end_delay.currentText()
-        chirp_end_delay = np.float32(chirp_end_delay.split(' ')[0]) * 1e-6
+        chirp_end_delay = self.qt_self.spin_box_set_chirp_end_delay.value()
+        chirp_end_delay = np.float32(chirp_end_delay * 1e-6)
 
         self.radar_param.sens.chirp_end_delay = chirp_end_delay
+        print(f"{chirp_end_delay=}")
+        self.set_chirp_end_delay()
         
+    
+    def set_chirp_end_delay(self) -> None:
+        if self.qt_self.running == True or self.qt_self.mira_controller is None:
+            return
+        pass
+                            
     def get_shape_repetition(self) -> None:
         shape_repetition = self.qt_self.combo_box_set_shape_repetition.currentText()
         shape_repetition = np.float32(shape_repetition.split(' ')[0])
 
         self.radar_param.sens.shape_repetition = shape_repetition
-                
+        print(f"{shape_repetition=}")
+
     def get_shape_end_delay(self) -> None:
-        shape_end_delay = self.qt_self.combo_box_set_shape_end_delay.currentText()
-        shape_end_delay = np.float32(shape_end_delay.split(' ')[0]) * 1e-6
+        shape_end_delay = self.qt_self.spin_box_set_shape_end_delay.value()
+        shape_end_delay = np.float32(shape_end_delay * 1e-6)
         
         self.radar_param.sens.shape_end_delay = shape_end_delay
+        print(f"{shape_end_delay=}")
+        self.set_shape_end_delay()
+        
+    def set_shape_end_delay(self) -> None:
+        if self.qt_self.running == True or self.qt_self.mira_controller is None:
+            return
+        pass
         
     def get_shape_set_repetition(self) -> None:
         shape_set_repetition = self.qt_self.combo_box_set_shape_set_repetition.currentText()
         shape_set_repetition = np.float32(shape_set_repetition.split(' ')[0])
         
         self.radar_param.sens.shape_set_repetition = shape_set_repetition
+        print(f"{shape_set_repetition=}")
         
     def get_shape_set_end_delay(self) -> None:
-        shape_set_end_delay = self.qt_self.combo_box_set_shape_set_end_delay.currentText()
-        shape_set_end_delay, unit = shape_set_end_delay.split(' ')
-        shape_set_end_delay = np.float32(shape_set_end_delay)
-        if unit == 'µs':
-            shape_set_end_delay *= 1e-6
-        elif unit == 'ms':
-            shape_set_end_delay *= 1e-3
+        shape_set_end_delay = self.qt_self.spin_box_set_shape_set_end_delay.value()
+        shape_set_end_delay = np.float32(shape_set_end_delay * 1e-6)
 
         self.radar_param.sens.shape_set_end_delay = shape_set_end_delay
-        
-    def update_sensor_settings(self) -> None:
+        self.set_shape_set_end_delay()
 
-        self.set_tx_power()
-        self.set_sample_rate()
+    def set_shape_set_end_delay(self) -> None:
+        if self.qt_self.running == True or self.qt_self.mira_controller is None:
+            return
+        self.qt_self.mira_controller.mira_device._ccr1_reg.set_fed_time(self.radar_param.sens.shape_set_end_delay)
+        self.update_sensor_settings()
+
+    def update_sensor_settings(self) -> None:
+        self.get_chirp_samples()
+        self.get_tx_power()
+        self.get_sample_rate()
+        
+        self.get_hp_rx()
+        self.get_bgt_hp_fc()
+        self.get_bgt_hp_gain()
+        self.get_bgt_vga_gain()
+        self.get_gui_fps()
+        self.update_bgt_hp_filter()
+        self.update_parameters_plots()
+        
+    def update_parameters_plots(self) -> None:
         self.reinit_calc_radar_parameters()
+        self.get_axis_x()
         self.reinit_qt_widget_plots()
 
     def reinit_calc_radar_parameters(self) -> None:

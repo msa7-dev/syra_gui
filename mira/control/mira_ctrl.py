@@ -12,7 +12,7 @@ from mira.processing.mira_data_simulation import MIRA_DATA_SIMULATOR
 # Class Name: MIRA_CTRL_GUI
 # ==============================================================================
 class MIRA_CTRL_GUI:
-    def __init__(self, radar_param: MIRA_RADAR_PARAMETER):
+    def __init__(self, radar_param: MIRA_RADAR_PARAMETER) -> None:
         self.config = configparser.ConfigParser()
         self.config.read(__init__.MIRA_SYS_CONFIG_PATH)
         self.radar_param = radar_param
@@ -25,8 +25,6 @@ class MIRA_CTRL_GUI:
             if self.mira_device.init == False:
                 return
             else:
-                self.mira_device.set_header_prefix()
-                self.mira_device.set_spi_high_speed()
                 self.data_extrator = MIRA_DATA_EXTRACTOR(self.mira_device)
 
             if self.radar_param.meas.measurement_flag:
@@ -38,6 +36,15 @@ class MIRA_CTRL_GUI:
                 # return 
         self.data_processor = MIRA_DATA_PROCESSOR(self.radar_param)
 
+    def reinit_controller(self, radar_param: MIRA_RADAR_PARAMETER) -> None:
+        self.radar_param = radar_param
+        self.mira_device.radar_param = radar_param
+        self.data_extrator = MIRA_DATA_EXTRACTOR(self.mira_device)
+        if self.radar_param.meas.measurement_flag:
+            self.save_meas = MIRA_SAVE_MEAS(self.mira_device)
+        
+        self.data_processor = MIRA_DATA_PROCESSOR(radar_param)
+        
 # ==============================================================================
 # Class Name: MIRA_CTRL_CLI
 # ==============================================================================

@@ -28,18 +28,13 @@ class MIRA_DEVICE:
         
         self.mira_bridge.init_fifo_overhead()
             
-        generate_register_to_txt(self, save_to_file=True)
-        generate_register_to_readable_txt(self, save_to_file=True)
         for reg in self.pll_1_shape_regs:
             reg.CONVERT
-        bgt_register_checker = check_sensor_register(self)
-        logger.debug(f"Sensor register check: {'Pass' if bgt_register_checker else 'Fail'}")
         
+        self.set_spi_high_speed()
+        self.set_header_prefix()
         self.init_radar_system_parameters()
-        if bgt_register_checker != True:
-            self.init = False
-            return 
-            
+
     def init_device_content(self):
         self._main_reg = MIRA6024_CONTENT.BGT_MAIN(self)
         self._adc0_reg = MIRA6024_CONTENT.BGT_ADC0(self)
@@ -177,9 +172,17 @@ class MIRA_DEVICE:
         
     def activate_rf_test_mode(self) -> None:
         if self.radar_param.sys.rf_test_mode_en:
-            self._rft0_reg.RFTSIGCLK_DIV = int((80*1e6)/self.radar_param.sys.rf_test_ton)
             self._rft0_reg.RFTSIGCLK_DIV_EN = 1
+            self._rft0_reg.RFTSIGCLK_DIV = int((80*1e6)/self.radar_param.sys.rf_test_ton)
             self._sfctl_reg.LFSR_EN = 1
+            self._csu1_0_reg.RX1MIX_EN = 0
+            self._csu1_0_reg.RX2MIX_EN = 0
+            self._csu1_0_reg.RX2MIX_EN = 0
+            self._csu1_0_reg.RX4MIX_EN = 0
+            self._csu2_0_reg.RX1MIX_EN = 0
+            self._csu2_0_reg.RX2MIX_EN = 0
+            self._csu2_0_reg.RX2MIX_EN = 0
+            self._csu2_0_reg.RX4MIX_EN = 0
         else:
             return
         
@@ -234,6 +237,7 @@ class MIRA_DEVICE:
             np.float32(self.radar_param.sys.lambda_freq[0] \
                         / (4 * self.radar_param.sys.coherent_pulse_interval * 2))
         self.calc_system_parameters()
+        print(self.radar_param.sys.__str__())
         
     def calc_system_parameters(self):
         self.radar_param.sys.max_velocity = np.float32(self.radar_param.sys.lambda_freq / (4 * self.radar_param.sys.pulse_repetition_time))
@@ -243,7 +247,19 @@ class MIRA_DEVICE:
         self.radar_param.sys.max_range = np.float32(c * self.radar_param.sys.max_dsp_freq / ((2 * self.radar_param.sys.ramp_slope[0])+np.finfo(float).eps))  
         self.radar_param.sys.resolution_velocity = \
             np.float32(self.radar_param.sys.lambda_freq / ((4 * self.radar_param.sys.coherent_pulse_interval *2)+np.finfo(float).eps))
-            
+
+
+    def finish_init(self) -> None:
+        self.mira_bridge.init_fifo_overhead()
+        generate_register_to_txt(self, save_to_file=True)
+        generate_register_to_readable_txt(self, save_to_file=True)
+        bgt_register_checker = check_sensor_register(self)
+        logger.debug(f"Sensor register check: {'Pass' if bgt_register_checker else 'Fail'}")
+        
+        if bgt_register_checker != True:
+            self.init = False
+            return
+        
     @property
     def CONTENT(self):
         return build_content(self)

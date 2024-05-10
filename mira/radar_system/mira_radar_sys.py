@@ -144,6 +144,7 @@ class MIRA_RADAR_SYS_PARAMETER():
         self.t_paen = np.float32(0)
         self.t_sstart = np.float32(0)
         self.t_acqu = np.float32(0)
+        
         # Frame Timing - timings once each frame
         # Wake Up Time
         self.t_wkup = np.uint32(0)
@@ -167,7 +168,80 @@ class MIRA_RADAR_SYS_PARAMETER():
         self.rf_test_mode_en_channels = [False, False, 
                                          False, False]
         self.rf_antenna = np.uint8(0)
-
+        
+    def __str__(self):
+        return (
+            f"Allocation Factor: {self.allocation_factor}\n"
+            f"Rx Active Antennas: {self.rx_active_antennas}\n"
+            f"Tx Active Antennas: {self.tx_active_antennas}\n"
+            f"Tx Power: {self.tx_power}\n"
+            f"Fullscale Voltage: {self.fullscale_voltage}\n"
+            f"Waterfall Spectrogram Time: {self.waterfall_spectrogram_time}\n"
+            f"Plot Axis Max Value: {self.plot_axis_max_value}\n"
+            f"Current Plot Ampl Limit: {self.curr_plot_ampl_limit}\n"
+            f"Plot Ampl Limit Min: {self.plot_ampl_limit_min}\n"
+            f"Plot Ampl Limit Max: {self.plot_ampl_limit_max}\n"
+            f"Current Select Axis Unit: {self.curr_select_axis_unit}\n"
+            f"Min Range: {self.min_range}\n"
+            f"Max Range: {self.max_range}\n"
+            f"Resolution Range: {self.resolution_range}\n"
+            f"Max Velocity: {self.max_velocity}\n"
+            f"Resolution Velocity: {self.resolution_velocity}\n"
+            f"RTU: {self.rtu}\n"
+            f"Min Angle: {self.min_angle}\n"
+            f"Max Angle: {self.max_angle}\n"
+            f"Resolution Angle: {self.resolution_angle}\n"
+            f"Pulse Repetition Frequency: {self.pulse_repetition_frequency}\n"
+            f"Pulse Repetition Interval: {self.pulse_repetition_interval}\n"
+            f"Coherent Pulse Interval: {self.coherent_pulse_interval}\n"
+            f"N FIFO Overhead: {self.n_fifo_overhead}\n"
+            f"Frames Per Second: {self.frames_per_second}\n"
+            f"Frame Duration: {self.frame_duration}\n"
+            f"Mid Frequency: {self.mid_frequency}\n"
+            f"Lambda Frequency: {self.lambda_freq}\n"
+            f"Start Frequency: {self.start_frequency}\n"
+            f"End Frequency: {self.end_frequency}\n"
+            f"Ramp Bandwidth: {self.ramp_bandwidth}\n"
+            f"Ramp Steps: {self.ramp_steps}\n"
+            f"Ramp Time: {self.ramp_time}\n"
+            f"Ramp Slope: {self.ramp_slope}\n"
+            f"Max DSP Frequency: {self.max_dsp_freq}\n"
+            f"Sampling Frequency: {self.sampling_frequency}\n"
+            f"Sampling Interval Time: {self.sampling_interval_time}\n"
+            f"Chirp Time: {self.chirp_time}\n"
+            f"Num Chirps per Frame: {self.num_chirps_frame}\n"
+            f"Frame Samples: {self.frame_samples}\n"
+            f"Frame Chirps: {self.frame_chirps}\n"
+            f"N Samples per Chirp: {self.n_samples_per_chirp}\n"
+            f"Shape Set Repetition: {self.shape_set_repetition}\n"
+            f"N Frames Range Doppler: {self.n_frames_range_doppler}\n"
+            f"Sync Word 0: {self.sync_word0}\n"
+            f"Sync Word 1: {self.sync_word1}\n"
+            f"Frame Count: {self.frame_cnt}\n"
+            f"Max Frame Count: {self.max_frame_cnt}\n"
+            f"Shape Group Count: {self.shape_grp_cnt}\n"
+            f"Shape Repetition: {self.shape_repetition}\n"
+            f"N Active Shape: {self.n_active_shape}\n"
+            f"BGT VGA Gain: {self.bgt_vga_gain}\n"
+            f"BGT HP FC: {self.bgt_hp_fc}\n"
+            f"BGT HP Gain: {self.bgt_hp_gain}\n"
+            f"T Start: {self.t_start}\n"
+            f"T End: {self.t_end}\n"
+            f"T PAEN: {self.t_paen}\n"
+            f"T SStart: {self.t_sstart}\n"
+            f"T Acqu: {self.t_acqu}\n"
+            f"T WKUP: {self.t_wkup}\n"
+            f"T Init0: {self.t_init0}\n"
+            f"T Init1: {self.t_init1}\n"
+            f"T FED: {self.t_fed}\n"
+            f"T SED: {self.t_sed}\n"
+            f"T ED: {self.t_ed}\n"
+            f"Pulse Repetition Time: {self.pulse_repetition_time}\n"
+            f"RF Test Ton: {self.rf_test_ton}\n"
+            f"RF Test Mode Enabled: {self.rf_test_mode_en}\n"
+            f"RF Test Mode Enabled Channels: {self.rf_test_mode_en_channels}\n"
+            f"RF Antenna: {self.rf_antenna}"
+        )
 # ==============================================================================
 # Class Name: MIRA_RADAR_GUI_PARAMETER
 # ==============================================================================

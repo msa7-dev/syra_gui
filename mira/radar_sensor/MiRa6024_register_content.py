@@ -199,9 +199,11 @@ class BGT_ADC0:
         set_reg_val(self)
 
     def calc_sampling_frequency(self) -> None:
-        # self.radar_param.sys.sampling_frequency = np.float32(80*1e6 / (self._ADC_DIV+np.finfo(float).eps)) # TODO : const clk 
+        self.radar_param.sys.sampling_frequency = np.float32(80*1e6 / (self._ADC_DIV+np.finfo(float).eps)) # TODO : const clk 
         pass
+    
     def set_sampling_frequency(self, sample_rate) -> None:
+        self.radar_param.sys.sampling_frequency = sample_rate
         self.ADC_DIV = np.uint16(80*1e6/sample_rate)
         
     @property
@@ -1459,9 +1461,11 @@ class BGT_CSCX:
     def REPC(self, value):
         self._REPC = value
         set_reg_val(self)
-        
+    
+    def set_shape_set_repetition(self, n_shape_set_repetition) -> None:
+        self.REPC = n_shape_set_repetition
+         
     def convert_all_values(self):
-        # self.get_shape_repetition_factor()
         pass
     
     @property
@@ -1641,10 +1645,29 @@ class BGT_CCR1:
         # T_FED = (TR_FED x 2^TR_FED_MUL x 8 + TR_FED_MUL +3) x TSYS_CLK
         self.radar_param.sys.t_fed = (self._TR_FED * 2**self._TR_FED_MUL * 8 + self._TR_FED_MUL + 3) * (1/80e6)
 
+    def set_fed_time(self, fed_time: np.float32) -> None:
+        T_SYS_CLK = 1/(80*1e6)
+        # Maximum TR_FED_MUL value (10 decimal)
+        max_tr_fed_mul = 10
+
+        for tr_fed_mul in range(max_tr_fed_mul + 1):
+            # Calculate the denominator part of the formula
+            factor = 2**tr_fed_mul * 8 + tr_fed_mul + 3
+
+            # Compute TR_FED required for the given T_FED
+            tr_fed = fed_time / (factor * T_SYS_CLK)
+
+            # Ensure that TR_FED is within the valid range of [1, 255]
+            if 1 <= tr_fed <= 255:
+                break
+        self.TR_FED = np.uint8(tr_fed)
+        self.TR_FED_MUL = np.uint8(tr_fed_mul)
+
     def convert_all_values(self):
         self.get_start_time()
         self.get_fed_time()
         
+
     @property
     def CONTENT(self):
         return build_content(self)
@@ -1692,6 +1715,10 @@ class BGT_CCR2:
     def get_shape_set_repetition(self) -> None:
         self.radar_param.sys.shape_set_repetition = self._FRAME_LEN + 1
     
+    def set_shape_set_repetition(self, shape_set_repetition) -> None:
+        self.FRAME_LEN = shape_set_repetition
+        self.radar_param.sys.shape_set_repetition = shape_set_repetition
+        
     def convert_all_values(self):
         self.get_max_frame_length()
         self.get_shape_set_repetition()
@@ -1847,7 +1874,8 @@ class BGT_PLLX_1:
     def set_ramp_steps(self) -> None:
         rtu = np.float32((self.radar_param.sys.ramp_time[0] / 8) * 80*1e6)
         value = self.radar_param.sys.ramp_bandwidth[0] / (8*rtu)
-        self.RSU = np.uint32(2**20*((value)/(640*1e6)))   
+        self.RSU = np.uint32(2**20*((value)/(640*1e6)))  
+         
         
     def get_ramp_bandwidth(self) -> None:
         reg_adr_to_index = {
@@ -1859,6 +1887,10 @@ class BGT_PLLX_1:
         index = reg_adr_to_index.get(self.REG_ADR)
         if index is not None:
             self.radar_param.sys.ramp_steps[index] = self._RSU
+       
+    def set_ramp_bandwidth(self, ramp_bandwidth: np.float32) -> None:
+        
+        pass
         
     def convert_all_values(self):
         self.get_ramp_bandwidth()
@@ -1900,7 +1932,7 @@ class BGT_PLLX_2:
                                             self.radar_param.sys.t_acqu - self.radar_param.sys.t_start
         self.radar_param.sys.ramp_time[1] = self.radar_param.sys.ramp_time[0]
         self.RTU = np.uint16((self.radar_param.sys.ramp_time[0] / 8) * 80*1e6)
-        print(self.radar_param.sys.ramp_time)
+        
         
     def get_bandwidth_slope(self) -> None:
         reg_adr_to_index = {
@@ -1948,6 +1980,26 @@ class BGT_PLLX_2:
         elif self._TR_EDU != 0 and index is not None:
             # If TR_EDU/D > 0: T_EDU/D = (8 x TR_EDU/D + 5) x TSYS_CLK.
             self.radar_param.sys.t_ed[index] = (8 * self._TR_EDU + 5) * (1/80e6)
+
+
+    def set_edu_time(self, edu_time: np.float32) -> None:
+        T_SYS_CLK = 1/(80*1e6)
+        # Maximum TR_FED_MUL value (10 decimal)
+        max_tr_edu_mul = 10
+
+        for tr_edu_mul in range(max_tr_edu_mul + 1):
+            # Calculate the denominator part of the formula
+            factor = 2**tr_edu_mul * 8 + tr_edu_mul + 3
+
+            # Compute TR_FED required for the given T_FED
+            tr_edu = edu_time / (factor * T_SYS_CLK)
+
+            # Ensure that TR_FED is within the valid range of [1, 255]
+            if 1 <= tr_edu <= 255:
+                break
+        
+        self.TR_EDU = tr_edu
+        self.TR_EDU_MUL = tr_edu_mul
         
     def convert_all_values(self):
         self.get_edu_time()
@@ -2006,7 +2058,13 @@ class BGT_PLLX_3:
         elif self.REG_ADR == BGT_REG.PLLX_3_REG.PLL4_3_ADR:
             self.radar_param.sys.n_samples_per_chirp[3] = self._APU
             self.radar_param.sys.n_samples_per_chirp[7] = self._APD
-            
+    
+    def set_chirp_sample_len(self, n_sample: np.uint16) -> None:
+        self.APU = np.uint16(n_sample)
+        self.radar_param.sys.n_samples_per_chirp[0] = np.uint16(n_sample)
+        self.radar_param.sys.n_samples_per_chirp[1] = np.uint16(n_sample)
+        self.radar_param.sys.n_samples_per_chirp[2] = np.uint16(n_sample)
+        self.radar_param.sys.n_samples_per_chirp[3] = np.uint16(n_sample)
         
     def convert_all_values(self):
         self.get_chirp_sample_len()
@@ -2223,7 +2281,7 @@ class BGT_PLLX_7:
     def REPS(self, value):
         self._REPS = value
         set_reg_val(self)
-
+    
     def get_shape_repetition(self) -> None:
         if self.REG_ADR == BGT_REG.PLLX_7_REG.PLL1_7_ADR:
             self.radar_param.sys.shape_repetition[0] = np.uint32(2**self._REPS)
@@ -2233,6 +2291,7 @@ class BGT_PLLX_7:
             self.radar_param.sys.shape_repetition[2] = np.uint32(2**self._REPS)
         elif self.REG_ADR == BGT_REG.PLLX_7_REG.PLL4_7_ADR:
             self.radar_param.sys.shape_repetition[3] = np.uint32(2**self._REPS)
+    
     
     @property
     def SH_EN(self):
@@ -2305,6 +2364,25 @@ class BGT_PLLX_7:
             self.radar_param.sys.t_sed[index] = \
                 (self._TR_SED * 2**self._TR_SED_MUL * 8 + self._TR_SED_MUL + 3) * (1/80e6)
 
+
+    def set_sed_time(self, sed_time: np.float32) -> None:
+        T_SYS_CLK = 1/(80*1e6)
+        # Maximum TR_FED_MUL value (10 decimal)
+        max_tr_sed_mul = 10
+
+        for tr_sed_mul in range(max_tr_sed_mul + 1):
+            # Calculate the denominator part of the formula
+            factor = 2**tr_sed_mul * 8 + tr_sed_mul + 3
+
+            # Compute TR_FED required for the given T_FED
+            tr_sed = sed_time / (factor * T_SYS_CLK)
+
+            # Ensure that TR_FED is within the valid range of [1, 255]
+            if 1 <= tr_sed <= 255:
+                break
+        self.TR_SED = tr_sed
+        self.TR_SED_MUL = tr_sed_mul
+    
     def convert_all_values(self):
         self.get_shape_repetition()
         self.get_nbr_active_shapes()
