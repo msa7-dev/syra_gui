@@ -6,8 +6,6 @@ import os
 import click
 import subprocess
 from loguru import logger
-from mira.radar_system.mira_radar_sys import MIRA_RADAR_PARAMETER
-from mira.radar_sensor.MiRa6024_sensor_device import MIRA_DEVICE
 
 @click.group()
 def cli():
@@ -42,12 +40,12 @@ def check_setup_venv():
         
 def start_mira_venv():
     """Start the virtual environment."""
-    subprocess.run(['/bin/bash', './mira/setup/unix/start_mira_gui_venv.sh'])
+    subprocess.run(['/bin/bash', './radar_eval/setup/unix/start_mira_gui_venv.sh'])
     
-def start_mira_process():
+def start_gui_process():
     logger.debug("Starting MiRa GUI...")
     import multiprocessing
-    import mira.gui.mira_eval_gui as mira_eval_gui
+    import radar_eval.gui.radar_eval_qt_gui as mira_eval_gui
 
     mira_eval_gui_main_process = multiprocessing.Process(
         name='MiRa_Eval_GUI_Main_Process',
@@ -60,11 +58,11 @@ def start_mira_process():
     logger.debug("MiRa GUI started.")
     
 # ==============================================================================
-# Click Command Name: start_mira
+# Click Command Name: start_gui
 # ============================================================================== 
 @cli.command(help="This command starts the MiRa GUI application")
-def start_mira():
-    start_mira_process()
+def start_gui():
+    start_gui_process()
 
 
 # ==============================================================================
@@ -88,34 +86,34 @@ def build_cython():
     This command invokes the setup.py script to compile the Cython modules.
 
     Example:
-    python3 ./mira/proc/cython/setup.py build_ext --inplace
+    python3 ./radar_eval/proc/cython/setup.py build_ext --inplace
     """
     logger.debug("Building Cython modules...")
-    subprocess.run(['python3', './mira/processing/cython/setup.py', 'build_ext', '--inplace'])
-    subprocess.run(['python3', './mira/communication/cython/setup.py', 'build_ext', '--inplace'])
+    subprocess.run(['python3', './radar_eval/processing/cython/setup.py', 'build_ext', '--inplace'])
+    subprocess.run(['python3', './radar_eval/communication/cython/setup.py', 'build_ext', '--inplace'])
 
     logger.debug("Successfully build cython modules.")
 
 
 # ==============================================================================
-# Click Command Name: mira_gui
+# Click Command Name: radar_gui
 # ==============================================================================
-@cli.command(help="This command starts the MiRa GUI application")
-def mira_gui():
+@cli.command(help="This command starts the Radar GUI application")
+def radar_gui():
     """
-    Starts the MiRa GUI application.
+    Starts the Radar GUI application.
 
-    This command spawns a new process to run the MiRa GUI, allowing the main process to continue executing other tasks.
+    This command spawns a new process to run the Radar GUI, allowing the main process to continue executing other tasks.
 
     Example:
-    ./sykno_cli mira-gui
+    ./sykno_cli radar-gui
     """
     check_setup_venv()
     checker_venv = check_activ_venv()
 
     if checker_venv:
         # install_requirements()
-        start_mira_process()
+        start_gui_process()
     else:
         start_mira_venv()
 
@@ -147,7 +145,7 @@ def run_docker():
     subprocess.run(['sudo', 'docker', 'run', '-it', '--rm', '--privileged', 
                     '-e', 'DISPLAY=$DISPLAY', '-v', '/dev/bus/usb:/dev/bus/usb', \
                     '-v', '/tmp/.X11-unix:/tmp/.X11-unix',
-                    '-v', './mira/measurement/hdf5/:/home/sykno/mira/measurement/hdf5/',
+                    '-v', './radar_eval/measurement/hdf5/:/home/sykno/radar_eval/measurement/hdf5/',
                     '--hostname', 'sykno-docker', 'sykno_docker'])
     logger.debug('Closed sykno docker.')
 
@@ -157,6 +155,8 @@ def run_docker():
 # ==============================================================================
 @cli.command(help="This command starts the flashing process for the MCU.")
 def flash_mcu():
+    from radar_eval.radar_system.radar_system_definition import MIRA_RADAR_PARAMETER
+    from radar_eval.radar_sensor.MiRa6024_sensor_device import MIRA_DEVICE
     radar_param = MIRA_RADAR_PARAMETER()
     device = MIRA_DEVICE(radar_param)
     if device.mira_bridge.device is not None:
@@ -165,8 +165,30 @@ def flash_mcu():
         logger.debug('Finished updating MCU firmware.')
     else:
         logger.warning('No device found, please ensure you connected the device.')
-        
-            
+
+
+# ==============================================================================
+# Click Command Name: compile_gui
+# ==============================================================================
+@cli.command(help="This command starts the flashing process for the MCU.")
+def compile_gui():
+    # Compile with Nuitka
+    subprocess.run([
+        'nuitka3', '--standalone', '--onefile',
+        '--enable-plugin=pyqt5',
+        '--output-dir=./',
+        '--remove-output',
+        # '--assume-yes-for-downloads',
+        '--python-flag=-OO',  # Remove docstrings and assert statements
+        '--lto=yes',  # Enable link-time optimization
+        '--follow-imports',
+        '--include-package-data=h5py',  # Ensure h5py package data is included
+        # '--verbose',  # Enable verbose logging
+        '--jobs=20',  # Use multiple jobs for faster compilation
+        './radar_gui_starter.py'
+    ])
+
+    
 # Call the CLI as main to start Click access
 if __name__ == '__main__':
     cli()

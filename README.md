@@ -1,5 +1,5 @@
 # README
-![](./mira/gui/resources/pics/Logo_Sykno.svg "")
+![](./radar_eval/gui/resources/pics/Logo_Sykno.svg "")
 
 # __MiRa Evaluation GUI__ 
 
@@ -34,5 +34,5 @@ $ sudo python3 sykno_cli mira-gui
 
 ### Build MiRa Eval GUI as one-file-executable via nuitka
 ```sh
-$  nuitka3 --standalone --onefile --enable-plugin=pyqt5 --output-dir=./mira_build ./mira_installer.py   
+$  nuitka3 --standalone --onefile --enable-plugin=pyqt5 --output-dir=./mira_build ./mira_installer.py
 ```
