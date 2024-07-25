@@ -12,10 +12,10 @@ from threading import Thread
 from typing import List, Optional
 from PyQt5 import uic, QtCore, QtWidgets
 from radar_eval.control.controller import MIRA_CTRL_GUI
-# from radar_eval.com.mira_tcp_client import MIRA_TCP_CLIENT
 from radar_eval.radar_system.radar_system_definition import MIRA_RADAR_PARAMETER
 from radar_eval.gui.gui_control import MIRA_GUI_CTRL, init_gui_window, init_gui_qtwidgets
 from radar_eval.control.multiprocessing import MIRA_MULTIPROCESSOR,distribute_cores_to_process
+from scipy.signal import find_peaks, convolve
 
 # ==============================================================================
 # Class Name: MIRA_MAIN_GUI
@@ -62,9 +62,11 @@ class MIRA_MAIN_GUI(QtWidgets.QMainWindow):
         self.prev_frame_cnt = 0
         
         self.prev_processed_radar_data_shape = {'Channel 1': (2,2,2),
-                                                'Channel 2': (2,2,2)}
+                                                'Channel 2': (2,2,2),
+                                                'Channel 3': (2,2,2)}
         self.processed_radar_data = {'Channel 1': np.zeros((1,1,1), dtype=np.float32),
-                                     'Channel 2': np.zeros((1,1,1), dtype=np.float32)}
+                                     'Channel 2': np.zeros((1,1,1), dtype=np.float32),
+                                     'Channel 3': np.zeros((1,1,1), dtype=np.float32)}
         
     def set_updates_per_sec(self, timer: QtCore.QTimer, fps: int) -> None:
         timer.start(int(1000 / fps))  # Interval in milliseconds
@@ -80,9 +82,7 @@ class MIRA_MAIN_GUI(QtWidgets.QMainWindow):
 
     def init_gui_controller(self):
         self.radar_param = MIRA_RADAR_PARAMETER()
-        print('init_gui_controller start')
         self.gui_controller = MIRA_GUI_CTRL(self, self.radar_param)
-        print('init_gui_controller stop')
         
         self.gui_controller.update_radar_params()
 
@@ -130,7 +130,6 @@ class MIRA_MAIN_GUI(QtWidgets.QMainWindow):
                 self.plot_channel_order_list = ['RX1 TX1']
             
             self.button_startstop.clicked.disconnect()
-            self.button_startstop.clicked.connect(self.start_stop)
             self.prev_time = 0
             self.frame_cnt = 0 
             self.prev_frame_cnt = 0
@@ -138,24 +137,28 @@ class MIRA_MAIN_GUI(QtWidgets.QMainWindow):
             if self.mira_controller is None:
                 self.mira_controller = MIRA_CTRL_GUI(self.radar_param)
 
-
-            if self.mira_controller.mira_device is None:
+            self.button_startstop.clicked.connect(self.start_stop)
+            if self.mira_controller.mira_device is None and self.radar_param.rply.replay_flag == False:
                 self.mira_controller = None
                 self.button_startstop.setText("Start")
                 return
             else:
                 self.button_startstop.setText("Stop")
-            self.gui_controller.update_gui_sensor_detected()
-
             
+            
+            self.gui_controller.update_gui_sensor_detected()
             self.gui_controller.update_sensor_settings()
             self.mira_controller.mira_device.activate_rf_test_mode()
             
-            self.mira_controller.reinit_controller(self.radar_param)
+            self.mira_controller.reinit_controller(self.gui_controller.radar_param)
             self.mira_processor = MIRA_MULTIPROCESSOR(self.mira_controller)
+            
             self.mira_controller.mira_device.finish_init()
+            
             self.gui_controller.update_radar_params()
+            
             self.mira_controller.mira_device.init_mira_frame_generation()
+            
             self.mira_processor.start_processes()
 
             self.running = True
@@ -170,9 +173,10 @@ class MIRA_MAIN_GUI(QtWidgets.QMainWindow):
             self.mira_processor.process_stop_event.set()
             self.running = False
             self.graph_update_flag = False
+            time.sleep(125e-3)
             self.mira_processor.stop_processes()
-
-            self.mira_controller.mira_device.mira_bridge.deinit_stm_usb_device()
+            if self.mira_controller.mira_device is not None:
+                self.mira_controller.mira_device.mira_bridge.deinit_stm_usb_device()
             self.mira_controller = None
             
             self.button_startstop.clicked.connect(self.start_stop)
@@ -292,11 +296,15 @@ class MIRA_MAIN_GUI(QtWidgets.QMainWindow):
         if self.processed_radar_data['Channel 1'].shape != \
            self.prev_processed_radar_data_shape['Channel 1'] or \
            self.processed_radar_data['Channel 2'].shape != \
-           self.prev_processed_radar_data_shape['Channel 2']:
+           self.prev_processed_radar_data_shape['Channel 2'] or \
+           self.processed_radar_data['Channel 3'].shape != \
+           self.prev_processed_radar_data_shape['Channel 3']:
             self.prev_processed_radar_data_shape['Channel 1'] = \
                 self.processed_radar_data['Channel 1'].shape
             self.prev_processed_radar_data_shape['Channel 2'] = \
                 self.processed_radar_data['Channel 2'].shape
+            self.prev_processed_radar_data_shape['Channel 3'] = \
+                self.processed_radar_data['Channel 3'].shape
             self.gui_controller.get_axis_x()
             return
         self.graph_update_flag = True
@@ -322,35 +330,51 @@ class MIRA_MAIN_GUI(QtWidgets.QMainWindow):
                     and 'Channel 2' in self.processed_radar_data \
                     and plot_counter > 3 \
                     and self.radar_param.mon.sykno_product_name == 'MiRa6024I1A':
+                
                     if  self.radar_param.gui.active_rx[plot_counter-4]:
                         self.gui_controller.mira_plotter.time_signal.plotlines[
                             f"{self.gui_controller.tab_name_time} {channel}"].setData(
                             self.gui_controller.mira_plotter.time_axis,
                             self.processed_radar_data['Channel 2'][:, plot_counter-4])
+                
+                data = self.processed_radar_data['Channel 3'][:]
+                self.gui_controller.mira_plotter.time_signal.plotlines[f'{self.gui_controller.tab_name_time} mean'].setData(
+                self.gui_controller.mira_plotter.time_axis, data)
+
         return dummy
     
     def set_spectrum(self, dummy: None) -> None:
         if self.running and self.graph_update_flag:
             for plot_counter, channel in enumerate(self.plot_channel_order_list):
-                if self.radar_param.gui.active_tx[0] \
-                   and 'Channel 1' in self.processed_radar_data \
-                   and plot_counter <= 3:
-                    if  self.radar_param.gui.active_rx[plot_counter]:
-                        self.gui_controller.mira_plotter.spectrum.plotlines[
-                            f"{self.gui_controller.tab_name_main_instance_window} {channel}"].setData(
-                            self.gui_controller.fft_axis, 
-                            self.processed_radar_data['Channel 1'][:, plot_counter])
+                data = None  # Initialize the data variable for each loop iteration
+                channel_name = None  # This will store the complete channel identifier for plotting
 
-                if self.radar_param.gui.active_tx[1] \
-                   and 'Channel 2' in self.processed_radar_data \
-                   and plot_counter > 3 \
-                   and self.radar_param.mon.sykno_product_name == 'MiRa6024I1A':
-                    if  self.radar_param.gui.active_rx[plot_counter-4]:
-                        self.gui_controller.mira_plotter.spectrum.plotlines[
-                            f"{self.gui_controller.tab_name_main_instance_window} {channel}"].setData(
-                            self.gui_controller.fft_axis, 
-                            self.processed_radar_data['Channel 2'][:, plot_counter-4])
-            return dummy
+                # Handling Channel 1 data
+                if self.radar_param.gui.active_tx[0] and 'Channel 1' in self.processed_radar_data and plot_counter <= 3:
+                    if self.radar_param.gui.active_rx[plot_counter]:
+                        channel_name = f"{self.gui_controller.tab_name_main_instance_window} {channel}"
+                        data = self.processed_radar_data['Channel 1'][:, plot_counter]
+                        self.gui_controller.mira_plotter.spectrum.plotlines[channel_name].setData(
+                            self.gui_controller.fft_axis, data)
+
+                # Handling Channel 2 data
+                if self.radar_param.gui.active_tx[1] and 'Channel 2' in self.processed_radar_data and plot_counter > 3:
+                    if self.radar_param.gui.active_rx[plot_counter-4]:
+                        channel_name = f"{self.gui_controller.tab_name_main_instance_window} {channel}"
+                        data = self.processed_radar_data['Channel 2'][:, plot_counter-4]
+                        self.gui_controller.mira_plotter.spectrum.plotlines[channel_name].setData(
+                            self.gui_controller.fft_axis, data)
+                        
+                data = self.processed_radar_data['Channel 3'][:]
+                self.gui_controller.mira_plotter.spectrum.plotlines['Spectrum mean'].setData(
+                    self.gui_controller.fft_axis, data)
+
+                ## Peak search - also have a look: qt_gui_plot.py
+                # peaks, _ = find_peaks(data, height=-20)  # Adjust the height threshold as needed
+                # peak_values = data[peaks]  # Extract the peak values
+                # self.gui_controller.mira_plotter.spectrum.peak_markers['Spectrum Peaks'].setData(self.gui_controller.fft_axis[peaks], peak_values)
+
+        return dummy
             
     def set_spectrogram(self, dummy: None) -> None:
         if self.running and self.graph_update_flag:
@@ -412,6 +436,23 @@ class MIRA_MAIN_GUI(QtWidgets.QMainWindow):
                 'Range Doppler RX1_TX1'].setImage(
                 np.transpose(np.flip(self.processed_radar_data['Channel 2'],
                                      axis=0), (0,1,2))[:,:,0], autoLevels=False)
+        return dummy
+    
+    def set_waterfall_range_doppler_azimtuh(self, dummy: None) -> None:
+        if self.running == True and self.graph_update_flag:
+            self.gui_controller.mira_plotter.range_azimuth.plotlines[
+                self.gui_controller.tab_name_main_instance_window].setImage(
+                self.processed_radar_data['Channel 1'], autoLevels=False)
+            
+            self.gui_controller.mira_plotter.range_doppler.plotlines[
+                'Range Doppler RX1_TX2'].setImage(
+                np.transpose(np.flip(self.processed_radar_data['Channel 2'],
+                                     axis=0), (0,1,2))[:,:,0], autoLevels=False)
+            
+            self.gui_controller.mira_plotter.spectrogram.plotlines[
+                'Waterfall Spectrogram RX1_TX2'].setImage(
+                np.transpose(np.flip(self.processed_radar_data['Channel 3'], axis=0),
+                             (1,0,2))[:,:,0], autoLevels=False)
         return dummy
 
     def closeEvent(self, event=None):

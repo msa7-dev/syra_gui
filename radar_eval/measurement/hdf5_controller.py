@@ -1,9 +1,11 @@
+
 import os
 import h5py
 import json
 import pickle
 import numpy as np
 import scipy.io as sio
+from loguru import logger
 
 class MIRA_HDF5_CTRL:
     def __init__(self, filename):
@@ -23,13 +25,13 @@ class MIRA_HDF5_CTRL:
     def load_all_data(self):
         self.load_datasets()
         self.load_metadata()
-        self.load_specific_dataset_attributes('/Data/Frame_Data_Cube_0000_0000')
+        self.load_specific_dataset_attributes('/Frame_Data_Cube_0000_0000')
         self.load_specific_metadata_attributes()
 
     def load_datasets(self):
         with h5py.File(self.filename, 'r') as file:
             for dataset_name in file['/Data']:
-                data = np.array(file['/Data'][dataset_name][:], dtype=np.float32)
+                data = np.array(file[f'/Data/{dataset_name}'][:], dtype=np.float32)
                 self.datasets[dataset_name] = np.expand_dims(data, axis=0)
             if self.datasets:
                 self.mira_data_cube = np.concatenate(list(self.datasets.values()), axis=0)
@@ -51,14 +53,7 @@ class MIRA_HDF5_CTRL:
                 self.timestamp = dataset.attrs['timestamp']
 
     def load_specific_metadata_attributes(self):
-        # self.mira_config = self.metadata.get('mira_config', {}).get('mira_config')
-        # self.mira_bgt_reg_content = self.metadata.get('mira_bgt_reg_content', {}).get('mira_bgt_reg_content')
-        # self.mira_bgt_reg_content_readable = self.metadata.get('mira_bgt_reg_content_readable', {}).get('mira_bgt_reg_content_readable')
-        # radar_param_data = self.metadata.get('mira_radar_parameters', {}).get('mira_radar_parameters')
-        # if radar_param_data is not None:
-        #     self.radar_param = pickle.loads(radar_param_data.tobytes())
         pass
-
 
     def print_hdf5_structure(self, output_filename=None):
         with h5py.File(self.filename, "r") as file:
@@ -78,30 +73,30 @@ class MIRA_HDF5_CTRL:
             if output_file:
                 output_file.write(f"{line}\n")
             else:
-                print(line)
+                logger.debug(line)
 
             for attr_name, attr_value in item.attrs.items():
                 attr_line = f"{indent}  - @{attr_name}: {attr_value}"
                 if output_file:
                     output_file.write(f"{attr_line}\n")
                 else:
-                    print(attr_line)
+                    logger.debug(attr_line)
 
             for key, subitem in item.items():
-                self._print_structure(key, subitem, depth + 1, output_file)  # Corrected recursive call
+                self._print_structure(key, subitem, depth + 1, output_file)
         elif isinstance(item, h5py.Dataset):
             line = f"{indent}- {name.split('/')[-1]} (Dataset)"
             if output_file:
                 output_file.write(f"{line}\n")
             else:
-                print(line)
+                logger.debug(line)
 
             for attr_name, attr_value in item.attrs.items():
                 attr_line = f"{indent}  - @{attr_name}: {attr_value}"
                 if output_file:
                     output_file.write(f"{attr_line}\n")
                 else:
-                    print(attr_line)
+                    logger.debug(attr_line)
 
     def read_dataset(self, dataset_path):
         with h5py.File(self.filename, 'r') as file:
@@ -109,7 +104,7 @@ class MIRA_HDF5_CTRL:
                 data = file[dataset_path][()]
                 return data
             else:
-                print(f"Dataset {dataset_path} not found in file.")
+                logger.debug(f"Dataset {dataset_path} not found in file.")
                 return None
 
     def get_dataset_statistics(self, dataset_path):
@@ -151,7 +146,7 @@ class MIRA_HDF5_CTRL:
                 else:
                     return data[()]
             else:
-                print(f"Dataset {dataset_path} not found in file.")
+                logger.debug(f"Dataset {dataset_path} not found in file.")
                 return None
 
     def list_all_datasets(self):
@@ -166,7 +161,7 @@ class MIRA_HDF5_CTRL:
                 dataset = file[dataset_path]
                 return dataset.shape, dataset.dtype
             else:
-                print(f"Dataset {dataset_path} not found in file.")
+                logger.debug(f"Dataset {dataset_path} not found in file.")
                 return None, None
 
     def search_datasets_by_name(self, search_string):
@@ -195,7 +190,7 @@ class MIRA_HDF5_CTRL:
 
             dataset_names = [name for name in file['Data']]
             if not dataset_names:
-                print("No datasets found for conversion.")
+                logger.debug("No datasets found for conversion.")
                 return
 
             first_dataset = self.read_dataset(f'/Data/{dataset_names[0]}')
@@ -214,12 +209,12 @@ class MIRA_HDF5_CTRL:
 
     def _save_as_npy(self, folder, base_name, data_cube):
         filename = os.path.join(folder, f"{base_name}.npy")
-        print(data_cube.shape)
+        logger.debug(data_cube.shape)
         np.save(filename, data_cube)
 
     def _save_as_mat(self, folder, base_name, data_cube):
         filename = os.path.join(folder, f"{base_name}.mat")
-        print(data_cube.shape)
+        logger.debug(data_cube.shape)
         sio.savemat(filename, {"data": data_cube})
 
     def load_radar_data_cube(self, group_path='/Data', dtype=np.float32):
@@ -240,7 +235,7 @@ class MIRA_HDF5_CTRL:
                 attrs = {attr: dataset.attrs[attr] for attr in dataset.attrs}
                 return data, attrs
             else:
-                print(f"Dataset {dataset_path} not found in file.")
+                logger.debug(f"Dataset {dataset_path} not found in file.")
                 return None, None
 
     def read_metadata(self, metadata_path='Metadata'):
@@ -264,5 +259,5 @@ class MIRA_HDF5_CTRL:
                 radar_param = pickle.loads(radar_param_data)
                 return radar_param
             else:
-                print(f"Metadata path {metadata_path} not found in file.")
+                logger.debug(f"Metadata path {metadata_path} not found in file.")
                 return None

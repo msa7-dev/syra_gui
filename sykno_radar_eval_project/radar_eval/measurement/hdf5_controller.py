@@ -88,7 +88,7 @@ class MIRA_HDF5_CTRL:
                     print(attr_line)
 
             for key, subitem in item.items():
-                self._print_structure(key, subitem, depth + 1, output_file)  
+                self._print_structure(key, subitem, depth + 1, output_file)  # Corrected recursive call
         elif isinstance(item, h5py.Dataset):
             line = f"{indent}- {name.split('/')[-1]} (Dataset)"
             if output_file:

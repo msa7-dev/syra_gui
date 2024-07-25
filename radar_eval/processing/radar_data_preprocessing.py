@@ -70,7 +70,7 @@ class MIRA_DATA_PREPROCESSOR():
                            cutoff: int=0) -> None:
         self.fc_hp = cutoff
         
-        fcn_bgt_high = cutoff / self.radar_param.sys.max_dsp_freq  # normalized upper cutoff frequency
+        fcn_bgt_high = cutoff / (self.radar_param.sys.max_dsp_freq + 1e-12)   # normalized upper cutoff frequency
         if order > 0 and cutoff > 0 and filter_type in ['ba', 'sos']:
             if filter_type == 'ba':
                 self.dsp_hp_b_coef, self.dsp_hp_a_coef = butter(N=order, Wn=fcn_bgt_high,

@@ -149,7 +149,6 @@ def run_docker():
                     '--hostname', 'sykno-docker', 'sykno_docker'])
     logger.debug('Closed sykno docker.')
 
-
 # ==============================================================================
 # Click Command Name: flash_mcu
 # ==============================================================================
@@ -176,7 +175,7 @@ def compile_gui():
     subprocess.run([
         'nuitka3', '--standalone', '--onefile',
         '--enable-plugin=pyqt5',
-        '--output-dir=./',
+        '--output-dir=./sykno_radar_eval_project/',
         '--remove-output',
         # '--assume-yes-for-downloads',
         '--python-flag=-OO',  # Remove docstrings and assert statements

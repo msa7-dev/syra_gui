@@ -60,6 +60,7 @@ class MIRA_RADAR_SENS_PARAMETER():
     def __init__(self) -> None:
         self.tx_power = np.float32(0)
         self.sample_rate = np.float32(0)
+        self.bandwidth = np.float32(0)
         self.bandwidth_lower = np.float32(0)
         self.bandwidth_upper = np.float32(0)
         self.chirp_samples = np.float32(0)

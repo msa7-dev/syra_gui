@@ -702,7 +702,7 @@ class CSCX_REG(IntEnum):
     REPC_ID = 0x381
     REPC_POS = 0
     REPC_MSK = 0x00000f
-    REPC_SET = 1024
+    REPC_SET = 0
     REPC_RST = 0
 
     CS_EN_ID = 0x382

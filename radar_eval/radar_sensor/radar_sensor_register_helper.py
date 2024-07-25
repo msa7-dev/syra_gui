@@ -12,6 +12,7 @@ def check_sensor_register(instance) -> bool:
     checker = False
     for content in instance.CONTENT:
         content = getattr(instance, content)
+        # print(content.__dict__)
         checker = all(value is not None for value in vars(instance).values())
     return checker
 
@@ -115,13 +116,13 @@ def extract_reg_symbol_value(reg: np.uint32, msk: np.uint32, pos: np.uint32):
     return (reg & msk) >> pos
 
 def get_reg_val(instance, id: IntEnum, 
-                adr: np.uint8=None,
-                rxData: np.uint32=None) -> np.uint32:
+                adr=None,
+                rxData=None) -> np.uint32:
 
     field_data = get_reg_def_data(instance, id)
-    if adr == None:
+    if adr is None:
         adr = field_data["ADR"]
-    if rxData == None:
+    if rxData is None:
         adr, rxData = instance.usb_spi_bridge.spi_read_reg(adr)
         rxData = int.from_bytes(rxData, byteorder='big')
 
@@ -149,6 +150,7 @@ def set_reg_val(instance):
 
     txData = build_register_from_content(instance)
     txData_list = [np.uint8(txData >> 16), np.uint8(txData >> 8), np.uint8(txData >> 0)]
+    # print(hex(adr), txData_list)
     instance.usb_spi_bridge.spi_write_reg_val(adr, txData_list)
 
 

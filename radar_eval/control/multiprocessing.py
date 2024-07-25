@@ -32,7 +32,7 @@ class MIRA_MULTIPROCESSOR():
     def _init_processes(self) -> None:
         if self.radar_param.meas.measurement_flag and \
            self.mira_controller.mira_device.mira_bridge.device is not None:
-            # Data Aquisition Process - BGT Raw Data via USB Bridge
+            # Data Acquisition Process - BGT Raw Data via USB Bridge
             self.data_save_process = multiprocessing.Process(
                 name='MiRa_Meas_Save_Process',
                 target=self.mira_controller.save_meas.save_to_hdf5_process,
@@ -42,10 +42,10 @@ class MIRA_MULTIPROCESSOR():
         else:
             self.data_save_process = None
         
-        if self.radar_param.remt.remote_flag == False or \
-           self.radar_param.remt.client_flag == True and \
-           self.mira_controller.mira_device.mira_bridge.device is not None:
-            # Data Aquisition Process - BGT Raw Data via USB Bridge
+        if (self.radar_param.remt.remote_flag == False or \
+           self.radar_param.remt.client_flag == True) and \
+           self.mira_controller.mira_device is not None:
+            # Data Acquisition Process - BGT Raw Data via USB Bridge
             self.data_aquisition_process = multiprocessing.Process(
                 name='MiRa_USB_Aquisition_Process',
                 target=self.mira_controller.mira_device.mira_bridge.raw_data_aquisition_process,
@@ -55,8 +55,20 @@ class MIRA_MULTIPROCESSOR():
         else:
             self.data_aquisition_process = None
         
-        if self.radar_param.remt.remote_flag == False or \
-           self.radar_param.remt.client_flag == True:
+        if self.radar_param.rply.replay_flag:
+            # Data Replaying Process - Loads measurement file and puts it in data queue to data processing
+            self.data_replaying_process = multiprocessing.Process(
+                name='MiRa_Replaying_Process',
+                target=self.mira_controller.data_replayer.data_replaying_process, 
+                args=(self.usb_extraction_data_queue, 
+                      self.update_gui_info_queue,
+                      self.extracted_processing_data_queue,
+                      self.save_data_queue,
+                      self.process_stop_event,
+                      self.radar_gui_para_queue))
+            self.data_replaying_process.daemon = True
+            self.data_extracting_process = None
+        else:
             # Data Extracting Process - Extracting BGT Raw Data into Header, RX-Channels
             self.data_extracting_process = multiprocessing.Process(
                 name='MiRa_Extracting_Process',
@@ -67,24 +79,10 @@ class MIRA_MULTIPROCESSOR():
                       self.save_data_queue,
                       self.process_stop_event))
             self.data_extracting_process.daemon = True
-        else:
-            self.data_extracting_process = None
+            self.data_replaying_process = None
         
-        if self.mira_controller.radar_param.rply.replay_flag == True:
-            # Data Simulating Process - Loads measurement file and puts it in data queue to data processing
-            self.data_simulating_process = multiprocessing.Process(
-                name='MiRa_Simulating_Process',
-                target=self.mira_controller.data_simulator.data_simulating_process, 
-                args=(self.usb_extraction_data_queue, 
-                      self.update_gui_info_queue,
-                      self.extracted_processing_data_queue,
-                      self.process_stop_event))
-            self.data_extracting_process.daemon = True
-        else:
-            self.data_simulating_process = None
-        
-        if self.mira_controller.radar_param.remt.remote_flag == True and \
-           self.mira_controller.radar_param.remt.client_flag == True:
+        if self.radar_param.remt.remote_flag == True and \
+           self.radar_param.remt.client_flag == True:
             # Data Transmitting Process - Handles the client endpoint of the remote TCP connection
             self.data_transmitting_process = multiprocessing.Process(
                 name='MiRa_Remote_Transmitting_Process',
@@ -93,12 +91,12 @@ class MIRA_MULTIPROCESSOR():
                       self.processed_gui_data_queue,
                       self.process_param_queue,
                       self.process_stop_event))
-            self.data_processing_process.daemon = True
+            self.data_transmitting_process.daemon = True
         else:
             self.data_transmitting_process = None
 
-        if self.mira_controller.radar_param.remt.remote_flag == True and \
-           self.mira_controller.radar_param.remt.client_flag == False:
+        if self.radar_param.remt.remote_flag == True and \
+           self.radar_param.remt.client_flag == False:
             # Data Receiving Process - Handles the host endpoint of the remote TCP connection
             self.data_receiving_process = multiprocessing.Process(
                 name='MiRa_Remote_Receiving_Process',
@@ -107,11 +105,11 @@ class MIRA_MULTIPROCESSOR():
                       self.processed_gui_data_queue,
                       self.process_param_queue,
                       self.process_stop_event))
-            self.data_processing_process.daemon = True
+            self.data_receiving_process.daemon = True
         else:
             self.data_receiving_process = None
         
-        if self.mira_controller.radar_param.remt.client_flag == False:
+        if self.radar_param.remt.client_flag == False:
             # Data Processing Process - Performing Preprocessing and Radar Data Cube calculations
             self.data_processing_process = multiprocessing.Process(
                 name='MiRa_Data_Processing_Process',
@@ -125,10 +123,10 @@ class MIRA_MULTIPROCESSOR():
             self.data_processing_process = None
         
         self.processes = [self.data_extracting_process,
+                          self.data_replaying_process,
                           self.data_processing_process, 
                           self.data_receiving_process,
                           self.data_transmitting_process,
-                          self.data_simulating_process,
                           self.data_save_process,
                           self.data_aquisition_process]
         

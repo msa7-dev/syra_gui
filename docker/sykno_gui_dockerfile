@@ -11,14 +11,17 @@ COPY . .
 ENV DEBIAN_FRONTEND=noninteractive
 ENV TZ=UTC
 
-# Remove the unavailable package if not critical
+# Install necessary packages
 RUN apt-get update -y && apt-get upgrade -y && \
     apt-get install -y apt-utils sudo tzdata usbutils udev \
     wget build-essential checkinstall libreadline-dev \
     libncursesw5-dev libssl-dev libsqlite3-dev tk-dev \
     libgdbm-dev libc6-dev libbz2-dev libffi-dev zlib1g-dev \
     tzdata x11-xserver-utils libusb-1.0-0-dev libftdi1-dev \
-    libqt5svg5* libglib2.0-0 libsm6 libxrender1 libxext6 && \
+    libqt5svg5* libglib2.0-0 libsm6 libxrender1 libxext6 \
+    qtbase5-dev qt5-qmake qtbase5-dev-tools \
+    libqt5gui5 libqt5widgets5 libqt5core5a libxcb-xinerama0 \
+    libxcb-xinerama0-dev libxkbcommon-x11-0 && \
     ln -fs /usr/share/zoneinfo/UTC /etc/localtime && \
     dpkg-reconfigure -f noninteractive tzdata && \
     apt-get autoremove -y && apt-get autoclean -y
@@ -39,7 +42,11 @@ RUN cd /tmp && \
 RUN python3.11 -m pip install --upgrade pip && \
     python3.11 -m pip install -r /home/sykno/radar_eval/setup/requirements.txt
 
-# Define the command to run the application
-RUN taskset -c 1 python3.11 -B ./sykno_cli build-cython
-RUN taskset -c 1 python3.11 -B ./sykno_cli setup-env
-# CMD ["sh", "-c", "taskset -c 1 python3.11 -B radar_gui_installer.py"]
+# Set the DISPLAY environment variable
+ENV DISPLAY=:0
+
+# Verify the installation
+RUN ls /home/sykno/sykno_radar_eval_project/
+
+# Command to run your application
+CMD ["sh", "-c", "taskset -c 1 /home/sykno/sykno_radar_eval_project/radar_gui_starter.bin"]

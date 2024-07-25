@@ -7,17 +7,17 @@ import configparser
 import pyqtgraph as pg
 from pathlib import Path
 from loguru import logger
-from PyQt5 import QtWidgets, QtCore
-from PyQt5.QtCore import Qt, QSize
-from PyQt5.QtGui import QPalette, QColor
-from PyQt5.QtWidgets import QGraphicsScene, QGraphicsRectItem, QGraphicsTextItem
-from PyQt5.QtGui import QLinearGradient, QColor, QBrush, QFont
 from PyQt5.QtCore import QRectF
+from PyQt5.QtCore import Qt, QSize
+from PyQt5 import QtWidgets, QtCore
+from PyQt5.QtGui import QPalette, QColor
+from PyQt5.QtGui import QLinearGradient, QColor, QBrush, QFont
+from PyQt5.QtWidgets import QGraphicsScene, QGraphicsRectItem, QGraphicsTextItem
 
-from radar_eval.gui.qt_gui_direcotry_browser import MIRA_BROWSER
 from radar_eval.gui.qt_gui_plot import MIRA_PLOTTER
-from radar_eval.radar_system.radar_system_definition import MIRA_RADAR_PARAMETER
+from radar_eval.gui.qt_gui_direcotry_browser import MIRA_BROWSER
 from radar_eval.gui.gui_config import MIRA_WIDGET_VALUES, MIRA_FUNC_PIPELINE
+from radar_eval.radar_system.radar_system_definition import MIRA_RADAR_PARAMETER
 
 # ==============================================================================
 # Class Name: MIRA_GUI_CTRL
@@ -91,10 +91,10 @@ class MIRA_GUI_CTRL():
         self.qt_self.browse_meas_out_path_button.clicked.connect(self.meas_out_path_browser_open_path_browser)
         self.qt_self.mira_project_button.clicked.connect(self.set_mira_project)
         self.qt_self.browse_meas_data_label_button.clicked.connect(self.set_mira_session_label)
-        self.qt_self.load_default_tcp_settings_button.clicked.connect(self.set_remote_tcp_default_settings)
-        self.qt_self.remote_tcp_connect_button.clicked.connect(self.start_tcp_connection)
-        self.qt_self.usb_device_connect_button.clicked.connect(self.qt_self.auto_connect_device)
         self.qt_self.activate_boot_mode_button.clicked.connect(self.activate_boot_mode)
+        self.qt_self.usb_device_connect_button.clicked.connect(self.qt_self.auto_connect_device)
+        # self.qt_self.load_default_tcp_settings_button.clicked.connect(self.set_remote_tcp_default_settings)
+        # self.qt_self.remote_tcp_connect_button.clicked.connect(self.start_tcp_connection)
 
     def init_values_combo_box(self):
         self.qt_self.combo_box_select_axis_x.addItems(self.widget_values.axis_unit_select_list)
@@ -171,10 +171,10 @@ class MIRA_GUI_CTRL():
         self.qt_self.label_tx_power.setText(f'{int(self.radar_param.sens.tx_power)} / {int(self.radar_param.sens.tx_power) if int(sum(self.radar_param.sys.tx_active_antennas)) > 1 else ""} dBm')
         self.qt_self.label_sampling_frequency.setText(f'{round(float(self.radar_param.sys.sampling_frequency*1e-6), 4)} MHz')
         self.qt_self.label_chrip_sample.setText(str(int(self.radar_param.sys.n_samples_per_chirp[0])))
-        self.qt_self.label_frequency.setText(f'{round(float(self.radar_param.sys.start_frequency[0] * 1e-9))} - '+
-                                             f'{round(float(self.radar_param.sys.end_frequency[0] * 1e-9))} GHz')
+        self.qt_self.label_frequency.setText(f'{round(float(self.radar_param.sens.bandwidth_lower * 1e-9), 2)} - '+
+                                             f'{round(float(self.radar_param.sens.bandwidth_upper * 1e-9), 2)} GHz')
         self.qt_self.label_ramp_time.setText(f'{round(float(self.radar_param.sys.ramp_time[0] * 1e6), 2)} µs')
-        self.qt_self.label_bandwidth.setText(f'{round(float(self.radar_param.sys.ramp_bandwidth[0] * 1e-9))} GHz')
+        self.qt_self.label_bandwidth.setText(f'{round(float(self.radar_param.sens.bandwidth * 1e-9),2)} GHz')
         self.qt_self.label_ramp_slope.setText(f'{round(float(self.radar_param.sys.ramp_slope[0] * 1e-12), 2)} MHz/µs')
         # self.qt_self.label_chirp_time.setText(f'{round(float(self.radar_param.sys.chirp_time[0]), 2)} ms')
         self.qt_self.label_frame_duration.setText(f'{round(float(self.radar_param.sys.frame_duration)*1e3)} ms ' +  \
@@ -226,10 +226,10 @@ class MIRA_GUI_CTRL():
         self.qt_self.usb_connection_checkBox.setChecked(True)
         self.qt_self.usb_auto_connect_checkBox.setChecked(True)
         self.qt_self.usb_device_connect_button.setDisabled(True)
-        self.qt_self.tcp_remote_control_checkBox.setChecked(False)
-        self.qt_self.tcp_remote_control_checkBox.setDisabled(True)
-        self.qt_self.load_default_tcp_settings_button.setDisabled(True)
-        self.qt_self.remote_tcp_connect_button.setDisabled(True)
+        # self.qt_self.tcp_remote_control_checkBox.setChecked(False)
+        # self.qt_self.tcp_remote_control_checkBox.setDisabled(True)
+        # self.qt_self.load_default_tcp_settings_button.setDisabled(True)
+        # self.qt_self.remote_tcp_connect_button.setDisabled(True)
         
         self.qt_self.browse_register_path_button.setDisabled(True)
         self.qt_self.browse_meas_out_path_button.setDisabled(True)
@@ -438,37 +438,38 @@ class MIRA_GUI_CTRL():
         if self.qt_self.usb_connection_checkBox.isChecked():
             self.qt_self.usb_auto_connect_checkBox.setDisabled(False)
             self.qt_self.usb_device_connected_label.setDisabled(False)
-            self.qt_self.tcp_remote_control_checkBox.setChecked(False)
             self.qt_self.usb_device_connect_button.setDisabled(False)
-            self.qt_self.remote_tcp_connect_button.setDisabled(True)
-            self.qt_self.tcp_remote_control_checkBox.setDisabled(True)
-            self.qt_self.load_default_tcp_settings_button.setDisabled(True)
+            # self.qt_self.tcp_remote_control_checkBox.setChecked(False)
+            # self.qt_self.remote_tcp_connect_button.setDisabled(True)
+            # self.qt_self.tcp_remote_control_checkBox.setDisabled(True)
+            # self.qt_self.load_default_tcp_settings_button.setDisabled(True)
         else:
             self.qt_self.usb_auto_connect_checkBox.setChecked(False)
             self.qt_self.usb_auto_connect_checkBox.setDisabled(True)
             self.qt_self.usb_device_connect_button.setDisabled(True)
             self.qt_self.usb_device_connected_label.setDisabled(True)
-            self.qt_self.remote_tcp_connect_button.setDisabled(True)
-            self.qt_self.load_default_tcp_settings_button.setDisabled(True)
-            self.qt_self.tcp_remote_control_checkBox.setDisabled(False)
+            # self.qt_self.remote_tcp_connect_button.setDisabled(True)
+            # self.qt_self.load_default_tcp_settings_button.setDisabled(True)
+            # self.qt_self.tcp_remote_control_checkBox.setDisabled(False)
 
     def handle_tcp_connection_state(self) -> None:
-        if self.qt_self.tcp_remote_control_checkBox.isChecked():
-            self.qt_self.usb_connection_checkBox.setChecked(False)
-            self.qt_self.usb_connection_checkBox.setDisabled(True)
-            self.qt_self.usb_auto_connect_checkBox.setChecked(False)
-            self.qt_self.usb_auto_connect_checkBox.setDisabled(True)
-            self.qt_self.usb_device_connect_button.setDisabled(True)
-            self.qt_self.usb_device_connected_label.setDisabled(True)
-            self.qt_self.load_default_tcp_settings_button.setDisabled(False)
-            self.qt_self.remote_tcp_connect_button.setDisabled(False)
-        else:
-            self.qt_self.usb_connection_checkBox.setDisabled(False)
-            self.qt_self.usb_auto_connect_checkBox.setDisabled(False)
-            self.qt_self.usb_device_connect_button.setDisabled(False)
-            self.qt_self.usb_device_connected_label.setDisabled(False)
-            self.qt_self.load_default_tcp_settings_button.setDisabled(True)
-            self.qt_self.remote_tcp_connect_button.setDisabled(True)
+        pass
+        # if self.qt_self.tcp_remote_control_checkBox.isChecked():
+            # self.qt_self.usb_connection_checkBox.setChecked(False)
+            # self.qt_self.usb_connection_checkBox.setDisabled(True)
+            # self.qt_self.usb_auto_connect_checkBox.setChecked(False)
+            # self.qt_self.usb_auto_connect_checkBox.setDisabled(True)
+            # self.qt_self.usb_device_connect_button.setDisabled(True)
+            # self.qt_self.usb_device_connected_label.setDisabled(True)
+            # self.qt_self.load_default_tcp_settings_button.setDisabled(False)
+            # self.qt_self.remote_tcp_connect_button.setDisabled(False)
+        # else:
+            # self.qt_self.usb_connection_checkBox.setDisabled(False)
+            # self.qt_self.usb_auto_connect_checkBox.setDisabled(False)
+            # self.qt_self.usb_device_connect_button.setDisabled(False)
+            # self.qt_self.usb_device_connected_label.setDisabled(False)
+            # self.qt_self.load_default_tcp_settings_button.setDisabled(True)
+            # self.qt_self.remote_tcp_connect_button.setDisabled(True)
             
     def init_connect_check_box(self):
         self.qt_self.check_box_replay.stateChanged.connect(self.handle_replay_state)
@@ -476,8 +477,9 @@ class MIRA_GUI_CTRL():
         
         self.qt_self.usb_auto_connect_checkBox.stateChanged.connect(self.handle_usb_auto_connect_state)
         self.qt_self.usb_connection_checkBox.stateChanged.connect(self.handle_usb_connection_state)
-        self.qt_self.tcp_remote_control_checkBox.stateChanged.connect(self.handle_tcp_connection_state)
+        # self.qt_self.tcp_remote_control_checkBox.stateChanged.connect(self.handle_tcp_connection_state)
         self.qt_self.headless_recording_check_box.stateChanged.connect(self.get_headless_recording_state)
+        
         self.qt_self.check_box_hp_rx1.stateChanged.connect(self.get_hp_rx)
         self.qt_self.check_box_hp_rx2.stateChanged.connect(self.get_hp_rx)
         self.qt_self.check_box_hp_rx3.stateChanged.connect(self.get_hp_rx)
@@ -538,34 +540,38 @@ class MIRA_GUI_CTRL():
                                                         self.radar_param.sys.plot_ampl_limit_max[self.radar_param.sys.curr_plot_ampl_limit]))
         
         if self.tab_name_main_instance_window == 'Waterfall Spectrogram' or \
-           self.tab_name_main_instance_window == 'Waterfall Azimuth':
-            self.mira_plotter.spectrogram.set_transform((0, plot_axis_max_value),
-                                                        (-self.radar_param.sys.waterfall_spectrogram_time, 0),
-                                                        (self.radar_param.sys.plot_ampl_limit_min[self.radar_param.sys.curr_plot_ampl_limit],
-                                                         self.radar_param.sys.plot_ampl_limit_max[self.radar_param.sys.curr_plot_ampl_limit]), 
-                                                        self.qt_self.processed_radar_data['Channel 1'].shape \
-                                                              if self.tab_name_main_instance_window == 'Waterfall Spectrogram' \
-                                                              else self.qt_self.processed_radar_data['Channel 2'].shape)
-        
+           self.tab_name_main_instance_window == 'Waterfall Azimuth' or \
+           self.tab_name_main_instance_window == 'Demo':
+                self.mira_plotter.spectrogram.set_transform(
+                    (0, plot_axis_max_value),
+                    (-self.radar_param.sys.waterfall_spectrogram_time, 0),
+                    (self.radar_param.sys.plot_ampl_limit_min[3],
+                     self.radar_param.sys.plot_ampl_limit_max[3]), 
+                    self.qt_self.processed_radar_data['Channel 1'].shape if self.tab_name_main_instance_window == 'Waterfall Spectrogram' else (self.qt_self.processed_radar_data['Channel 3'].shape if self.tab_name_main_instance_window == 'Demo' else self.qt_self.processed_radar_data['Channel 2'].shape)
+                )
+
         if self.tab_name_main_instance_window == 'Range Doppler' or \
-           self.tab_name_main_instance_window == 'Range Doppler Azimuth':
+           self.tab_name_main_instance_window == 'Range Doppler Azimuth' or \
+           self.tab_name_main_instance_window == 'Demo':
             self.mira_plotter.range_doppler.set_transform((0, plot_axis_max_value),
                                                           (-self.radar_param.sys.max_velocity[0],
                                                            self.radar_param.sys.max_velocity[0]),
-                                                          (self.radar_param.sys.plot_ampl_limit_min[self.radar_param.sys.curr_plot_ampl_limit],
-                                                           self.radar_param.sys.plot_ampl_limit_max[self.radar_param.sys.curr_plot_ampl_limit]),
+                                                          (self.radar_param.sys.plot_ampl_limit_min[4],
+                                                           self.radar_param.sys.plot_ampl_limit_max[4]),
                                                           self.qt_self.processed_radar_data['Channel 1'].shape \
-                                                              if self.tab_name_main_instance_window == 'Range Doppler' \
+                                                              if self.tab_name_main_instance_window == 'Range Doppler'
                                                               else self.qt_self.processed_radar_data['Channel 2'].shape)
         
         if self.tab_name_main_instance_window == 'Range Azimuth' or \
            self.tab_name_main_instance_window == 'Waterfall Azimuth' or \
-           self.tab_name_main_instance_window == 'Range Doppler Azimuth':  
+           self.tab_name_main_instance_window == 'Range Doppler Azimuth' or \
+           self.tab_name_main_instance_window == 'Demo':   
             self.mira_plotter.range_azimuth.set_transform((0, plot_axis_max_value), 
-                                                          (-plot_axis_max_value, plot_axis_max_value), (0, 8000),
-                                                        #   (self.radar_param.sys.plot_ampl_limit_min[self.radar_param.sys.curr_plot_ampl_limit],
-                                                        #    self.radar_param.sys.plot_ampl_limit_max[self.radar_param.sys.curr_plot_ampl_limit]),
+                                                          (-plot_axis_max_value, plot_axis_max_value),
+                                                          (self.radar_param.sys.plot_ampl_limit_min[5],
+                                                           self.radar_param.sys.plot_ampl_limit_max[5]),
                                                           self.qt_self.processed_radar_data['Channel 1'].shape)
+            
         
     def clear_plots(self) -> None:
         
@@ -655,17 +661,23 @@ class MIRA_GUI_CTRL():
         elif self.tab_index_main_instance_window == 4:
             logger.debug(f"Switch to Tab: Range Azimuth - Index: {self.tab_index_main_instance_window}")
             self.tab_name_main_instance_window = 'Range Azimuth'
-            self.radar_param.sys.curr_plot_ampl_limit = 5             
+            self.radar_param.sys.curr_plot_ampl_limit = 5
 
         elif self.tab_index_main_instance_window == 5:
             logger.debug(f"Switch to Tab: Waterfall | Azimuth - Index: {self.tab_index_main_instance_window}")
             self.tab_name_main_instance_window = 'Waterfall Azimuth'
-            self.radar_param.sys.curr_plot_ampl_limit = 3 
+            self.radar_param.sys.curr_plot_ampl_limit = 3
         
         elif self.tab_index_main_instance_window == 6:
             logger.debug(f"Switch to Tab: Range Doppler | Azimuth - Index: {self.tab_index_main_instance_window}")
             self.tab_name_main_instance_window = 'Range Doppler Azimuth'
-            self.radar_param.sys.curr_plot_ampl_limit = 4 
+            self.radar_param.sys.curr_plot_ampl_limit = 4
+            
+        elif self.tab_index_main_instance_window == 7:
+            logger.debug(f"Switch to Tab: Demo - Index: {self.tab_index_main_instance_window}")
+            self.tab_name_main_instance_window = 'Demo'
+            self.radar_param.sys.curr_plot_ampl_limit = 3
+
 
         self.graph_update_flag = False
         self.update_slider()
@@ -752,9 +764,9 @@ class MIRA_GUI_CTRL():
     # encode dB value to index value
     def encode_bgt_hp_gain(self, hp_gain_value) -> np.uint8:
         if hp_gain_value == 18:
-            return 0
-        elif hp_gain_value == 30:
             return 1
+        elif hp_gain_value == 30:
+            return 0
         
     def get_bgt_hp_fc(self):
         curr_bgt_hp_fc = self.qt_self.combo_box_bgt_hp_fc.currentText()
@@ -889,8 +901,9 @@ class MIRA_GUI_CTRL():
         self.qt_self.start_gui_event_timer()
         
     def start_tcp_connection(self) -> None:
-        self.set_remote_tcp_settings()
-        self.qt_self.connect_tcp_client()
+        pass
+        # self.set_remote_tcp_settings()
+        # self.qt_self.connect_tcp_client()
     
     def set_remote_tcp_default_settings(self) -> None:
         MIRA_TCP_CLIENT_IP = self.config.get('MIRA_REMOTE_SETTINGS', 'MIRA_TCP_CLIENT_IP')
@@ -900,14 +913,15 @@ class MIRA_GUI_CTRL():
         self.radar_param.remt.client_ip_port = [MIRA_TCP_CLIENT_IP, MIRA_TCP_CLIENT_PORT]
         self.radar_param.remt.client_ssh_name = MIRA_SSH_CLIENT_NAME
         self.radar_param.remt.client_ssh_pwd = MIRA_SSH_CLIENT_PWD
-        self.qt_self.client_ip_port_plainTextEdit.setPlainText(f'{MIRA_TCP_CLIENT_IP}:{MIRA_TCP_CLIENT_PORT}')
-        self.qt_self.client_ssh_name_plainTextEdit.setPlainText(MIRA_SSH_CLIENT_NAME)
-        self.qt_self.client_ssh_pwd_plainTextEdit.setPlainText(MIRA_SSH_CLIENT_PWD)
+        # self.qt_self.client_ip_port_plainTextEdit.setPlainText(f'{MIRA_TCP_CLIENT_IP}:{MIRA_TCP_CLIENT_PORT}')
+        # self.qt_self.client_ssh_name_plainTextEdit.setPlainText(MIRA_SSH_CLIENT_NAME)
+        # self.qt_self.client_ssh_pwd_plainTextEdit.setPlainText(MIRA_SSH_CLIENT_PWD)
     
     def set_remote_tcp_settings(self) -> None:
-        self.set_client_ip_port()
-        self.set_client_ssh_name()
-        self.set_client_ssh_pwd()
+        pass
+        # self.set_client_ip_port()
+        # self.set_client_ssh_name()
+        # self.set_client_ssh_pwd()
     
     def set_client_ip_port(self) -> None:
         client_ip_port = self.qt_self.client_ip_port_plainTextEdit.toPlainText()
@@ -943,29 +957,35 @@ class MIRA_GUI_CTRL():
 
 
     def get_sample_rate(self) -> None:
-        # sample_rate = self.qt_self.spin_box_set_sample_rate.value()
-        # sample_rate = np.float32(sample_rate * 1e6)
-        # self.radar_param.sens.sample_rate = sample_rate
-        # self.radar_param.sys.sampling_frequency = sample_rate
-        # self.set_sample_rate()
-        pass
+        sample_rate = self.qt_self.spin_box_set_sample_rate.value()
+        sample_rate = np.float32(sample_rate * 1e6)
+        self.radar_param.sens.sample_rate = sample_rate
+        self.radar_param.sys.sampling_frequency = sample_rate
+        # pass
             
     def set_sample_rate(self) -> None:
         if self.qt_self.running == True or self.qt_self.mira_controller is None:
             return
-        # self.qt_self.mira_controller.mira_device._pll1_2.set_ramp_time(self.radar_param.sens.sample_rate)
-        # self.qt_self.mira_controller.mira_device._pll2_2.set_ramp_time(self.radar_param.sens.sample_rate)
-        # self.qt_self.mira_controller.mira_device._pll3_2.set_ramp_time(self.radar_param.sens.sample_rate)
-        # self.qt_self.mira_controller.mira_device._pll4_2.set_ramp_time(self.radar_param.sens.sample_rate)
-        # self.qt_self.mira_controller.mira_device._adc0_reg.set_sampling_frequency(self.radar_param.sens.sample_rate)
-        # self.qt_self.mira_controller.mira_device._pll1_1.set_ramp_steps()
-        # self.qt_self.mira_controller.mira_device._pll2_1.set_ramp_steps()
-        # self.qt_self.mira_controller.mira_device._pll3_1.set_ramp_steps()
-        # self.qt_self.mira_controller.mira_device._pll4_1.set_ramp_steps()
-        # self.qt_self.mira_controller.mira_device._pll1_2.get_bandwidth_slope()
-        # self.qt_self.mira_controller.mira_device._pll2_2.get_bandwidth_slope()
-        # self.qt_self.mira_controller.mira_device._pll3_2.get_bandwidth_slope()
-        # self.qt_self.mira_controller.mira_device._pll4_2.get_bandwidth_slope()
+        self.get_sample_rate()
+        self.qt_self.mira_controller.mira_device._pll1_2.set_ramp_time(self.radar_param.sens.sample_rate)
+        self.qt_self.mira_controller.mira_device._pll2_2.set_ramp_time(self.radar_param.sens.sample_rate)
+        self.qt_self.mira_controller.mira_device._pll3_2.set_ramp_time(self.radar_param.sens.sample_rate)
+        self.qt_self.mira_controller.mira_device._pll4_2.set_ramp_time(self.radar_param.sens.sample_rate)
+        self.qt_self.mira_controller.mira_device._adc0_reg.set_sampling_frequency(self.radar_param.sens.sample_rate)
+        self.qt_self.mira_controller.mira_device._pll1_1.set_ramp_steps()
+        self.qt_self.mira_controller.mira_device._pll2_1.set_ramp_steps()
+        self.qt_self.mira_controller.mira_device._pll3_1.set_ramp_steps()
+        self.qt_self.mira_controller.mira_device._pll4_1.set_ramp_steps()
+        
+        self.qt_self.mira_controller.mira_device._pll1_1.get_ramp_bandwidth()
+        self.qt_self.mira_controller.mira_device._pll2_1.get_ramp_bandwidth()
+        self.qt_self.mira_controller.mira_device._pll3_1.get_ramp_bandwidth()
+        self.qt_self.mira_controller.mira_device._pll4_1.get_ramp_bandwidth()
+
+        self.qt_self.mira_controller.mira_device._pll1_2.get_bandwidth_slope()
+        self.qt_self.mira_controller.mira_device._pll2_2.get_bandwidth_slope()
+        self.qt_self.mira_controller.mira_device._pll3_2.get_bandwidth_slope()
+        self.qt_self.mira_controller.mira_device._pll4_2.get_bandwidth_slope()
         
         self.update_parameters_plots()
     
@@ -978,29 +998,67 @@ class MIRA_GUI_CTRL():
         
         if (bandwidth_upper > bandwitdh_lower):
             self.radar_param.sens.bandwidth_upper = bandwidth_upper 
-            # print(f"{bandwidth_upper=}")
             self.radar_param.sens.bandwidth_lower = bandwitdh_lower
-            # print(f"{bandwitdh_lower=}")
             self.radar_param.sens.bandwidth = bandwidth_upper - bandwitdh_lower
-            self.set_bandwidth()
 
         else:
             self.qt_self.spin_box_set_bandwidth_lower.setValue(bandwidth_upper*1e-9-0.25)
-            return
+            bandwidth_upper *= 1e-9-0.25
+        self.radar_param.sens.bandwidth = bandwidth_upper - bandwitdh_lower
+        self.radar_param.sens.bandwidth_upper = bandwidth_upper
+        self.radar_param.sens.bandwidth_lower = bandwitdh_lower
+        
+        self.set_bandwidth()
+
+    def calculate_and_format_radar_params(self, start_freq, end_freq, ramp_time, f_sys=80e6, n_divset=20):
+        # Calculate FSU
+        fsu = (2**20) * ((start_freq / (8 * f_sys)) - 4 * (n_divset + 2) - 8)
+
+        # Calculate RTU
+        rtu = ramp_time * (f_sys / 8)
+
+        # Calculate RSU
+        delta_freq_rf = (end_freq - start_freq) / (8 * rtu)
+        rsu = (2**20) * (delta_freq_rf / 640e6)
+
+        # Convert to appropriate types
+        fsu_uint32 = np.uint32(int(fsu) & 0xFFFFFFFF)
+        rsu_uint16 = np.uint16(int(rsu) & 0xFFFF)
+        rtu_uint16 = np.uint16(int(rtu) & 0xFFFF)
+
+        return fsu_uint32, rsu_uint16, rtu_uint16
 
     def set_bandwidth(self) -> None:
         if self.qt_self.running == True or self.qt_self.mira_controller is None:
             return
+        fsu, rsu, rtu = self.calculate_and_format_radar_params(self.radar_param.sens.bandwidth_lower, 
+                                                     self.radar_param.sens.bandwidth_upper,
+                                                     self.radar_param.sys.ramp_time[0])
+        
+        self.qt_self.mira_controller.mira_device._pll1_0.set_start_frequency(fsu)
+        self.qt_self.mira_controller.mira_device._pll2_0.set_start_frequency(fsu)
+        self.qt_self.mira_controller.mira_device._pll3_0.set_start_frequency(0)
+        self.qt_self.mira_controller.mira_device._pll4_0.set_start_frequency(0)
+        
+        self.qt_self.mira_controller.mira_device._pll1_0.get_start_frequency()
+        self.qt_self.mira_controller.mira_device._pll2_0.get_start_frequency()
+        self.qt_self.mira_controller.mira_device._pll3_0.get_start_frequency()
+        self.qt_self.mira_controller.mira_device._pll4_0.get_start_frequency()
+        
+        self.qt_self.mira_controller.mira_device._pll1_1.set_ramp_steps(rsu)
+        self.qt_self.mira_controller.mira_device._pll2_1.set_ramp_steps(rsu)
+        self.qt_self.mira_controller.mira_device._pll3_1.set_ramp_steps(rsu)
+        self.qt_self.mira_controller.mira_device._pll4_1.set_ramp_steps(rsu)
+        
+        self.set_sample_rate()
         self.update_parameters_plots()
-        pass
 
     def get_chirp_samples(self) -> None:
         chirp_samples = self.qt_self.combo_box_set_chirp_samples.currentText()
         chirp_samples = np.float32(chirp_samples.split(' ')[0])
 
         self.radar_param.sens.chirp_samples = chirp_samples
-        # print(f"{chirp_samples=}")
-        # self.set_chirp_samples()
+        self.set_chirp_samples()
         
     def set_chirp_samples(self) -> None:
         if self.qt_self.running == True or self.qt_self.mira_controller is None:
@@ -1009,49 +1067,100 @@ class MIRA_GUI_CTRL():
         self.qt_self.mira_controller.mira_device._pll2_3.set_chirp_sample_len(self.radar_param.sens.chirp_samples)
         self.qt_self.mira_controller.mira_device._pll3_3.set_chirp_sample_len(self.radar_param.sens.chirp_samples)
         self.qt_self.mira_controller.mira_device._pll4_3.set_chirp_sample_len(self.radar_param.sens.chirp_samples)
+
+        self.qt_self.mira_controller.mira_device._pll1_3.get_chirp_sample_len()
+        self.qt_self.mira_controller.mira_device._pll2_3.get_chirp_sample_len()
+        self.qt_self.mira_controller.mira_device._pll3_3.get_chirp_sample_len()
+        self.qt_self.mira_controller.mira_device._pll4_3.get_chirp_sample_len()
         self.update_parameters_plots()
+        
         
     def get_chirp_end_delay(self) -> None:
         chirp_end_delay = self.qt_self.spin_box_set_chirp_end_delay.value()
         chirp_end_delay = np.float32(chirp_end_delay * 1e-6)
 
         self.radar_param.sens.chirp_end_delay = chirp_end_delay
-        # print(f"{chirp_end_delay=}")
         self.set_chirp_end_delay()
         
-    
     def set_chirp_end_delay(self) -> None:
         if self.qt_self.running == True or self.qt_self.mira_controller is None:
             return
-        pass
+        self.qt_self.mira_controller.mira_device._pll1_2.set_edu_time(self.radar_param.sens.chirp_end_delay)
+        self.qt_self.mira_controller.mira_device._pll2_2.set_edu_time(self.radar_param.sens.chirp_end_delay)
+        self.qt_self.mira_controller.mira_device._pll3_2.set_edu_time(self.radar_param.sens.chirp_end_delay)
+        self.qt_self.mira_controller.mira_device._pll4_2.set_edu_time(self.radar_param.sens.chirp_end_delay)
+        
+        self.qt_self.mira_controller.mira_device._pll1_2.get_edu_time()
+        self.qt_self.mira_controller.mira_device._pll2_2.get_edu_time()
+        self.qt_self.mira_controller.mira_device._pll3_2.get_edu_time()
+        self.qt_self.mira_controller.mira_device._pll4_2.get_edu_time()
                             
     def get_shape_repetition(self) -> None:
         shape_repetition = self.qt_self.combo_box_set_shape_repetition.currentText()
         shape_repetition = np.float32(shape_repetition.split(' ')[0])
 
-        self.radar_param.sens.shape_repetition = shape_repetition
-        # print(f"{shape_repetition=}")
+        self.radar_param.sens.shape_repetition = np.uint16(shape_repetition)
+        self.radar_param.sys.shape_repetition[0] = np.uint16(shape_repetition)
+        self.set_shape_repetition(np.uint16(shape_repetition))
 
     def get_shape_end_delay(self) -> None:
         shape_end_delay = self.qt_self.spin_box_set_shape_end_delay.value()
         shape_end_delay = np.float32(shape_end_delay * 1e-6)
         
         self.radar_param.sens.shape_end_delay = shape_end_delay
-        # print(f"{shape_end_delay=}")
         self.set_shape_end_delay()
         
     def set_shape_end_delay(self) -> None:
         if self.qt_self.running == True or self.qt_self.mira_controller is None:
             return
-        pass
+        self.qt_self.mira_controller.mira_device._pll1_7.set_sed_time(self.radar_param.sens.shape_end_delay)
+        self.qt_self.mira_controller.mira_device._pll2_7.set_sed_time(self.radar_param.sens.shape_end_delay)
+        self.qt_self.mira_controller.mira_device._pll3_7.set_sed_time(0)
+        self.qt_self.mira_controller.mira_device._pll4_7.set_sed_time(0)
         
+        self.qt_self.mira_controller.mira_device._pll1_7.get_sed_time()
+        self.qt_self.mira_controller.mira_device._pll2_7.get_sed_time()
+        self.qt_self.mira_controller.mira_device._pll3_7.get_sed_time()
+        self.qt_self.mira_controller.mira_device._pll4_7.get_sed_time()
+        pass
+
+    def get_shape_set_repetition_(self) -> None:
+        pass
+    
     def get_shape_set_repetition(self) -> None:
         shape_set_repetition = self.qt_self.combo_box_set_shape_set_repetition.currentText()
         shape_set_repetition = np.float32(shape_set_repetition.split(' ')[0])
         
-        self.radar_param.sens.shape_set_repetition = shape_set_repetition
-        # print(f"{shape_set_repetition=}")
+        self.radar_param.sens.shape_set_repetition = np.uint16(shape_set_repetition)
+        self.radar_param.sys.shape_set_repetition = np.uint16(shape_set_repetition)
+        self.set_shape_set_repetition(np.uint16(shape_set_repetition))
+    
+    def set_shape_repetition(self, shape_repetition: np.uint16) -> None:
+        if self.qt_self.running == True or self.qt_self.mira_controller is None:
+            return
+        self.qt_self.mira_controller.mira_device._ccr0_reg.set_repetition(15)
+
+        for csc in self.qt_self.mira_controller.mira_device.csc_shape_regs :
+            if shape_repetition == 1:
+                csc.REPC = 0
+            elif shape_repetition > 1:
+                csc.REPC = np.uint8(np.log2(shape_repetition))
+                
+        self.qt_self.mira_controller.mira_device._pll1_7.set_shape_repetition(shape_repetition)
+        self.qt_self.mira_controller.mira_device._pll2_7.set_shape_repetition(shape_repetition)
+        self.qt_self.mira_controller.mira_device._pll3_7.set_shape_repetition(0)
+        self.qt_self.mira_controller.mira_device._pll4_7.set_shape_repetition(0)
+
+        self.qt_self.mira_controller.mira_device._pll1_7.get_shape_repetition()
+        self.qt_self.mira_controller.mira_device._pll2_7.get_shape_repetition()
+        self.qt_self.mira_controller.mira_device._pll3_7.get_shape_repetition()
+        self.qt_self.mira_controller.mira_device._pll4_7.get_shape_repetition()
         
+    def set_shape_set_repetition(self, shape_set_repetition: np.uint16) -> None:
+        if self.qt_self.running == True or self.qt_self.mira_controller is None:
+            return
+        self.qt_self.mira_controller.mira_device._ccr2_reg.FRAME_LEN = np.uint16(((shape_set_repetition-1)*np.uint8(sum(self.radar_param.sys.tx_active_antennas)))+ np.uint8(sum(self.radar_param.sys.tx_active_antennas)-1))
+
     def get_shape_set_end_delay(self) -> None:
         shape_set_end_delay = self.qt_self.spin_box_set_shape_set_end_delay.value()
         shape_set_end_delay = np.float32(shape_set_end_delay * 1e-6)
@@ -1063,12 +1172,20 @@ class MIRA_GUI_CTRL():
         if self.qt_self.running == True or self.qt_self.mira_controller is None:
             return
         self.qt_self.mira_controller.mira_device._ccr1_reg.set_fed_time(self.radar_param.sens.shape_set_end_delay)
-        self.update_sensor_settings()
+        self.qt_self.mira_controller.mira_device._ccr1_reg.get_fed_time()
 
     def update_sensor_settings(self) -> None:
+
         self.get_chirp_samples()
         self.get_tx_power()
         self.get_sample_rate()
+        self.set_sample_rate()
+        self.get_bandwidth()
+        self.get_chirp_end_delay()
+        self.get_shape_end_delay()
+        self.get_shape_repetition()
+        self.get_shape_set_end_delay()
+        self.get_shape_set_repetition()
         
         self.get_hp_rx()
         self.get_bgt_hp_fc()
@@ -1258,7 +1375,6 @@ def init_gui_window(app_instance, main_instance) -> QtWidgets.QApplication:
     width = rect.width()
     
     available_styles = QtWidgets.QStyleFactory.keys()
-    print(available_styles)
     app.setStyle("Fusion")
     
     MIRA_GUI_COLOR_PALETTE_PATH = config.get("MIRA_6024_EVAL_GUI", 

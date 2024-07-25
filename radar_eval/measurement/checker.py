@@ -1,4 +1,5 @@
 import h5py
+from loguru import logger
 
 def check_hdf5_file(hdf5_filename):
     expected_datasets = set()
@@ -21,16 +22,16 @@ def check_hdf5_file(hdf5_filename):
         missing_datasets.difference_update(actual_datasets)
 
     if missing_datasets:
-        print("Missing Datasets:")
+        logger.debug("Missing Datasets:")
         for missing in missing_datasets:
-            print(missing)
+            logger.debug(missing)
     else:
-        print("No missing datasets.")
+        logger.debug("No missing datasets.")
 
-    print(f"Total expected datasets: {len(expected_datasets)}, Found: {len(expected_datasets) - len(missing_datasets)}")
+    logger.debug(f"Total expected datasets: {len(expected_datasets)}, Found: {len(expected_datasets) - len(missing_datasets)}")
     return len(missing_datasets) == 0
 
 # Usage
 hdf5_filename = "MiRa6024_Measurement_02_02_2024_00_58_11.hdf5"  # Specify the path to your HDF5 file
 result = check_hdf5_file(hdf5_filename)
-print("Check result:", "Passed" if result else "Failed")
+logger.debug("Check result:", "Passed" if result else "Failed")

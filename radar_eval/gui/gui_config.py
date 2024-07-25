@@ -52,6 +52,9 @@ class MIRA_FUNC_PIPELINE():
                                       self.qt_self.plot_ready],
             'Range Doppler Azimuth': [self.qt_self.check_plot_shape,
                                       self.qt_self.set_range_doppler_azimtuh,
+                                      self.qt_self.plot_ready],
+            'Demo':                  [self.qt_self.check_plot_shape,
+                                      self.qt_self.set_waterfall_range_doppler_azimtuh,
                                       self.qt_self.plot_ready]
         }
         self.composed_func_pipeline_dict: Dict[str, Function] = {

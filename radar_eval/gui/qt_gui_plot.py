@@ -81,7 +81,7 @@ class MIRA_PLOT_CONFIG:
         self.init_color_lut(qt_self.radar_param.sys.plot_ampl_limit_min, qt_self.radar_param.sys.plot_ampl_limit_max)
 
     def init_pen_colors(self):
-        num_pens = 8
+        num_pens = 9
         pen_colors = []
 
         for i in range(1, num_pens + 1):
@@ -130,9 +130,9 @@ class TIME_SIGNAL_PLOTTER:
     def create_time_signal_plot(self, plot, title):
         if self.qt_self.radar_param.mon.sykno_product_name == 'MiRa6024I1A':
             names = ['RX1 TX1', 'RX1 TX2', 'RX2 TX1', 'RX2 TX2',
-                     'RX3 TX1', 'RX3 TX2', 'RX4 TX1', 'RX4 TX2']
+                     'RX3 TX1', 'RX3 TX2', 'RX4 TX1', 'RX4 TX2', 'mean']
         elif self.qt_self.radar_param.mon.sykno_product_name == 'SY60I13':
-            names = ['RX1 TX1', 'RX2 TX1', 'RX3 TX1']
+            names = ['RX1 TX1', 'RX2 TX1', 'RX3 TX1', 'mean']
         elif self.qt_self.radar_param.mon.sykno_product_name == 'SY60I11':
             names = ['RX1 TX1']
         else:
@@ -197,11 +197,13 @@ class SPECTRUM_PLOTTER:
 
     def init_plot_parameters(self):
         self.plotlines = {}
+        self.peak_markers = {} 
+        
         if self.qt_self.radar_param.mon.sykno_product_name == 'MiRa6024I1A':
             names = ['RX1 TX1', 'RX1 TX2', 'RX2 TX1', 'RX2 TX2',
-                     'RX3 TX1', 'RX3 TX2', 'RX4 TX1', 'RX4 TX2']
+                     'RX3 TX1', 'RX3 TX2', 'RX4 TX1', 'RX4 TX2', 'mean']
         elif self.qt_self.radar_param.mon.sykno_product_name == 'SY60I13':
-            names = ['RX1 TX1', 'RX2 TX1', 'RX3 TX1']
+            names = ['RX1 TX1', 'RX2 TX1', 'RX3 TX1', 'mean']
         elif self.qt_self.radar_param.mon.sykno_product_name == 'SY60I11':
             names = ['RX1 TX1']
         else:
@@ -210,10 +212,19 @@ class SPECTRUM_PLOTTER:
         self.plot_spectrum.clear()
         for name, pen in zip(names, self.plot_config.plot_pens):
             plotline = pg.PlotDataItem(name=name, pen=pen)
-            self.plot_spectrum.addLegend()
             self.plot_spectrum.addItem(plotline)
             self.plotlines['Spectrum' + f' {name}'] = plotline
 
+        ## Peak search - also have a look: radar_eval_qt_gui.py
+        # pen = pg.mkPen(cosmetic=True,
+        #                color=QColor(*(255,0,0)),
+        #                width=1)
+        # # Initialize peak markers for each spectrum line
+        # peak_marker = pg.ScatterPlotItem(pen=pen, symbol='x', symbolBrush='b', name=f"Peaks")
+        # self.plot_spectrum.addItem(peak_marker)
+        # self.peak_markers['Spectrum Peaks'] = peak_marker
+
+        self.plot_spectrum.addLegend()
         # Set the background
         self.plot_spectrum.setBackground(self.plot_config.plot_background)
 
@@ -228,6 +239,7 @@ class SPECTRUM_PLOTTER:
         x_axis.setTickFont(self.plot_config.axis_numbers_font)
         x_axis.setStyle(tickTextOffset=self.plot_config.axis_label_offset)
         self.select_axis_unit()
+        
         # Y-Axis
         y_axis = self.plot_spectrum.getAxis("left")
         y_axis.label.setFont(self.plot_config.axis_numbers_font)
@@ -253,6 +265,8 @@ class SPECTRUM_PLOTTER:
         for name, plotline in self.plotlines.items():
             plotline.clear()
             plotline.setData([-9999, -9999])
+        for name, marker in self.peak_markers.items():
+            marker.clear()  # Clear peak markers
 
 
 # ==============================================================================
@@ -271,7 +285,8 @@ class SPECTROGRAM_PLOTTER:
                                       qt_self.plot_spectrogram_6,
                                       qt_self.plot_spectrogram_7,
                                       qt_self.plot_spectrogram_8,
-                                      qt_self.plot_waterfall_azimuth_spectrogram]
+                                      qt_self.plot_waterfall_azimuth_spectrogram,
+                                      qt_self.plot_waterfall_demo]
         self.radar_param = qt_self.radar_param
 
         self.init_plot_parameters()
@@ -284,7 +299,7 @@ class SPECTROGRAM_PLOTTER:
                        'Channel - RX3 TX1', 'Channel - RX4 TX1',
                        'Channel - RX1 TX2', 'Channel - RX2 TX2',
                        'Channel - RX3 TX2', 'Channel - RX4 TX2',
-                       'Waterfall - RX1_TX1']
+                       'Waterfall - RX1_TX1', 'Waterfall - RX1_TX2']
 
         for plot_spectrogram, title in zip(self.plot_spectrogram_list, self.titles):
             self.create_spectrogram_plot(plot_spectrogram, title)
@@ -379,7 +394,8 @@ class RANGE_DOPPLER_PLOTTER:
                                         qt_self.plot_range_doppler_6,
                                         qt_self.plot_range_doppler_7,
                                         qt_self.plot_range_doppler_8,
-                                        qt_self.plot_range_doppler_azimuth_range_doppler]
+                                        qt_self.plot_range_doppler_azimuth_range_doppler,
+                                        qt_self.plot_range_doppler_demo]
         self.radar_param = qt_self.radar_param
         self.init_plot_parameters()
 
@@ -390,7 +406,7 @@ class RANGE_DOPPLER_PLOTTER:
                        'Channel - RX3 TX1', 'Channel - RX4 TX1',
                        'Channel - RX1 TX2', 'Channel - RX2 TX2',
                        'Channel - RX3 TX2', 'Channel - RX4 TX2',
-                       'Range Doppler - RX1_TX1', ]
+                       'Range Doppler - RX1_TX1', 'Range Doppler - RX1_TX2']
 
         for plot_range_doppler, title in zip(self.plot_range_doppler_list, self.titles):
             self.create_range_doppler_plot(plot_range_doppler, title)
@@ -482,15 +498,16 @@ class RANGE_AZIMUTH_PLOTTER:
         self.plot_config = MIRA_PLOT_CONFIG(qt_self)
         self.plot_range_azimuth_list = [qt_self.plot_range_azimuth,
                                         qt_self.plot_waterfall_azimuth_range_azimuth,
-                                        qt_self.plot_range_doppler_azimuth_azimuth]
+                                        qt_self.plot_range_doppler_azimuth_azimuth,
+                                        qt_self.plot_range_azimuth_demo]
         self.radar_param = qt_self.radar_param
         self.init_plot_parameters()
 
     def init_plot_parameters(self):
         self.plotlines = {}
         self.plots = {}
-        self.indexs = ['Range Azimuth', 'Waterfall Azimuth', 'Range Doppler Azimuth']
-        self.titles = ['Range Azimuth', 'Range Azimuth', 'Range Azimuth']
+        self.indexs = ['Range Azimuth', 'Waterfall Azimuth', 'Range Doppler Azimuth', 'Demo']
+        self.titles = ['Range Azimuth', 'Range Azimuth', 'Range Azimuth', 'Range Azimuth']
         for plot_range_azimuth, title, index in zip(self.plot_range_azimuth_list, self.titles, self.indexs):
             self.create_range_azimuth_plot(plot_range_azimuth, title, index)
 
@@ -519,7 +536,7 @@ class RANGE_AZIMUTH_PLOTTER:
         axis.setTextPen(self.plot_config.plot_text_color)
         axis.setTickFont(self.plot_config.axis_numbers_font)
         axis.setStyle(tickTextOffset=self.plot_config.axis_label_offset)
-        plot.setLabels(bottom="Azimuth Angle in Degree")
+        plot.setLabels(bottom="Range in m")
 
     def set_plot_limits(self,
                         x_min_max: tuple,

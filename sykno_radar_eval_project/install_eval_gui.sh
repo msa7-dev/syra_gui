@@ -32,4 +32,6 @@ else
     fi
 fi
 
+sudo apt-get install hdf5-tools
+
 echo "Done"

@@ -42,7 +42,6 @@ class MIRA_SAVE_MEAS():
 
         self.hdf5_file_path = f'{MIRA_MEAS_HDF5_FOLDER_PATH}' + \
                               f'{self.radar_param.mon.sykno_product_name}_{MIRA_MEAS_FILENAME}_{self.timestamp}_' + \
-                              f'{self.radar_param.gui.project_name}_' + \
                               f'{self.radar_param.meas.session_label}.hdf5'
                               
         reg_content_content = generate_register_to_txt(mira_device, save_to_file=False)
@@ -80,7 +79,7 @@ class MIRA_SAVE_MEAS():
             if not save_data_queue.empty():
                 meas_save_dict = save_data_queue.get_nowait()
             else:
-                time.sleep(250e-6)
+                time.sleep(20e-6)
                 continue
             header_dict = meas_save_dict['Header']
             frame_data_cube = meas_save_dict['Data']

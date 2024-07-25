@@ -1,64 +1,95 @@
 import __init__
-
-import os 
+import os
 import time
-import queue
 import psutil
 import numpy as np
+import setproctitle
 import configparser
 import multiprocessing
-from radar_eval.radar_system.radar_system_definition import MIRA_RADAR_PARAMETER
+from pathlib import Path
+from datetime import datetime
+from radar_eval.measurement.hdf5_controller import MIRA_HDF5_CTRL
 
-# ==============================================================================
-# Class Name: MIRA_DATA_PLAYER
-# ==============================================================================
-class MIRA_DATA_SIMULATOR():
-    def __init__(self, radar_param: MIRA_RADAR_PARAMETER):
-        self.mira_device = None
-
-    def data_simulating_process(self, prefix_header_queue: multiprocessing.Queue, 
-                                radar_data_extraced_queue: multiprocessing.Queue,
-                                stop_event: multiprocessing.Event,
-                                set_header_queue_event: multiprocessing.Event,
-                                ):
+class MIRA_DATA_REPLAYER:
+    def __init__(self, hdf5_filename='./radar_eval/measurement/hdf5/SY60I13_Measurement_24_07_2024_17_03_47_Default_Session.hdf5'):
+        self.config = configparser.ConfigParser()
+        self.config.read(__init__.MIRA_SYS_CONFIG_PATH)
+        self.hdf5_ctrl = MIRA_HDF5_CTRL(Path(hdf5_filename).resolve())
+        self.data_index = 0
         
-        MIRA_PROCESS_PRIO = np.int8(self.config.get("MIRA_HOST_SYS_PARAMETER",
-                                                    "MIRA_PROCESS_PRIO"))
-        MIRA_EXTRACTING_CPU_CORE = int(self.config.get("MIRA_HOST_SYS_PARAMETER", 
-                                                       "MIRA_EXTRACTING_CPU_CORE"))
+        # Load radar parameters from the HDF5 file
+        self.hdf5_ctrl.load_metadata()  # Load all metadata
+        self.radar_param = self.hdf5_ctrl.unpickle_metadata()  # Load radar parameters
+        
+        self.frame_duration = 1 / self.radar_param.sys.frames_per_second  # Calculate frame duration
+
+    def extract_frame_number(self, dataset_name):
+        """Extract the frame number from the dataset name."""
+        parts = dataset_name.split('_')
+        return int(parts[-1])
+
+    def data_replaying_process(self, usb_extraction_data_queue: multiprocessing.Queue,
+                               prefix_header_queue: multiprocessing.Queue,
+                               extracted_processing_data_queue: multiprocessing.Queue,
+                               save_data_queue: multiprocessing.Queue,
+                               stop_event: multiprocessing.Event,
+                               set_header_queue_event: multiprocessing.Event):
+        MIRA_PROCESS_PRIO = np.int8(self.config.get("MIRA_HOST_SYS_PARAMETER", "MIRA_PROCESS_PRIO"))
+        MIRA_EXTRACTING_CPU_CORE = int(self.config.get("MIRA_HOST_SYS_PARAMETER", "MIRA_EXTRACTING_CPU_CORE"))
 
         current_process = psutil.Process(os.getpid())
         current_process.cpu_affinity([MIRA_EXTRACTING_CPU_CORE])
         current_process.nice(MIRA_PROCESS_PRIO)
-        
-        # while not stop_event.is_set():
-        #     # check multiprocessing queue if there is new data available 
-        #     try:
-        #         # get latest data_cube from radar_bridge_usb_device.raw_data_aquisition() process
-        #         raw_fifo_data = raw_fifo_data_queue.get(block=False) # ndarray.shape = (12288, )
-        #         hdf5_load_dataset, header_dict 
-        #     except queue.Empty:
-        #         time.sleep(250e-6)
-        #         continue         
+
+        radar_data_cube_build_buffer = np.zeros((self.radar_param.sys.n_samples_per_chirp[0],  # Dim 1 - Samples
+                                                int(self.radar_param.sys.rx_active_antennas[0]),  # Dim 2 - Number RX Antennas
+                                                int(sum(self.radar_param.sys.tx_active_antennas)),  # Dim 3 - Number Chirps per Shape
+                                                int(self.radar_param.sys.shape_set_repetition),  # Dim 4 - Shape Set Repetition
+                                                self.radar_param.sys.max_frame_cnt),  # Dim 5
+                                                dtype=np.uint16)
+
+        start_time = time.time()
+        self.prev_frame_cnt = np.uint16(0)
+
+        while not stop_event.is_set():
+            frame_start_time = time.time()  # Record the start time of the frame
+
+            dataset_names = self.hdf5_ctrl.list_all_datasets()
+            if self.data_index >= len(dataset_names):
+                self.data_index = 0  # Reset to loop over the data if end is reached
             
-        #     if set_header_queue_event.is_set():
-        #         header_dict['temperature'] = self.convert_sadc_data(header_dict['sadc_val'])
-        #         prefix_header_queue.put(header_dict)
-        #         set_header_queue_event.clear()
-                    
-        #         radar_data_extraced_queue.put(hdf5_loaded_frame)
-                
+            dataset_name = dataset_names[self.data_index]
+            print(dataset_name)
+            dataset_path = f'/{dataset_name}'
+            print(f"Attempting to read dataset: {dataset_path}")  # Debugging statement
 
-    def convert_sadc_data(self, sadc_val: np.uint16) -> None:
-        # if self.radar_param.mon.sadc_output_mode == 0:
-        #     # Temperature Conversion BGT60ATR24 Datasheet: p. 92
-        #     return round((((sadc_val/2**10)*1.21 * self.radar_param.mon.sadc_gain)-0.7989)/0.00297, 2)
-        # elif self.radar_param.mon.sadc_output_mode == 1:
-        #     pass
-        # else: 
-        #     return np.float16(-42.17) # magic number 
-        pass
-        
+            data_cube, attrs = self.hdf5_ctrl.read_dataset_with_attributes(dataset_path)
+            print(attrs)
+            if data_cube is not None and attrs is not None:
+                frame_number = self.extract_frame_number(dataset_name)
+                radar_data_cube_build_buffer[:, :, :, :, frame_number] = data_cube
 
-    def load_meta_data_from_hdf5(self):
-        pass 
+                if extracted_processing_data_queue.empty():
+                    extracted_processing_data_queue.put(radar_data_cube_build_buffer[:, :, :, :, frame_number])
+
+                if self.radar_param.meas.measurement_flag:
+                    save_data_queue.put({'Data': radar_data_cube_build_buffer[:, :, :, :, frame_number], 
+                                         'Header': attrs})
+
+            self.data_index += 1
+
+            frame_end_time = time.time()  # Record the end time of the frame
+            elapsed_time = frame_end_time - frame_start_time
+
+            # Sleep for the remaining time to match the frame duration
+            if elapsed_time < self.frame_duration:
+                time.sleep(self.frame_duration - elapsed_time)
+
+def print_hdf5_file_contents(file_path):
+    with h5py.File(file_path, 'r') as file:
+        def print_attrs(name, obj):
+            print(f"{name}")
+            for key, val in obj.attrs.items():
+                print(f"  Attribute: {key} = {val}")
+
+        file.visititems(print_attrs)

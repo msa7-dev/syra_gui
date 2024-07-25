@@ -28,8 +28,8 @@ class MIRA_DEVICE:
         
         self.mira_bridge.init_fifo_overhead()
             
-        for reg in self.pll_1_shape_regs:
-            reg.CONVERT
+        # for reg in self.pll_1_shape_regs:
+        #     reg.CONVERT
         
         self.set_spi_high_speed()
         self.set_header_prefix()
@@ -90,8 +90,8 @@ class MIRA_DEVICE:
         self._csc2_reg  = MIRA6024_CONTENT.BGT_CSCX(self, BGT_REG.CSCX_REG.CSC2_ADR)
         self._csc3_reg  = MIRA6024_CONTENT.BGT_CSCX(self, BGT_REG.CSCX_REG.CSC3_ADR)
         self._csc4_reg  = MIRA6024_CONTENT.BGT_CSCX(self, BGT_REG.CSCX_REG.CSC4_ADR)
-        self.csc_shape_regs = [self._csc1_reg, self._csc2_reg, self._csc3_reg, self._csc4_reg]
-        
+        self.csc_shape_regs = [self._csci_reg, self._cscds_reg, self._csc1_reg, self._csc2_reg, self._csc3_reg, self._csc4_reg]
+
         self._ccr0_reg = MIRA6024_CONTENT.BGT_CCR0(self)
         self._ccr1_reg = MIRA6024_CONTENT.BGT_CCR1(self)
         self._ccr2_reg = MIRA6024_CONTENT.BGT_CCR2(self)
@@ -237,7 +237,6 @@ class MIRA_DEVICE:
             np.float32(self.radar_param.sys.lambda_freq[0] \
                         / (4 * self.radar_param.sys.coherent_pulse_interval * 2))
         self.calc_system_parameters()
-        # print(self.radar_param.sys.__str__())
         
     def calc_system_parameters(self):
         self.radar_param.sys.max_velocity = np.float32(self.radar_param.sys.lambda_freq / (4 * self.radar_param.sys.pulse_repetition_time))
@@ -250,10 +249,11 @@ class MIRA_DEVICE:
 
 
     def finish_init(self) -> None:
-        self.mira_bridge.init_fifo_overhead()
+        self.mira_bridge.init_fifo_overhead()        
         generate_register_to_txt(self, save_to_file=True)
         generate_register_to_readable_txt(self, save_to_file=True)
         bgt_register_checker = check_sensor_register(self)
+  
         logger.debug(f"Sensor register check: {'Pass' if bgt_register_checker else 'Fail'}")
         
         if bgt_register_checker != True:

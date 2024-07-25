@@ -497,123 +497,123 @@ HPF_SEL1         |      0       |     0x0      |     0b0
 _____________________________________________________________
 
 CSU1_2 (0x12):
-Register Value:  0x800000
+Register Value:  0x9ce73
 Register Symbol  | Value (dec)  | Value (hex)  | Value (bin) 
 _____________________________________________________________
-HP_GAIN          |      8       |     0x8      |    0b1000   
-VGA_GAIN4        |      0       |     0x0      |     0b0     
-HPF_SEL4         |      0       |     0x0      |     0b0     
-VGA_GAIN3        |      0       |     0x0      |     0b0     
-HPF_SEL3         |      0       |     0x0      |     0b0     
-VGA_GAIN2        |      0       |     0x0      |     0b0     
-HPF_SEL2         |      0       |     0x0      |     0b0     
-VGA_GAIN1        |      0       |     0x0      |     0b0     
-HPF_SEL1         |      0       |     0x0      |     0b0     
+HP_GAIN          |      0       |     0x0      |     0b0     
+VGA_GAIN4        |      4       |     0x4      |    0b100    
+HPF_SEL4         |      3       |     0x3      |     0b11    
+VGA_GAIN3        |      4       |     0x4      |    0b100    
+HPF_SEL3         |      3       |     0x3      |     0b11    
+VGA_GAIN2        |      4       |     0x4      |    0b100    
+HPF_SEL2         |      3       |     0x3      |     0b11    
+VGA_GAIN1        |      4       |     0x4      |    0b100    
+HPF_SEL1         |      3       |     0x3      |     0b11    
 _____________________________________________________________
 
 CSD1_2 (0x15):
-Register Value:  0x800000
+Register Value:  0x9ce73
 Register Symbol  | Value (dec)  | Value (hex)  | Value (bin) 
 _____________________________________________________________
-HP_GAIN          |      8       |     0x8      |    0b1000   
-VGA_GAIN4        |      0       |     0x0      |     0b0     
-HPF_SEL4         |      0       |     0x0      |     0b0     
-VGA_GAIN3        |      0       |     0x0      |     0b0     
-HPF_SEL3         |      0       |     0x0      |     0b0     
-VGA_GAIN2        |      0       |     0x0      |     0b0     
-HPF_SEL2         |      0       |     0x0      |     0b0     
-VGA_GAIN1        |      0       |     0x0      |     0b0     
-HPF_SEL1         |      0       |     0x0      |     0b0     
+HP_GAIN          |      0       |     0x0      |     0b0     
+VGA_GAIN4        |      4       |     0x4      |    0b100    
+HPF_SEL4         |      3       |     0x3      |     0b11    
+VGA_GAIN3        |      4       |     0x4      |    0b100    
+HPF_SEL3         |      3       |     0x3      |     0b11    
+VGA_GAIN2        |      4       |     0x4      |    0b100    
+HPF_SEL2         |      3       |     0x3      |     0b11    
+VGA_GAIN1        |      4       |     0x4      |    0b100    
+HPF_SEL1         |      3       |     0x3      |     0b11    
 _____________________________________________________________
 
 CSU2_2 (0x19):
-Register Value:  0x800000
+Register Value:  0x9ce73
 Register Symbol  | Value (dec)  | Value (hex)  | Value (bin) 
 _____________________________________________________________
-HP_GAIN          |      8       |     0x8      |    0b1000   
-VGA_GAIN4        |      0       |     0x0      |     0b0     
-HPF_SEL4         |      0       |     0x0      |     0b0     
-VGA_GAIN3        |      0       |     0x0      |     0b0     
-HPF_SEL3         |      0       |     0x0      |     0b0     
-VGA_GAIN2        |      0       |     0x0      |     0b0     
-HPF_SEL2         |      0       |     0x0      |     0b0     
-VGA_GAIN1        |      0       |     0x0      |     0b0     
-HPF_SEL1         |      0       |     0x0      |     0b0     
+HP_GAIN          |      0       |     0x0      |     0b0     
+VGA_GAIN4        |      4       |     0x4      |    0b100    
+HPF_SEL4         |      3       |     0x3      |     0b11    
+VGA_GAIN3        |      4       |     0x4      |    0b100    
+HPF_SEL3         |      3       |     0x3      |     0b11    
+VGA_GAIN2        |      4       |     0x4      |    0b100    
+HPF_SEL2         |      3       |     0x3      |     0b11    
+VGA_GAIN1        |      4       |     0x4      |    0b100    
+HPF_SEL1         |      3       |     0x3      |     0b11    
 _____________________________________________________________
 
 CSD2_2 (0x1c):
-Register Value:  0x800000
+Register Value:  0x9ce73
 Register Symbol  | Value (dec)  | Value (hex)  | Value (bin) 
 _____________________________________________________________
-HP_GAIN          |      8       |     0x8      |    0b1000   
-VGA_GAIN4        |      0       |     0x0      |     0b0     
-HPF_SEL4         |      0       |     0x0      |     0b0     
-VGA_GAIN3        |      0       |     0x0      |     0b0     
-HPF_SEL3         |      0       |     0x0      |     0b0     
-VGA_GAIN2        |      0       |     0x0      |     0b0     
-HPF_SEL2         |      0       |     0x0      |     0b0     
-VGA_GAIN1        |      0       |     0x0      |     0b0     
-HPF_SEL1         |      0       |     0x0      |     0b0     
+HP_GAIN          |      0       |     0x0      |     0b0     
+VGA_GAIN4        |      4       |     0x4      |    0b100    
+HPF_SEL4         |      3       |     0x3      |     0b11    
+VGA_GAIN3        |      4       |     0x4      |    0b100    
+HPF_SEL3         |      3       |     0x3      |     0b11    
+VGA_GAIN2        |      4       |     0x4      |    0b100    
+HPF_SEL2         |      3       |     0x3      |     0b11    
+VGA_GAIN1        |      4       |     0x4      |    0b100    
+HPF_SEL1         |      3       |     0x3      |     0b11    
 _____________________________________________________________
 
 CSU3_2 (0x20):
-Register Value:  0x800000
+Register Value:  0x9ce73
 Register Symbol  | Value (dec)  | Value (hex)  | Value (bin) 
 _____________________________________________________________
-HP_GAIN          |      8       |     0x8      |    0b1000   
-VGA_GAIN4        |      0       |     0x0      |     0b0     
-HPF_SEL4         |      0       |     0x0      |     0b0     
-VGA_GAIN3        |      0       |     0x0      |     0b0     
-HPF_SEL3         |      0       |     0x0      |     0b0     
-VGA_GAIN2        |      0       |     0x0      |     0b0     
-HPF_SEL2         |      0       |     0x0      |     0b0     
-VGA_GAIN1        |      0       |     0x0      |     0b0     
-HPF_SEL1         |      0       |     0x0      |     0b0     
+HP_GAIN          |      0       |     0x0      |     0b0     
+VGA_GAIN4        |      4       |     0x4      |    0b100    
+HPF_SEL4         |      3       |     0x3      |     0b11    
+VGA_GAIN3        |      4       |     0x4      |    0b100    
+HPF_SEL3         |      3       |     0x3      |     0b11    
+VGA_GAIN2        |      4       |     0x4      |    0b100    
+HPF_SEL2         |      3       |     0x3      |     0b11    
+VGA_GAIN1        |      4       |     0x4      |    0b100    
+HPF_SEL1         |      3       |     0x3      |     0b11    
 _____________________________________________________________
 
 CSD3_2 (0x23):
-Register Value:  0x800000
+Register Value:  0x9ce73
 Register Symbol  | Value (dec)  | Value (hex)  | Value (bin) 
 _____________________________________________________________
-HP_GAIN          |      8       |     0x8      |    0b1000   
-VGA_GAIN4        |      0       |     0x0      |     0b0     
-HPF_SEL4         |      0       |     0x0      |     0b0     
-VGA_GAIN3        |      0       |     0x0      |     0b0     
-HPF_SEL3         |      0       |     0x0      |     0b0     
-VGA_GAIN2        |      0       |     0x0      |     0b0     
-HPF_SEL2         |      0       |     0x0      |     0b0     
-VGA_GAIN1        |      0       |     0x0      |     0b0     
-HPF_SEL1         |      0       |     0x0      |     0b0     
+HP_GAIN          |      0       |     0x0      |     0b0     
+VGA_GAIN4        |      4       |     0x4      |    0b100    
+HPF_SEL4         |      3       |     0x3      |     0b11    
+VGA_GAIN3        |      4       |     0x4      |    0b100    
+HPF_SEL3         |      3       |     0x3      |     0b11    
+VGA_GAIN2        |      4       |     0x4      |    0b100    
+HPF_SEL2         |      3       |     0x3      |     0b11    
+VGA_GAIN1        |      4       |     0x4      |    0b100    
+HPF_SEL1         |      3       |     0x3      |     0b11    
 _____________________________________________________________
 
 CSU4_2 (0x27):
-Register Value:  0x800000
+Register Value:  0x9ce73
 Register Symbol  | Value (dec)  | Value (hex)  | Value (bin) 
 _____________________________________________________________
-HP_GAIN          |      8       |     0x8      |    0b1000   
-VGA_GAIN4        |      0       |     0x0      |     0b0     
-HPF_SEL4         |      0       |     0x0      |     0b0     
-VGA_GAIN3        |      0       |     0x0      |     0b0     
-HPF_SEL3         |      0       |     0x0      |     0b0     
-VGA_GAIN2        |      0       |     0x0      |     0b0     
-HPF_SEL2         |      0       |     0x0      |     0b0     
-VGA_GAIN1        |      0       |     0x0      |     0b0     
-HPF_SEL1         |      0       |     0x0      |     0b0     
+HP_GAIN          |      0       |     0x0      |     0b0     
+VGA_GAIN4        |      4       |     0x4      |    0b100    
+HPF_SEL4         |      3       |     0x3      |     0b11    
+VGA_GAIN3        |      4       |     0x4      |    0b100    
+HPF_SEL3         |      3       |     0x3      |     0b11    
+VGA_GAIN2        |      4       |     0x4      |    0b100    
+HPF_SEL2         |      3       |     0x3      |     0b11    
+VGA_GAIN1        |      4       |     0x4      |    0b100    
+HPF_SEL1         |      3       |     0x3      |     0b11    
 _____________________________________________________________
 
 CSD4_2 (0x2a):
-Register Value:  0x800000
+Register Value:  0x9ce73
 Register Symbol  | Value (dec)  | Value (hex)  | Value (bin) 
 _____________________________________________________________
-HP_GAIN          |      8       |     0x8      |    0b1000   
-VGA_GAIN4        |      0       |     0x0      |     0b0     
-HPF_SEL4         |      0       |     0x0      |     0b0     
-VGA_GAIN3        |      0       |     0x0      |     0b0     
-HPF_SEL3         |      0       |     0x0      |     0b0     
-VGA_GAIN2        |      0       |     0x0      |     0b0     
-HPF_SEL2         |      0       |     0x0      |     0b0     
-VGA_GAIN1        |      0       |     0x0      |     0b0     
-HPF_SEL1         |      0       |     0x0      |     0b0     
+HP_GAIN          |      0       |     0x0      |     0b0     
+VGA_GAIN4        |      4       |     0x4      |    0b100    
+HPF_SEL4         |      3       |     0x3      |     0b11    
+VGA_GAIN3        |      4       |     0x4      |    0b100    
+HPF_SEL3         |      3       |     0x3      |     0b11    
+VGA_GAIN2        |      4       |     0x4      |    0b100    
+HPF_SEL2         |      3       |     0x3      |     0b11    
+VGA_GAIN1        |      4       |     0x4      |    0b100    
+HPF_SEL1         |      3       |     0x3      |     0b11    
 _____________________________________________________________
 
 CSCI (0xb):
@@ -718,21 +718,21 @@ TR_INIT1_MUL     |      0       |     0x0      |     0b0
 _____________________________________________________________
 
 CCR1 (0x2d):
-Register Value:  0x24fc49
+Register Value:  0x2bc49
 Register Symbol  | Value (dec)  | Value (hex)  | Value (bin) 
 _____________________________________________________________
 TR_START         |      73      |     0x49     |  0b1001001  
 PD_MODE          |      2       |     0x2      |     0b10    
-TR_FED           |     159      |     0x9f     |  0b10011111 
-TR_FED_MUL       |      4       |     0x4      |    0b100    
+TR_FED           |      87      |     0x57     |  0b1010111  
+TR_FED_MUL       |      0       |     0x0      |     0b0     
 _____________________________________________________________
 
 CCR2 (0x2e):
-Register Value:  0xff000
+Register Value:  0x1ff000
 Register Symbol  | Value (dec)  | Value (hex)  | Value (bin) 
 _____________________________________________________________
 MAX_FRAME_CNT    |      0       |     0x0      |     0b0     
-FRAME_LEN        |     255      |     0xff     |  0b11111111 
+FRAME_LEN        |     511      |    0x1ff     | 0b111111111 
 _____________________________________________________________
 
 CCR3 (0x2f):
@@ -746,17 +746,17 @@ TR_INIT0_MUL     |      2       |     0x2      |     0b10
 _____________________________________________________________
 
 PLL1_0 (0x30):
-Register Value:  0xa4409a
+Register Value:  0xa9ffff
 Register Symbol  | Value (dec)  | Value (hex)  | Value (bin) 
 _____________________________________________________________
-FSU              |   10764442   |   0xa4409a   | 0b101001000100000010011010
+FSU              |  4289331199  |  0xffa9ffff  | 0b11111111101010011111111111111111
 _____________________________________________________________
 
 PLL2_0 (0x38):
-Register Value:  0xa4409a
+Register Value:  0xa9ffff
 Register Symbol  | Value (dec)  | Value (hex)  | Value (bin) 
 _____________________________________________________________
-FSU              |   10764442   |   0xa4409a   | 0b101001000100000010011010
+FSU              |  4289331199  |  0xffa9ffff  | 0b11111111101010011111111111111111
 _____________________________________________________________
 
 PLL3_0 (0x40):
@@ -774,94 +774,94 @@ FSU              |      0       |     0x0      |     0b0
 _____________________________________________________________
 
 PLL1_1 (0x31):
-Register Value:  0x239
+Register Value:  0x92
 Register Symbol  | Value (dec)  | Value (hex)  | Value (bin) 
 _____________________________________________________________
-RSU              |     569      |    0x239     | 0b1000111001
+RSU              |     146      |     0x92     |  0b10010010 
 _____________________________________________________________
 
 PLL2_1 (0x39):
-Register Value:  0x239
+Register Value:  0x92
 Register Symbol  | Value (dec)  | Value (hex)  | Value (bin) 
 _____________________________________________________________
-RSU              |     569      |    0x239     | 0b1000111001
+RSU              |     146      |     0x92     |  0b10010010 
 _____________________________________________________________
 
 PLL3_1 (0x41):
-Register Value:  0x0
+Register Value:  0x92
 Register Symbol  | Value (dec)  | Value (hex)  | Value (bin) 
 _____________________________________________________________
-RSU              |      0       |     0x0      |     0b0     
+RSU              |     146      |     0x92     |  0b10010010 
 _____________________________________________________________
 
 PLL4_1 (0x49):
-Register Value:  0x0
+Register Value:  0x92
 Register Symbol  | Value (dec)  | Value (hex)  | Value (bin) 
 _____________________________________________________________
-RSU              |      0       |     0x0      |     0b0     
+RSU              |     146      |     0x92     |  0b10010010 
 _____________________________________________________________
 
 PLL1_2 (0x32):
-Register Value:  0xff0760
+Register Value:  0x771c5f
 Register Symbol  | Value (dec)  | Value (hex)  | Value (bin) 
 _____________________________________________________________
-RTU              |     1888     |    0x760     | 0b11101100000
-TR_EDU           |     255      |     0xff     |  0b11111111 
+RTU              |     7263     |    0x1c5f    | 0b1110001011111
+TR_EDU           |     119      |     0x77     |  0b1110111  
 _____________________________________________________________
 
 PLL2_2 (0x3a):
-Register Value:  0xff0760
+Register Value:  0x771c5f
 Register Symbol  | Value (dec)  | Value (hex)  | Value (bin) 
 _____________________________________________________________
-RTU              |     1888     |    0x760     | 0b11101100000
-TR_EDU           |     255      |     0xff     |  0b11111111 
+RTU              |     7263     |    0x1c5f    | 0b1110001011111
+TR_EDU           |     119      |     0x77     |  0b1110111  
 _____________________________________________________________
 
 PLL3_2 (0x42):
-Register Value:  0x0
+Register Value:  0x771c5f
 Register Symbol  | Value (dec)  | Value (hex)  | Value (bin) 
 _____________________________________________________________
-RTU              |      0       |     0x0      |     0b0     
-TR_EDU           |      0       |     0x0      |     0b0     
+RTU              |     7263     |    0x1c5f    | 0b1110001011111
+TR_EDU           |     119      |     0x77     |  0b1110111  
 _____________________________________________________________
 
 PLL4_2 (0x4a):
-Register Value:  0x0
+Register Value:  0x771c5f
 Register Symbol  | Value (dec)  | Value (hex)  | Value (bin) 
 _____________________________________________________________
-RTU              |      0       |     0x0      |     0b0     
-TR_EDU           |      0       |     0x0      |     0b0     
+RTU              |     7263     |    0x1c5f    | 0b1110001011111
+TR_EDU           |     119      |     0x77     |  0b1110111  
 _____________________________________________________________
 
 PLL1_3 (0x33):
-Register Value:  0x200
+Register Value:  0x800
 Register Symbol  | Value (dec)  | Value (hex)  | Value (bin) 
 _____________________________________________________________
-APU              |     512      |    0x200     | 0b1000000000
+APU              |     2048     |    0x800     | 0b100000000000
 APD              |      0       |     0x0      |     0b0     
 _____________________________________________________________
 
 PLL2_3 (0x3b):
-Register Value:  0x200
+Register Value:  0x800
 Register Symbol  | Value (dec)  | Value (hex)  | Value (bin) 
 _____________________________________________________________
-APU              |     512      |    0x200     | 0b1000000000
+APU              |     2048     |    0x800     | 0b100000000000
 APD              |      0       |     0x0      |     0b0     
 _____________________________________________________________
 
 PLL3_3 (0x43):
-Register Value:  0x0
+Register Value:  0x800
 Register Symbol  | Value (dec)  | Value (hex)  | Value (bin) 
 _____________________________________________________________
-APU              |      0       |     0x0      |     0b0     
+APU              |     2048     |    0x800     | 0b100000000000
 APD              |      0       |     0x0      |     0b0     
 _____________________________________________________________
 
 PLL4_3 (0x4b):
-Register Value:  0x0
+Register Value:  0x800
 Register Symbol  | Value (dec)  | Value (hex)  | Value (bin) 
 _____________________________________________________________
-APU              |      0       |     0x0      |     0b0     
+APU              |     2048     |    0x800     | 0b100000000000
 APD              |      0       |     0x0      |     0b0     
 _____________________________________________________________
 
@@ -954,51 +954,51 @@ TR_EDD           |      0       |     0x0      |     0b0
 _____________________________________________________________
 
 PLL1_7 (0x37):
-Register Value:  0x1cb910
+Register Value:  0x2b910
 Register Symbol  | Value (dec)  | Value (hex)  | Value (bin) 
 _____________________________________________________________
 REPS             |      0       |     0x0      |     0b0     
 SH_EN            |      1       |     0x1      |     0b1     
 CONT_MODE        |      1       |     0x1      |     0b1     
 PD_MODE          |      0       |     0x0      |     0b0     
-TR_SED           |     151      |     0x97     |  0b10010111 
-TR_SED_MUL       |      3       |     0x3      |     0b11    
+TR_SED           |      87      |     0x57     |  0b1010111  
+TR_SED_MUL       |      0       |     0x0      |     0b0     
 _____________________________________________________________
 
 PLL2_7 (0x3f):
-Register Value:  0x1cb910
+Register Value:  0x2b910
 Register Symbol  | Value (dec)  | Value (hex)  | Value (bin) 
 _____________________________________________________________
 REPS             |      0       |     0x0      |     0b0     
 SH_EN            |      1       |     0x1      |     0b1     
 CONT_MODE        |      1       |     0x1      |     0b1     
 PD_MODE          |      0       |     0x0      |     0b0     
-TR_SED           |     151      |     0x97     |  0b10010111 
-TR_SED_MUL       |      3       |     0x3      |     0b11    
+TR_SED           |      87      |     0x57     |  0b1010111  
+TR_SED_MUL       |      0       |     0x0      |     0b0     
 _____________________________________________________________
 
 PLL3_7 (0x47):
-Register Value:  0x393b00
+Register Value:  0x500300
 Register Symbol  | Value (dec)  | Value (hex)  | Value (bin) 
 _____________________________________________________________
 REPS             |      0       |     0x0      |     0b0     
 SH_EN            |      0       |     0x0      |     0b0     
 CONT_MODE        |      1       |     0x1      |     0b1     
 PD_MODE          |      1       |     0x1      |     0b1     
-TR_SED           |      39      |     0x27     |   0b100111  
-TR_SED_MUL       |      7       |     0x7      |    0b111    
+TR_SED           |      0       |     0x0      |     0b0     
+TR_SED_MUL       |      10      |     0xa      |    0b1010   
 _____________________________________________________________
 
 PLL4_7 (0x4f):
-Register Value:  0x393b00
+Register Value:  0x500300
 Register Symbol  | Value (dec)  | Value (hex)  | Value (bin) 
 _____________________________________________________________
 REPS             |      0       |     0x0      |     0b0     
 SH_EN            |      0       |     0x0      |     0b0     
 CONT_MODE        |      1       |     0x1      |     0b1     
 PD_MODE          |      1       |     0x1      |     0b1     
-TR_SED           |      39      |     0x27     |   0b100111  
-TR_SED_MUL       |      7       |     0x7      |    0b111    
+TR_SED           |      0       |     0x0      |     0b0     
+TR_SED_MUL       |      10      |     0xa      |    0b1010   
 _____________________________________________________________
 
 RFT0 (0x55):

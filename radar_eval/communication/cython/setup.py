@@ -53,13 +53,13 @@ folder_path = str(Path("./build").resolve())
 if os.path.exists(folder_path):
     shutil.rmtree(folder_path)
 else:
-    print(f"The folder {folder_path} does not exist.")
+    logger.debug(f"The folder {folder_path} does not exist.")
 
 # Check if the file exists and then remove it
 c_file_path = f"{output_dir}/{module_name}.c"
 if os.path.exists(c_file_path):
     os.remove(c_file_path)
 else:
-    print(f"The file {c_file_path} does not exist.")
+    logger.debug(f"The file {c_file_path} does not exist.")
     
 logger.debug(f'Compiled cython module {files_to_move[0]} moved to {output_dir}')
