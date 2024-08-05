@@ -275,7 +275,7 @@ class SPECTRUM_PLOTTER:
 class SPECTROGRAM_PLOTTER:
     def __init__(self, qt_self):
         self.qt_self = qt_self
-
+        
         self.plot_config = MIRA_PLOT_CONFIG(qt_self)
         self.plot_spectrogram_list = [qt_self.plot_spectrogram_1,
                                       qt_self.plot_spectrogram_2,
@@ -286,7 +286,7 @@ class SPECTROGRAM_PLOTTER:
                                       qt_self.plot_spectrogram_7,
                                       qt_self.plot_spectrogram_8,
                                       qt_self.plot_waterfall_azimuth_spectrogram,
-                                      qt_self.plot_waterfall_demo]
+                                      qt_self.plot_waterfall_demo if hasattr(qt_self, 'plot_waterfall_demo') else None]
         self.radar_param = qt_self.radar_param
 
         self.init_plot_parameters()
@@ -302,7 +302,8 @@ class SPECTROGRAM_PLOTTER:
                        'Waterfall - RX1_TX1', 'Waterfall - RX1_TX2']
 
         for plot_spectrogram, title in zip(self.plot_spectrogram_list, self.titles):
-            self.create_spectrogram_plot(plot_spectrogram, title)
+            if plot_spectrogram is not None:
+                self.create_spectrogram_plot(plot_spectrogram, title)
 
     def create_spectrogram_plot(self, plot, title):
         plotline = pg.ImageItem()
@@ -343,8 +344,9 @@ class SPECTROGRAM_PLOTTER:
                         y_min_max: tuple,
                         z_min_max: tuple):
         for plot_spectrogram in self.plot_spectrogram_list:
-            plot_spectrogram.setXRange(*x_min_max)
-            plot_spectrogram.setYRange(*y_min_max)
+            if plot_spectrogram is not None:
+                plot_spectrogram.setXRange(*x_min_max)
+                plot_spectrogram.setYRange(*y_min_max)
 
         for _, plotline in self.plotlines.items():
             plotline.setLevels(z_min_max)
@@ -355,8 +357,9 @@ class SPECTROGRAM_PLOTTER:
                       z_min_max: tuple,
                       spectogram_map_shape: tuple):
         for plot_spectrogram in self.plot_spectrogram_list:
-            plot_spectrogram.setXRange(*x_min_max)
-            plot_spectrogram.setYRange(*y_min_max)
+            if plot_spectrogram is not None:
+                plot_spectrogram.setXRange(*x_min_max)
+                plot_spectrogram.setYRange(*y_min_max)
 
         for _, plotline in self.plotlines.items():
             plotline.setLevels(z_min_max)
@@ -373,10 +376,11 @@ class SPECTROGRAM_PLOTTER:
 
     def clear_plot(self):
         for plot_spectrogram, title in zip(self.plot_spectrogram_list, self.titles):
-            index = title.split(' - ')[1]
-            self.plotlines[f"Waterfall Spectrogram {index}"].clear()
-            self.plots[f"Waterfall Spectrogram {index}"].clear()
-            self.create_spectrogram_plot(plot_spectrogram, title)
+            if plot_spectrogram is not None:
+                index = title.split(' - ')[1]
+                self.plotlines[f"Waterfall Spectrogram {index}"].clear()
+                self.plots[f"Waterfall Spectrogram {index}"].clear()
+                self.create_spectrogram_plot(plot_spectrogram, title)
 
 
 # ==============================================================================
@@ -395,7 +399,8 @@ class RANGE_DOPPLER_PLOTTER:
                                         qt_self.plot_range_doppler_7,
                                         qt_self.plot_range_doppler_8,
                                         qt_self.plot_range_doppler_azimuth_range_doppler,
-                                        qt_self.plot_range_doppler_demo]
+                                        qt_self.plot_range_doppler_demo if hasattr(qt_self, 'plot_range_doppler_demo') else None]
+        
         self.radar_param = qt_self.radar_param
         self.init_plot_parameters()
 
@@ -409,7 +414,8 @@ class RANGE_DOPPLER_PLOTTER:
                        'Range Doppler - RX1_TX1', 'Range Doppler - RX1_TX2']
 
         for plot_range_doppler, title in zip(self.plot_range_doppler_list, self.titles):
-            self.create_range_doppler_plot(plot_range_doppler, title)
+            if plot_range_doppler is not None:
+                self.create_range_doppler_plot(plot_range_doppler, title)
 
     def create_range_doppler_plot(self, plot, title):
         plotline = pg.ImageItem()
@@ -452,8 +458,9 @@ class RANGE_DOPPLER_PLOTTER:
                         y_min_max: tuple,
                         z_min_max: tuple):
         for plot_spectrogram in self.plot_range_doppler_list:
-            plot_spectrogram.setXRange(*x_min_max)
-            plot_spectrogram.setYRange(*y_min_max)
+            if plot_spectrogram is not None:
+                plot_spectrogram.setXRange(*x_min_max)
+                plot_spectrogram.setYRange(*y_min_max)
 
         for _, plotline in self.plotlines.items():
             plotline.setLevels(z_min_max)
@@ -464,8 +471,9 @@ class RANGE_DOPPLER_PLOTTER:
                       z_min_max: tuple,
                       range_doppler_map_shape: tuple):
         for plot_spectrogram in self.plot_range_doppler_list:
-            plot_spectrogram.setXRange(*x_min_max)
-            plot_spectrogram.setYRange(*y_min_max)
+            if plot_spectrogram is not None:
+                plot_spectrogram.setXRange(*x_min_max)
+                plot_spectrogram.setYRange(*y_min_max)
 
         for _, plotline in self.plotlines.items():
             plotline.setLevels(z_min_max)
@@ -482,10 +490,11 @@ class RANGE_DOPPLER_PLOTTER:
 
     def clear_plot(self):
         for plot_spectrogram, title in zip(self.plot_range_doppler_list, self.titles):
-            index = title.split(' - ')[1]
-            self.plotlines[f"Range Doppler {index}"].clear()
-            self.plots[f"Range Doppler {index}"].clear()
-            self.create_range_doppler_plot(plot_spectrogram, title)
+            if plot_spectrogram is not None:
+                index = title.split(' - ')[1]
+                self.plotlines[f"Range Doppler {index}"].clear()
+                self.plots[f"Range Doppler {index}"].clear()
+                self.create_range_doppler_plot(plot_spectrogram, title)
 
 
 # ==============================================================================
@@ -499,7 +508,8 @@ class RANGE_AZIMUTH_PLOTTER:
         self.plot_range_azimuth_list = [qt_self.plot_range_azimuth,
                                         qt_self.plot_waterfall_azimuth_range_azimuth,
                                         qt_self.plot_range_doppler_azimuth_azimuth,
-                                        qt_self.plot_range_azimuth_demo]
+                                        qt_self.plot_range_azimuth_demo if hasattr(qt_self, 'plot_range_azimuth_demo') else None]
+
         self.radar_param = qt_self.radar_param
         self.init_plot_parameters()
 
@@ -509,7 +519,8 @@ class RANGE_AZIMUTH_PLOTTER:
         self.indexs = ['Range Azimuth', 'Waterfall Azimuth', 'Range Doppler Azimuth', 'Demo']
         self.titles = ['Range Azimuth', 'Range Azimuth', 'Range Azimuth', 'Range Azimuth']
         for plot_range_azimuth, title, index in zip(self.plot_range_azimuth_list, self.titles, self.indexs):
-            self.create_range_azimuth_plot(plot_range_azimuth, title, index)
+            if plot_range_azimuth is not None:
+                self.create_range_azimuth_plot(plot_range_azimuth, title, index)
 
     def create_range_azimuth_plot(self, plot, title, index):
         plotline = pg.ImageItem()
@@ -542,9 +553,11 @@ class RANGE_AZIMUTH_PLOTTER:
                         x_min_max: tuple,
                         y_min_max: tuple,
                         z_min_max: tuple):
+        
         for plot in self.plot_range_azimuth_list:
-            plot.setXRange(*x_min_max)
-            plot.setYRange(*y_min_max)
+            if plot is not None:
+                plot.setXRange(*x_min_max)
+                plot.setYRange(*y_min_max)
 
         for _, plotline in self.plotlines.items():
             plotline.setLevels(z_min_max)
@@ -567,9 +580,10 @@ class RANGE_AZIMUTH_PLOTTER:
 
     def clear_plot(self):
         for plot, index, title in zip(self.plot_range_azimuth_list, self.indexs, self.titles):
-            self.plotlines[f"{index}"].clear()
-            self.plots[f"{index}"].clear()
-            self.create_range_azimuth_plot(plot, title, index)
+            if plot is not None:
+                self.plotlines[f"{index}"].clear()
+                self.plots[f"{index}"].clear()
+                self.create_range_azimuth_plot(plot, title, index)
 
 
 from pyqtgraph import AxisItem

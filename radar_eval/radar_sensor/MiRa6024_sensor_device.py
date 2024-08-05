@@ -33,7 +33,7 @@ class MIRA_DEVICE:
         
         self.set_spi_high_speed()
         self.set_header_prefix()
-        self.init_radar_system_parameters()
+        # self.init_radar_system_parameters()
 
     def init_device_content(self):
         self._main_reg = MIRA6024_CONTENT.BGT_MAIN(self)
@@ -174,25 +174,27 @@ class MIRA_DEVICE:
         if self.radar_param.sys.rf_test_mode_en:
             self._rft0_reg.RFTSIGCLK_DIV_EN = 1
             self._rft0_reg.RFTSIGCLK_DIV = int((80*1e6)/self.radar_param.sys.rf_test_ton)
-            self._sfctl_reg.LFSR_EN = 1
-            self._csu1_0_reg.RX1MIX_EN = 0
-            self._csu1_0_reg.RX2MIX_EN = 0
-            self._csu1_0_reg.RX2MIX_EN = 0
-            self._csu1_0_reg.RX4MIX_EN = 0
-            self._csu2_0_reg.RX1MIX_EN = 0
-            self._csu2_0_reg.RX2MIX_EN = 0
-            self._csu2_0_reg.RX2MIX_EN = 0
-            self._csu2_0_reg.RX4MIX_EN = 0
+            self._sfctl_reg.LFSR_EN = 0
+            self._csu1_0_reg.TEST_DIV_EN = 1
+            self._csu2_0_reg.TEST_DIV_EN = 1
         else:
             return
         
         if self.radar_param.sys.rf_test_mode_en_channels[0]:
+            self._csu1_0_reg.RX1MIX_EN = 0
+            self._csu2_0_reg.RX1MIX_EN = 0
             self._rft0_reg.TEST_SIG_IF1_EN = 1
         if self.radar_param.sys.rf_test_mode_en_channels[1]:
+            self._csu1_0_reg.RX2MIX_EN = 0
+            self._csu2_0_reg.RX2MIX_EN = 0
             self._rft0_reg.TEST_SIG_IF2_EN = 1
         if self.radar_param.sys.rf_test_mode_en_channels[2]:
+            self._csu1_0_reg.RX3MIX_EN = 0
+            self._csu2_0_reg.RX3MIX_EN = 0
             self._rft0_reg.TEST_SIG_IF3_EN = 1
         if self.radar_param.sys.rf_test_mode_en_channels[3]:
+            self._csu1_0_reg.RX4MIX_EN = 0
+            self._csu2_0_reg.RX4MIX_EN = 0
             self._rft0_reg.TEST_SIG_IF4_EN = 1
 
     def init_radar_system_parameters(self) -> None:
@@ -223,7 +225,7 @@ class MIRA_DEVICE:
  
         self.radar_param.sys.pulse_repetition_time = 2*(chirp_timings[0] + const_timings_each_chirp + self.radar_param.sys.t_sed[0])
         self.radar_param.sys.coherent_pulse_interval = self.radar_param.sys.pulse_repetition_time + chirp_timings[1] + const_timings_each_chirp + chirp_timings[0] + const_timings_each_chirp + self.radar_param.sys.t_sed[1]
-        # self.radar_param.sys.ramp_bandwidth = self.radar_param.sys.ramp_slope * self.radar_param.sys.ramp_time
+        self.radar_param.sys.ramp_bandwidth = self.radar_param.sys.ramp_slope * self.radar_param.sys.t_acqu
         
         self.radar_param.sys.mid_frequency = self.radar_param.sys.start_frequency \
                                              + (self.radar_param.sys.ramp_bandwidth / 2)

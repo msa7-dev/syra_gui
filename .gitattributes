@@ -1,0 +1,2 @@
+sykno_radar_eval_project/radar_gui_starter_aarch64.bin filter=lfs diff=lfs merge=lfs -text
+sykno_radar_eval_project/radar_gui_starter_amd64_x84_64.bin filter=lfs diff=lfs merge=lfs -text

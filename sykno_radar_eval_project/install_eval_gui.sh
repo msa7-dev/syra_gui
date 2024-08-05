@@ -34,4 +34,18 @@ fi
 
 sudo apt-get install hdf5-tools
 
+sudo apt-get update -y && \
+    sudo apt-get upgrade -y && \
+    sudo apt-get install -y apt-utils sudo tzdata usbutils udev \
+    wget build-essential checkinstall libreadline-dev \
+    libncursesw5-dev libssl-dev libsqlite3-dev tk-dev \
+    libgdbm-dev libc6-dev libbz2-dev libffi-dev zlib1g-dev \
+    tzdata x11-xserver-utils libusb-1.0-0-dev libftdi1-dev \
+    libqt5svg5* libglib2.0-0 libsm6 libxrender1 libxext6 \
+    qtbase5-dev qt5-qmake qtbase5-dev-tools python3-pyqt5\
+    libqt5gui5 libqt5widgets5 libqt5core5a libxcb-xinerama0 \
+    libxcb-xinerama0-dev libxkbcommon-x11-0 \
+    qemu-user-static pkg-config libhdf5-dev &&  \
+    sudo apt-get autoremove -y && sudo apt-get autoclean -y
+
 echo "Done"

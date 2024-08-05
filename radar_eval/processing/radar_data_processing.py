@@ -2,6 +2,7 @@ import __init__
 import os 
 import time
 import psutil
+import platform
 import numpy as np
 import configparser
 import setproctitle
@@ -103,11 +104,12 @@ class MIRA_DATA_PROCESSOR():
         MIRA_PROCESS_PRIO = np.int8(self.config.get("MIRA_HOST_SYS_PARAMETER", 
                                                     "MIRA_PROCESS_PRIO"))
         
-        mira_data_processing_process = psutil.Process(os.getpid())
-        mira_data_processing_process.cpu_affinity([MIRA_PROCESSING_CPU_CORE])
-        mira_data_processing_process.nice(MIRA_PROCESS_PRIO)
-        distribute_cores_to_process(mira_data_processing_process, 2)
-        setproctitle.setproctitle("Sykno - Radar Eval GUI - Processing Process")
+        if platform.system() != "Windows":  # Only adjust affinity if not on Windows
+            mira_data_processing_process = psutil.Process(os.getpid())
+            mira_data_processing_process.cpu_affinity([MIRA_PROCESSING_CPU_CORE])
+            mira_data_processing_process.nice(MIRA_PROCESS_PRIO)
+            distribute_cores_to_process(mira_data_processing_process, 2)
+            setproctitle.setproctitle("Sykno - Radar Eval GUI - Processing Process")
 
         radar_data_cube = np.zeros((np.uint16(self.radar_param.sys.n_samples_per_chirp[0]), # Dim. 1
                                     int(8),

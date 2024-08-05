@@ -3,6 +3,7 @@ import os
 import sys
 import time
 import psutil
+import platform
 import numpy as np
 import configparser
 import setproctitle
@@ -39,11 +40,12 @@ class MIRA_MAIN_GUI(QtWidgets.QMainWindow):
                 logger.error(f'Error 404: Radar GUI PyQt file not found! Searched here: {path}')
                 sys.exit()
         
-        setproctitle.setproctitle('Sykno - Radar Eval GUI - GUI Process')
-        mira_eval_gui_main_process = psutil.Process(os.getpid())
-        mira_eval_gui_main_process.cpu_affinity([3])
-        mira_eval_gui_main_process.nice(0)
-        distribute_cores_to_process(mira_eval_gui_main_process, 3)
+        if platform.system() != "Windows":  # Only adjust affinity if not on Windows
+            setproctitle.setproctitle('Sykno - Radar Eval GUI - GUI Process')
+            mira_eval_gui_main_process = psutil.Process(os.getpid())
+            mira_eval_gui_main_process.cpu_affinity([3])
+            mira_eval_gui_main_process.nice(0)
+            distribute_cores_to_process(mira_eval_gui_main_process, 3)
         
         uic.loadUi(f"{MIRA_UI_PYQT_FILE_PATH}", self)
 
@@ -96,12 +98,18 @@ class MIRA_MAIN_GUI(QtWidgets.QMainWindow):
             if self.mira_controller.mira_device is None:
                 self.mira_controller = None
                 return
+            # self.gui_controller.update_gui_sensor_detected()
+            self.gui_controller.update_sensor_settings(flag=False)            
+            self.mira_controller.reinit_controller(self.gui_controller.radar_param)
+            self.mira_controller.mira_device.init_radar_system_parameters()
+
             self.firmware_version_label.setText(f"{self.radar_param.mon.product_usb.split('(')[1].replace(') |', '')}")
         if self.mira_controller.mira_device is None:
             self.mira_controller = None
             return
-        self.connect_timer.stop()
-        self.connect_timer.timeout.disconnect()
+        if self.connect_timer.isActive():
+            self.connect_timer.stop()
+            self.connect_timer.timeout.disconnect()
         
         self.gui_controller.set_device_connected()
         self.gui_controller.update_radar_params()
@@ -154,9 +162,7 @@ class MIRA_MAIN_GUI(QtWidgets.QMainWindow):
             self.mira_processor = MIRA_MULTIPROCESSOR(self.mira_controller)
             
             self.mira_controller.mira_device.finish_init()
-            
             self.gui_controller.update_radar_params()
-            
             self.mira_controller.mira_device.init_mira_frame_generation()
             
             self.mira_processor.start_processes()
@@ -173,7 +179,9 @@ class MIRA_MAIN_GUI(QtWidgets.QMainWindow):
             self.mira_processor.process_stop_event.set()
             self.running = False
             self.graph_update_flag = False
+            
             time.sleep(125e-3)
+            
             self.mira_processor.stop_processes()
             if self.mira_controller.mira_device is not None:
                 self.mira_controller.mira_device.mira_bridge.deinit_stm_usb_device()

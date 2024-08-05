@@ -132,22 +132,46 @@ def radar_gui():
 @cli.command(help="This command builds a docker image from the Dockerfile")
 def build_docker():
     logger.debug("Building docker image from Dockerfile...")
-    subprocess.run(['sudo', 'docker', 'build', '-f', './docker/sykno_gui_dockerfile', '-t', 'sykno_docker', '.'])
+    command = ['sudo', 
+               'docker', 'build',
+               '--platform', 'linux/arm64',
+               '-f', './docker/sykno_gui_dockerfile', 
+               '-t', 'sykno_docker', '.'
+               ]
+    subprocess.run(command)
     logger.debug('Finished docker build.\n Now you can run the docker image with: python3 sykno_cli run-docker')
-
 
 # ==============================================================================
 # Click Command Name: run_docker
 # ==============================================================================
-@cli.command(help="This command runs the build docker image")
+@cli.command(help="This command runs the build docker image using QEMU for ARM emulation")
 def run_docker():
-    logger.debug('Run sykno docker...')
-    subprocess.run(['sudo', 'docker', 'run', '-it', '--rm', '--privileged', 
-                    '-e', 'DISPLAY=$DISPLAY', '-v', '/dev/bus/usb:/dev/bus/usb', \
-                    '-v', '/tmp/.X11-unix:/tmp/.X11-unix',
-                    '-v', './radar_eval/measurement/hdf5/:/home/sykno/radar_eval/measurement/hdf5/',
-                    '--hostname', 'sykno-docker', 'sykno_docker'])
-    logger.debug('Closed sykno docker.')
+    logger.debug('Run sykno docker with QEMU...')
+    
+    # Define the Docker run command with all the arguments
+    docker_command = [
+        'sudo',  # Run the command with superuser privileges
+        'docker',  # Docker CLI command
+        'run',  # Run a container from an image
+        '-it',  # '-i' keeps STDIN open, '-t' allocates a pseudo-TTY
+        '--rm',  # Automatically remove the container when it exits
+        '--privileged',  # Give the container elevated privileges
+        '--platform', 'linux/arm64',  # Specify target platform (ARM64)
+        # '-e', f'DISPLAY={os.getenv("DISPLAY")}',  # Set DISPLAY environment variable for GUI apps
+        '-v', '/dev/bus/usb:/dev/bus/usb',  # Mount USB devices directory from host to container
+        # '-v', '/tmp/.X11-unix:/tmp/.X11-unix',  # Mount X11 socket for GUI applications
+        '-v', f'{os.getcwd()}/mira/meas/hdf5/:/home/sykno/mira/meas/hdf5/',  # Mount host directory to container
+        '--hostname', 'sykno-docker',  # Set hostname of the container
+        'sykno_docker'  # Docker image name
+    ]
+    
+    result = subprocess.run(docker_command, capture_output=True, text=True)
+    
+    if result.returncode != 0:
+        logger.error(f"Failed to run docker container: {result.stderr}")
+    else:
+        logger.debug('Closed sykno docker.')
+
 
 # ==============================================================================
 # Click Command Name: flash_mcu
@@ -165,27 +189,37 @@ def flash_mcu():
     else:
         logger.warning('No device found, please ensure you connected the device.')
 
-
 # ==============================================================================
 # Click Command Name: compile_gui
 # ==============================================================================
 @cli.command(help="This command starts the flashing process for the MCU.")
 def compile_gui():
-    # Compile with Nuitka
-    subprocess.run([
-        'nuitka3', '--standalone', '--onefile',
-        '--enable-plugin=pyqt5',
-        '--output-dir=./sykno_radar_eval_project/',
-        '--remove-output',
-        # '--assume-yes-for-downloads',
-        '--python-flag=-OO',  # Remove docstrings and assert statements
-        '--lto=yes',  # Enable link-time optimization
-        '--follow-imports',
-        '--include-package-data=h5py',  # Ensure h5py package data is included
-        # '--verbose',  # Enable verbose logging
-        '--jobs=20',  # Use multiple jobs for faster compilation
-        './radar_gui_starter.py'
-    ])
+    # Command to activate the virtual environment and run the Nuitka compilation
+    command = f"""
+    nuitka3 --standalone --onefile \
+    --enable-plugin=pyqt5 \
+    --output-dir=./sykno_radar_eval_project/ \
+    --remove-output \
+    --show-modules \
+    --python-flag=-OO \
+    --lto=yes \
+    --follow-imports \
+    --include-package-data=h5py \
+    --include-module=usb \
+    --include-module=h5py \
+    --include-module=PyQt5 \
+    --include-module=scipy \
+    --include-package-data=scipy \
+    --include-module=scipy.special \
+    --include-module=scipy.special._ufuncs \
+    --include-module=scipy.special._ufuncs_cxx \
+    --include-module=scipy.special._cdflib \
+    --jobs=20 \
+    ./radar_gui_starter.py
+    """
+
+    # Run the command in a shell
+    subprocess.run(command, shell=True, executable='/bin/bash')
 
     
 # Call the CLI as main to start Click access

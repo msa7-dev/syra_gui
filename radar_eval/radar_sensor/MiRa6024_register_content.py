@@ -1900,7 +1900,7 @@ class BGT_PLLX_1:
             self.radar_param.sys.ramp_steps[index] = self._RSU
        
     def set_bandwidth_ramp_steps(self, rsu_reg_val: np.float32) -> None:
-        self.RSU = rsu_reg_val
+        self.RSU = np.uint32(rsu_reg_val)
                 
     def convert_all_values(self):
         self.get_ramp_bandwidth()
@@ -1959,18 +1959,14 @@ class BGT_PLLX_2:
         self.radar_param.sys.ramp_time[index] = np.float32(self._RTU * 8 * 12.5e-9)
         self.radar_param.sys.ramp_bandwidth[index] = np.float32(self._RTU * 8 * (640e6 / 2**20) \
                                                                 * self.radar_param.sys.ramp_steps[index]) # BGT Datasheet see page 32ff 
-    
         self.radar_param.sys.end_frequency[index] = np.float32(self.radar_param.sys.start_frequency[index]
                                                                + self.radar_param.sys.ramp_bandwidth[index])
-        
         self.radar_param.sys.ramp_slope[index] = np.float32(self.radar_param.sys.ramp_bandwidth[index] \
-                                                            // (self.radar_param.sys.ramp_time[index] 
+                                                            // (self.radar_param.sys.t_acqu
                                                               + np.finfo(np.float32).eps)) 
         
     def set_bandwidth_ramp_time(self, rtu_reg_valu: np.uint16) -> None:
         self.RTU = rtu_reg_valu
-
-
 
     @property
     def TR_EDU(self):
@@ -1997,13 +1993,11 @@ class BGT_PLLX_2:
             # If TR_EDU/D > 0: T_EDU/D = (8 x TR_EDU/D + 5) x TSYS_CLK.
             self.radar_param.sys.t_ed[index] = (8 * self._TR_EDU + 5) * (1/80e6)
 
-
-
     def set_edu_time(self, edu_time: np.float32) -> None:
         T_SYS_CLK = 1 / (80 * 1e6)  # System clock period (12.5 ns)
 
         # Calculate TR_EDU required for the given edu_time
-        if edu_time == 2 * T_SYS_CLK:
+        if edu_time <= 2 * T_SYS_CLK:
             tr_edu = 0
         else:
             tr_edu = (edu_time / T_SYS_CLK - 5) / 8
@@ -2230,7 +2224,7 @@ class BGT_PLLX_6:
         self.radar_param.sys.end_frequency = np.nan_to_num(self.radar_param.sys.end_frequency)
         
         self.radar_param.sys.ramp_slope[index] = np.float32(self.radar_param.sys.ramp_bandwidth[index] 
-                                                            / (self.radar_param.sys.ramp_time[index] 
+                                                            / (self.radar_param.sys.t_acqu 
                                                             + np.finfo(np.float32).eps)) 
         self.radar_param.sys.ramp_slope = np.nan_to_num(self.radar_param.sys.ramp_slope)
             

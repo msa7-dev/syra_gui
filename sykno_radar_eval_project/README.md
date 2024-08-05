@@ -20,6 +20,10 @@ $ ./radar_gui_starter.bin
 ```
 
 ### Python virtuel enviorment:
+A virtuel enviorment is recommended for working with jupyter notebook. 
+
+Follow this instructions to install and activate a new virtuel enviorment with all dependencies. 
+
 ```sh
 $ python3 -m pip install virtualenv
 $ python3 -m venv sykno_env

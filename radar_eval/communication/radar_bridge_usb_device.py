@@ -16,7 +16,7 @@ from pathlib import Path
 from loguru import logger
 
 from radar_eval.radar_system.radar_system_definition import MIRA_RADAR_PARAMETER
-from radar_eval.communication.cython.radar_bridge_mcu_commands import MIRA_MCU_COMMANDS, MIRA_MCU_USB_DEF
+from radar_eval.communication.radar_bridge_mcu_commands import MIRA_MCU_COMMANDS, MIRA_MCU_USB_DEF
 
 # ==============================================================================
 # Class Name: MIRA_USB_SPI_BRIDGE
@@ -232,7 +232,6 @@ class MIRA_USB_SPI_BRIDGE():
                 usb_extraction_data_queue.put(raw_data)
 
 
-
     def spi_read_reg(self, reg_adr: np.uint8) -> list[np.uint8, np.ndarray]:
         usb_payload = bytearray([self.mcu_commands.read_cmd, reg_adr])
         self.read_counter += 1
@@ -363,8 +362,9 @@ class MIRA_USB_SPI_BRIDGE():
         try:
             self.spi_deinit_mira()
             # Attempt to release the interface and dispose resources if the device is connected
-            usb.util.release_interface(self.device, self.interface)
-            usb.util.dispose_resources(self.device)
+            if self.device is not None and self.interface is not None:
+                usb.util.release_interface(self.device, self.interface)
+                usb.util.dispose_resources(self.device)
             logger.debug(str(self.config.get('DEFAULT', f"MIRA_PRODUCT_NAME_{self.used_usb_product_id}")) +
                          " by Sykno GmbH: USB Interface released.")
         except usb.core.USBError as e:

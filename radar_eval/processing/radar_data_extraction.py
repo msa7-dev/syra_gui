@@ -3,6 +3,7 @@ import __init__
 import os 
 import time
 import psutil
+import platform
 import numpy as np
 import setproctitle
 import configparser
@@ -34,11 +35,12 @@ class MIRA_DATA_EXTRACTOR():
         MIRA_PROCESS_PRIO = np.int8(self.config.get("MIRA_HOST_SYS_PARAMETER", "MIRA_PROCESS_PRIO"))
         MIRA_EXTRACTING_CPU_CORE = int(self.config.get("MIRA_HOST_SYS_PARAMETER", "MIRA_EXTRACTING_CPU_CORE"))
 
-        mira_data_extraction_process = psutil.Process(os.getpid())
-        mira_data_extraction_process.cpu_affinity([MIRA_EXTRACTING_CPU_CORE])
-        mira_data_extraction_process.nice(MIRA_PROCESS_PRIO)
-        distribute_cores_to_process(mira_data_extraction_process, 1)
-        setproctitle.setproctitle("Sykno - Radar Eval GUI - Extraction Process")
+        if platform.system() != "Windows":  # Only adjust affinity if not on Windows
+            mira_data_extraction_process = psutil.Process(os.getpid())
+            mira_data_extraction_process.cpu_affinity([MIRA_EXTRACTING_CPU_CORE])
+            mira_data_extraction_process.nice(MIRA_PROCESS_PRIO)
+            distribute_cores_to_process(mira_data_extraction_process, 1)
+            setproctitle.setproctitle("Sykno - Radar Eval GUI - Extraction Process")
 
         radar_data_cube_build_buffer = np.zeros((self.radar_param.sys.n_samples_per_chirp[0],  # Dim 1 - Samples
                                                  int(self.radar_param.sys.rx_active_antennas[0]),  # Dim. 2 - Number RX Antennas

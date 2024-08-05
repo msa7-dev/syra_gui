@@ -603,134 +603,6 @@
               </item>
              </layout>
             </widget>
-            <widget class="QWidget" name="tab_7">
-             <attribute name="title">
-              <string>Demo</string>
-             </attribute>
-             <layout class="QVBoxLayout" name="verticalLayout_4">
-              <item>
-               <layout class="QVBoxLayout" name="verticalLayout_3">
-                <item>
-                 <widget class="PlotWidget" name="plot_waterfall_demo" native="true">
-                  <property name="font">
-                   <font>
-                    <pointsize>16</pointsize>
-                   </font>
-                  </property>
-                  <widget class="QLabel" name="label_temperature_out_5">
-                   <property name="geometry">
-                    <rect>
-                     <x>1380</x>
-                     <y>110</y>
-                     <width>90</width>
-                     <height>26</height>
-                    </rect>
-                   </property>
-                   <property name="sizePolicy">
-                    <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-                     <horstretch>0</horstretch>
-                     <verstretch>0</verstretch>
-                    </sizepolicy>
-                   </property>
-                   <property name="maximumSize">
-                    <size>
-                     <width>90</width>
-                     <height>16777215</height>
-                    </size>
-                   </property>
-                   <property name="font">
-                    <font>
-                     <pointsize>6</pointsize>
-                    </font>
-                   </property>
-                   <property name="text">
-                    <string/>
-                   </property>
-                  </widget>
-                 </widget>
-                </item>
-               </layout>
-              </item>
-              <item>
-               <widget class="PlotWidget" name="plot_range_doppler_demo" native="true">
-                <property name="font">
-                 <font>
-                  <pointsize>16</pointsize>
-                 </font>
-                </property>
-                <widget class="QLabel" name="label_temperature_out_4">
-                 <property name="geometry">
-                  <rect>
-                   <x>1380</x>
-                   <y>110</y>
-                   <width>90</width>
-                   <height>26</height>
-                  </rect>
-                 </property>
-                 <property name="sizePolicy">
-                  <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-                   <horstretch>0</horstretch>
-                   <verstretch>0</verstretch>
-                  </sizepolicy>
-                 </property>
-                 <property name="maximumSize">
-                  <size>
-                   <width>90</width>
-                   <height>16777215</height>
-                  </size>
-                 </property>
-                 <property name="font">
-                  <font>
-                   <pointsize>6</pointsize>
-                  </font>
-                 </property>
-                 <property name="text">
-                  <string/>
-                 </property>
-                </widget>
-               </widget>
-              </item>
-              <item>
-               <widget class="PlotWidget" name="plot_range_azimuth_demo" native="true">
-                <property name="font">
-                 <font>
-                  <pointsize>16</pointsize>
-                 </font>
-                </property>
-                <widget class="QLabel" name="label_temperature_out_6">
-                 <property name="geometry">
-                  <rect>
-                   <x>1380</x>
-                   <y>110</y>
-                   <width>90</width>
-                   <height>26</height>
-                  </rect>
-                 </property>
-                 <property name="sizePolicy">
-                  <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-                   <horstretch>0</horstretch>
-                   <verstretch>0</verstretch>
-                  </sizepolicy>
-                 </property>
-                 <property name="maximumSize">
-                  <size>
-                   <width>90</width>
-                   <height>16777215</height>
-                  </size>
-                 </property>
-                 <property name="font">
-                  <font>
-                   <pointsize>6</pointsize>
-                  </font>
-                 </property>
-                 <property name="text">
-                  <string/>
-                 </property>
-                </widget>
-               </widget>
-              </item>
-             </layout>
-            </widget>
            </widget>
           </item>
          </layout>
@@ -3667,7 +3539,7 @@
                  </font>
                 </property>
                 <property name="text">
-                 <string>IF test ton</string>
+                 <string>IF test tone</string>
                 </property>
                </widget>
               </item>
