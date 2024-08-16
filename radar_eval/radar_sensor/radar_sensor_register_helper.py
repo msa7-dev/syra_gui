@@ -57,9 +57,9 @@ def build_register_from_content(instance):
     for name, member in instance.REG_DEF.__members__.items():
         if name.endswith("_ID"):
             field_name = name[:-3]  # Remove "_ID" from the end
-            pos = getattr(instance.REG_DEF, f"{field_name}_POS")
-            mask = getattr(instance.REG_DEF, f"{field_name}_MSK")
-            value = instance.CONTENT.get(f"_{field_name}", 0)
+            pos = np.uint32(getattr(instance.REG_DEF, f"{field_name}_POS"))
+            mask = np.uint32(getattr(instance.REG_DEF, f"{field_name}_MSK"))
+            value = np.uint32(instance.CONTENT.get(f"_{field_name}", 0))
             result |= ((value << pos) & mask)
     return np.uint32(result)  # Ensure the result is a 24-bit integer
 

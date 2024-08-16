@@ -1647,7 +1647,7 @@ class BGT_CCR1:
 
     def get_fed_time(self) -> None:
         # T_FED = (TR_FED x 2^TR_FED_MUL x 8 + TR_FED_MUL +3) x TSYS_CLK
-        self.radar_param.sys.t_fed = (self._TR_FED * 2**self._TR_FED_MUL * 8 + self._TR_FED_MUL + 3) * (1/80e6)
+        self.radar_param.sys.t_fed = np.uint32((np.uint32(self._TR_FED) * 2**np.uint32(self._TR_FED_MUL) * 8 + np.uint32(self._TR_FED_MUL) + 3) * (1/80e6))
 
     def set_fed_time(self, fed_time: np.float32) -> None:
         T_SYS_CLK = 1/(80*1e6)
@@ -1991,7 +1991,7 @@ class BGT_PLLX_2:
             self.radar_param.sys.t_ed[index] = 2 * (1/80e6)
         elif self._TR_EDU != 0 and index is not None:
             # If TR_EDU/D > 0: T_EDU/D = (8 x TR_EDU/D + 5) x TSYS_CLK.
-            self.radar_param.sys.t_ed[index] = (8 * self._TR_EDU + 5) * (1/80e6)
+            self.radar_param.sys.t_ed[index] = np.uint32(8 * np.uint32(self._TR_EDU) + 5) * (1/80e6)
 
     def set_edu_time(self, edu_time: np.float32) -> None:
         T_SYS_CLK = 1 / (80 * 1e6)  # System clock period (12.5 ns)
@@ -2376,7 +2376,7 @@ class BGT_PLLX_7:
         if index is not None:
             # T_SED = (TR_SED x 2^TR_SED_MUL x 8 + TR_SED_MUL +3) x TSYS_CLK
             self.radar_param.sys.t_sed[index] = \
-                (self._TR_SED * 2**self._TR_SED_MUL * 8 + self._TR_SED_MUL + 3) * (1/80e6)
+                np.uint32(np.uint32(self._TR_SED) * 2**np.uint32(self._TR_SED_MUL) * 8 + np.uint32(self._TR_SED_MUL) + 3) * (1/80e6)
 
 
     def set_sed_time(self, sed_time: np.float32) -> None:

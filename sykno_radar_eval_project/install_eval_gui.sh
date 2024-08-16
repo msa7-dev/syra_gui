@@ -48,4 +48,5 @@ sudo apt-get update -y && \
     qemu-user-static pkg-config libhdf5-dev &&  \
     sudo apt-get autoremove -y && sudo apt-get autoclean -y
 
+sudo chmod u+x ./*.bin
 echo "Done"

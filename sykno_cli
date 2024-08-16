@@ -196,7 +196,8 @@ def flash_mcu():
 def compile_gui():
     # Command to activate the virtual environment and run the Nuitka compilation
     command = f"""
-    nuitka3 --standalone --onefile \
+    nuitka3 --standalone \
+    --onefile \
     --enable-plugin=pyqt5 \
     --output-dir=./sykno_radar_eval_project/ \
     --remove-output \

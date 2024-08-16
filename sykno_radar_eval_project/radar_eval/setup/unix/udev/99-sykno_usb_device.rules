@@ -4,13 +4,15 @@
 #   $ sudo udevadm control --reload-rules && sudo udevadm trigger
 
 # MiRa6024 USB 2.0 HS interface 
-ACTION=="add", ATTRS{idVendor}=="1337", ATTRS{idProduct}=="6024", MODE="0666", TAG+="uaccess"
+ACTION=="add", ATTRS{idVendor}=="1337", ATTRS{idProduct}=="6024", MODE="0666", TAG+="uaccess", RUN+="echo "Hell Yeah" > /home/jurnijasted/coding/sykno/udev_test.txt"
 
 # MiRa6013 USB 2.0 HS interface 
 ACTION=="add", ATTRS{idVendor}=="1337", ATTRS{idProduct}=="6013", MODE="0666", TAG+="uaccess"
-
 # MiRa6011 USB 2.0 HS interface 
 ACTION=="add", ATTRS{idVendor}=="1337", ATTRS{idProduct}=="6011", MODE="0666", TAG+="uaccess"
 
+
 # FTDI234XD-R USB to UART bridge for incircuit firmware update via USB
 ACTION=="add", ATTRS{idVendor}=="0403", ATTRS{idProduct}=="6015", MODE="0666", TAG+="uaccess"
+
+ 

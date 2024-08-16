@@ -345,9 +345,10 @@ class MIRA_MAIN_GUI(QtWidgets.QMainWindow):
                             self.gui_controller.mira_plotter.time_axis,
                             self.processed_radar_data['Channel 2'][:, plot_counter-4])
                 
-                data = self.processed_radar_data['Channel 3'][:]
-                self.gui_controller.mira_plotter.time_signal.plotlines[f'{self.gui_controller.tab_name_time} mean'].setData(
-                self.gui_controller.mira_plotter.time_axis, data)
+                if self.radar_param.mon.sykno_product_name != 'SY60I11':
+                    data = self.processed_radar_data['Channel 3'][:]
+                    self.gui_controller.mira_plotter.time_signal.plotlines[f'{self.gui_controller.tab_name_time} mean'].setData(
+                    self.gui_controller.mira_plotter.time_axis, data)
 
         return dummy
     
@@ -372,10 +373,11 @@ class MIRA_MAIN_GUI(QtWidgets.QMainWindow):
                         data = self.processed_radar_data['Channel 2'][:, plot_counter-4]
                         self.gui_controller.mira_plotter.spectrum.plotlines[channel_name].setData(
                             self.gui_controller.fft_axis, data)
-                        
-                data = self.processed_radar_data['Channel 3'][:]
-                self.gui_controller.mira_plotter.spectrum.plotlines['Spectrum mean'].setData(
-                    self.gui_controller.fft_axis, data)
+
+                if self.radar_param.mon.sykno_product_name != 'SY60I11':
+                    data = self.processed_radar_data['Channel 3'][:]
+                    self.gui_controller.mira_plotter.spectrum.plotlines['Spectrum mean'].setData(
+                        self.gui_controller.fft_axis, data)
 
                 ## Peak search - also have a look: qt_gui_plot.py
                 # peaks, _ = find_peaks(data, height=-20)  # Adjust the height threshold as needed

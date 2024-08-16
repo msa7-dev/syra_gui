@@ -159,18 +159,6 @@
               </property>
              </widget>
             </item>
-            <item>
-             <widget class="QCheckBox" name="check_box_replay">
-              <property name="font">
-               <font>
-                <pointsize>12</pointsize>
-               </font>
-              </property>
-              <property name="text">
-               <string>Replay</string>
-              </property>
-             </widget>
-            </item>
            </layout>
           </item>
           <item row="0" column="2">

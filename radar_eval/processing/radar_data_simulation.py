@@ -59,12 +59,9 @@ class MIRA_DATA_REPLAYER:
                 self.data_index = 0  # Reset to loop over the data if end is reached
             
             dataset_name = dataset_names[self.data_index]
-            print(dataset_name)
             dataset_path = f'/{dataset_name}'
-            print(f"Attempting to read dataset: {dataset_path}")  # Debugging statement
 
             data_cube, attrs = self.hdf5_ctrl.read_dataset_with_attributes(dataset_path)
-            print(attrs)
             if data_cube is not None and attrs is not None:
                 frame_number = self.extract_frame_number(dataset_name)
                 radar_data_cube_build_buffer[:, :, :, :, frame_number] = data_cube

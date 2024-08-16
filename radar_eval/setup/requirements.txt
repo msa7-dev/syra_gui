@@ -9,8 +9,8 @@ pyusb
 path
 ft4222
 Cython
-# pyqt5-tools; python_version < "3.10"
-# PyQt5
+pyqt5-tools; python_version < "3.10"
+PyQt5
 pyqtgraph
 psutil
 paramiko

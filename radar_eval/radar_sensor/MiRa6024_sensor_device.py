@@ -173,7 +173,7 @@ class MIRA_DEVICE:
     def activate_rf_test_mode(self) -> None:
         if self.radar_param.sys.rf_test_mode_en:
             self._rft0_reg.RFTSIGCLK_DIV_EN = 1
-            self._rft0_reg.RFTSIGCLK_DIV = int((80*1e6)/self.radar_param.sys.rf_test_ton)
+            self._rft0_reg.RFTSIGCLK_DIV = np.uint32((80*1e6)/self.radar_param.sys.rf_test_ton)
             self._sfctl_reg.LFSR_EN = 0
             self._csu1_0_reg.TEST_DIV_EN = 1
             self._csu2_0_reg.TEST_DIV_EN = 1

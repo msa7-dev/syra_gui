@@ -7,7 +7,6 @@
 - Unix based OS
 - 4 Core CPU (x86_64)
 
-
  Open the terminal and execute the following commands:
 ### Install Sykno Radar USB device rules (udev):
 ```sh
@@ -19,7 +18,7 @@ $ sudo ./install_eval_gui.sh
 $ ./radar_gui_starter.bin
 ```
 
-### Python virtuel enviorment:
+### Python virtual enviroment:
 A virtuel enviorment is recommended for working with jupyter notebook. 
 
 Follow this instructions to install and activate a new virtuel enviorment with all dependencies. 

@@ -51,7 +51,7 @@ class MIRA_DATA_EXTRACTOR():
 
         USB_SPI_BRIDGE_DATA_ALLOCATION = np.uint32(self.config.get("MIRA_USB_SPI_BRIDGE",
                                                                    f"USB_SPI_BRIDGE_DATA_ALLOCATION_{self.radar_param.mon.sykno_product_name}"))
-        DATA_ALLOCATION = np.uint32(USB_SPI_BRIDGE_DATA_ALLOCATION + self.radar_param.sys.n_fifo_overhead * 9)
+        DATA_ALLOCATION = np.uint32(np.uint32(USB_SPI_BRIDGE_DATA_ALLOCATION) + np.uint32(self.radar_param.sys.n_fifo_overhead) * 9)
 
         self.package_chirp_header_index_distance = np.uint32(
             self.radar_param.sys.n_samples_per_chirp[0] *

@@ -208,7 +208,7 @@ class MIRA_GUI_CTRL():
 
 
     def init_value_check_box(self):
-        self.qt_self.check_box_replay.setChecked(False)
+        # self.qt_self.check_box_replay.setChecked(False)
         self.qt_self.check_box_record.setChecked(False)
         
         self.qt_self.usb_connection_checkBox.setChecked(True)
@@ -376,6 +376,7 @@ class MIRA_GUI_CTRL():
             self.qt_self.tab_plots.setTabEnabled(6, False)
                 
     def handle_replay_state(self) -> None:
+        return
         if self.qt_self.check_box_replay.isChecked():
             self.qt_self.check_box_record.setChecked(False)
             self.qt_self.check_box_record.setDisabled(True)
@@ -389,8 +390,8 @@ class MIRA_GUI_CTRL():
 
     def handle_record_state(self) -> None:
         if self.qt_self.check_box_record.isChecked():
-            self.qt_self.check_box_replay.setChecked(False)
-            self.qt_self.check_box_replay.setDisabled(True)
+            # self.qt_self.check_box_replay.setChecked(False)
+            # self.qt_self.check_box_replay.setDisabled(True)
             self.qt_self.browse_register_path_button.setDisabled(False)
             self.qt_self.browse_meas_out_path_button.setDisabled(False)
             self.qt_self.browse_meas_data_label_button.setDisabled(False)
@@ -403,7 +404,7 @@ class MIRA_GUI_CTRL():
             self.qt_self.disconnect_device()
             self.qt_self.start_auto_connect()
         else:
-            self.qt_self.check_box_replay.setDisabled(False)
+            # self.qt_self.check_box_replay.setDisabled(False)
             self.qt_self.browse_register_path_button.setDisabled(True)
             self.qt_self.browse_meas_out_path_button.setDisabled(True)
             self.qt_self.browse_meas_data_label_button.setDisabled(True)
@@ -460,7 +461,7 @@ class MIRA_GUI_CTRL():
             # self.qt_self.remote_tcp_connect_button.setDisabled(True)
             
     def init_connect_check_box(self):
-        self.qt_self.check_box_replay.stateChanged.connect(self.handle_replay_state)
+        # self.qt_self.check_box_replay.stateChanged.connect(self.handle_replay_state)
         self.qt_self.check_box_record.stateChanged.connect(self.handle_record_state)
         
         self.qt_self.usb_auto_connect_checkBox.stateChanged.connect(self.handle_usb_auto_connect_state)
