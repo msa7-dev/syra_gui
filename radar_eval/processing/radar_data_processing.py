@@ -176,7 +176,8 @@ class MIRA_DATA_PROCESSOR():
         elif preprocessing and not output_mean:
             return np.asarray(self.data_preprocessor.preprocess_channels(raw_radar_data_cube), dtype=np.float32)
         elif not preprocessing and output_mean:
-            return np.mean(np.asarray((np.divide(raw_radar_data_cube, np.power(2, 12)-1) * 1200), dtype=np.float32), axis=3, dtype=np.float32)
+            return np.mean(np.asarray((np.divide(raw_radar_data_cube, np.power(2, 12)-1) * 1200),
+                                      dtype=np.float32), axis=3, dtype=np.float32)
         elif not preprocessing and not output_mean:
             return np.asarray((np.divide(raw_radar_data_cube, np.power(2, 12)-1) * 1200), dtype=np.float32)
     

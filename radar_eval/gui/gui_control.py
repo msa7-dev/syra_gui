@@ -264,8 +264,8 @@ class MIRA_GUI_CTRL():
         
         ret_lower_upper_value = self.reinit_sliders()
         for i in range(len(self.radar_param.sys.plot_ampl_limit_max)):
-            self.radar_param.sys.plot_ampl_limit_min[i] = ret_lower_upper_value[0][i] 
-            self.radar_param.sys.plot_ampl_limit_max[i] = ret_lower_upper_value[1][i]
+            self.radar_param.sys.plot_ampl_limit_min[i] = np.float32(ret_lower_upper_value[0][i]) 
+            self.radar_param.sys.plot_ampl_limit_max[i] = np.float32(ret_lower_upper_value[1][i])
             self.qt_self.lower_ampl_limit_slider.setValue(self.radar_param.sys.plot_ampl_limit_min[i])
             self.qt_self.upper_ampl_limit_slider.setValue(self.radar_param.sys.plot_ampl_limit_max[i])
 
@@ -517,16 +517,16 @@ class MIRA_GUI_CTRL():
                           self.radar_param.sys.n_samples_per_chirp[0])
 
         time_axis_max = self.radar_param.sys.ramp_time[0]
-        
+
         if self.tab_name_main_instance_window == 'Time':
-            self.mira_plotter.time_signal.set_plot_limits((0, time_axis_max*1e6), 
+            self.mira_plotter.time_signal.set_plot_limits((0, np.float32(time_axis_max*1e6)), 
                                                           (self.radar_param.sys.plot_ampl_limit_min[self.radar_param.sys.curr_plot_ampl_limit], 
                                                            self.radar_param.sys.plot_ampl_limit_max[self.radar_param.sys.curr_plot_ampl_limit]))
         
         if self.tab_name_main_instance_window == 'Spectrum':
-            self.mira_plotter.spectrum.set_plot_limits((0, plot_axis_max_value), 
-                                                       (self.radar_param.sys.plot_ampl_limit_min[self.radar_param.sys.curr_plot_ampl_limit], 
-                                                        self.radar_param.sys.plot_ampl_limit_max[self.radar_param.sys.curr_plot_ampl_limit]))
+            self.mira_plotter.spectrum.set_plot_limits((0, np.float32(plot_axis_max_value)), 
+                                                       (np.float32(self.radar_param.sys.plot_ampl_limit_min[self.radar_param.sys.curr_plot_ampl_limit]), 
+                                                        np.float32(self.radar_param.sys.plot_ampl_limit_max[self.radar_param.sys.curr_plot_ampl_limit])))
         
         if self.tab_name_main_instance_window == 'Waterfall Spectrogram' or \
            self.tab_name_main_instance_window == 'Waterfall Azimuth' or \
@@ -534,8 +534,8 @@ class MIRA_GUI_CTRL():
                 self.mira_plotter.spectrogram.set_transform(
                     (0, plot_axis_max_value),
                     (-self.radar_param.sys.waterfall_spectrogram_time, 0),
-                    (self.radar_param.sys.plot_ampl_limit_min[3],
-                     self.radar_param.sys.plot_ampl_limit_max[3]), 
+                    (np.float32(self.radar_param.sys.plot_ampl_limit_min[3]),
+                     np.float32(self.radar_param.sys.plot_ampl_limit_max[3])), 
                     self.qt_self.processed_radar_data['Channel 1'].shape if self.tab_name_main_instance_window == 'Waterfall Spectrogram' else (self.qt_self.processed_radar_data['Channel 3'].shape if self.tab_name_main_instance_window == 'Demo' else self.qt_self.processed_radar_data['Channel 2'].shape)
                 )
 
@@ -545,8 +545,8 @@ class MIRA_GUI_CTRL():
             self.mira_plotter.range_doppler.set_transform((0, plot_axis_max_value),
                                                           (-self.radar_param.sys.max_velocity[0],
                                                            self.radar_param.sys.max_velocity[0]),
-                                                          (self.radar_param.sys.plot_ampl_limit_min[4],
-                                                           self.radar_param.sys.plot_ampl_limit_max[4]),
+                                                          (np.float32(self.radar_param.sys.plot_ampl_limit_min[4]),
+                                                           np.float32(self.radar_param.sys.plot_ampl_limit_max[4])),
                                                           self.qt_self.processed_radar_data['Channel 1'].shape \
                                                               if self.tab_name_main_instance_window == 'Range Doppler'
                                                               else self.qt_self.processed_radar_data['Channel 2'].shape)
@@ -557,8 +557,8 @@ class MIRA_GUI_CTRL():
            self.tab_name_main_instance_window == 'Demo':   
             self.mira_plotter.range_azimuth.set_transform((0, plot_axis_max_value), 
                                                           (-plot_axis_max_value, plot_axis_max_value),
-                                                          (self.radar_param.sys.plot_ampl_limit_min[5],
-                                                           self.radar_param.sys.plot_ampl_limit_max[5]),
+                                                          (np.float32(self.radar_param.sys.plot_ampl_limit_min[5]),
+                                                           np.float32(self.radar_param.sys.plot_ampl_limit_max[5])),
                                                           self.qt_self.processed_radar_data['Channel 1'].shape)
             
         
@@ -808,12 +808,12 @@ class MIRA_GUI_CTRL():
         self.radar_param.meas.recording_n_frames = int(recording_n_frames_text)
     
     def get_lower_slider_value(self, value):
-        self.radar_param.sys.plot_ampl_limit_min[self.radar_param.sys.curr_plot_ampl_limit] = self.qt_self.lower_ampl_limit_slider.value()
+        self.radar_param.sys.plot_ampl_limit_min[self.radar_param.sys.curr_plot_ampl_limit] = np.float32(self.qt_self.lower_ampl_limit_slider.value())
         self.set_color_bar_graphics()
         self.get_axis_x()
         
     def get_upper_slider_value(self, value):
-        self.radar_param.sys.plot_ampl_limit_max[self.radar_param.sys.curr_plot_ampl_limit] = self.qt_self.upper_ampl_limit_slider.value()  
+        self.radar_param.sys.plot_ampl_limit_max[self.radar_param.sys.curr_plot_ampl_limit] = np.float32(self.qt_self.upper_ampl_limit_slider.value())
         self.set_color_bar_graphics()
         self.get_axis_x()
 
@@ -1147,7 +1147,6 @@ class MIRA_GUI_CTRL():
     def get_shape_set_end_delay(self) -> None:
         shape_set_end_delay = self.qt_self.spin_box_set_shape_set_end_delay.value()
         shape_set_end_delay = np.float32(shape_set_end_delay * 1e-6)
-
         self.radar_param.sens.shape_set_end_delay = shape_set_end_delay
         self.set_shape_set_end_delay()
 
@@ -1156,6 +1155,7 @@ class MIRA_GUI_CTRL():
             return
         self.qt_self.mira_controller.mira_device._ccr1_reg.set_fed_time(self.radar_param.sens.shape_set_end_delay)
         self.qt_self.mira_controller.mira_device._ccr1_reg.get_fed_time()
+        self.update_parameters_plots()
 
     def update_sensor_settings(self, flag: bool=True) -> None:
         self.get_chirp_samples()
@@ -1227,6 +1227,7 @@ class MIRA_GUI_CTRL():
             self.qt_self.mira_processor.process_param_queue.put(self.build_process_param_queue())
 
     def activate_boot_mode(self):
+        return
         self.qt_self.mira_controller.mira_device.mira_bridge.spi_activate_boot_mode()
         time.sleep(1)
         self.qt_self.start_auto_connect()

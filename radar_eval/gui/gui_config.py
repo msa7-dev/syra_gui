@@ -158,7 +158,7 @@ class MIRA_WIDGET_VALUES():
         
         self.rf_antenna_combo_box_list = ['Antenna type 1', 'Antenna type 2']
         
-        self.gui_fps_list = ['10', '1', '5', '10', '15', '20', '25',
+        self.gui_fps_list = ['60', '1', '5', '10', '15', '20', '25',
                              '30', '35', '40', '45', '50', '55', '60']
         
         

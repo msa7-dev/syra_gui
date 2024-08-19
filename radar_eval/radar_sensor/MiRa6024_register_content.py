@@ -1647,13 +1647,13 @@ class BGT_CCR1:
 
     def get_fed_time(self) -> None:
         # T_FED = (TR_FED x 2^TR_FED_MUL x 8 + TR_FED_MUL +3) x TSYS_CLK
-        self.radar_param.sys.t_fed = np.uint32((np.uint32(self._TR_FED) * 2**np.uint32(self._TR_FED_MUL) * 8 + np.uint32(self._TR_FED_MUL) + 3) * (1/80e6))
+        self.radar_param.sys.t_fed = np.float32((np.uint32(self._TR_FED) * 2**np.uint32(self._TR_FED_MUL) * 8 + np.uint32(self._TR_FED_MUL) + 3) * (1/80e6))
 
     def set_fed_time(self, fed_time: np.float32) -> None:
         T_SYS_CLK = 1/(80*1e6)
         # Maximum TR_FED_MUL value (10 decimal)
         max_tr_fed_mul = 10
-
+        
         for tr_fed_mul in range(max_tr_fed_mul + 1):
             # Calculate the denominator part of the formula
             factor = 2**tr_fed_mul * 8 + tr_fed_mul + 3
@@ -1666,6 +1666,7 @@ class BGT_CCR1:
                 break
         self.TR_FED = np.uint8(tr_fed)
         self.TR_FED_MUL = np.uint8(tr_fed_mul)
+        self.get_fed_time()
 
     def convert_all_values(self):
         self.get_start_time()
@@ -1991,7 +1992,7 @@ class BGT_PLLX_2:
             self.radar_param.sys.t_ed[index] = 2 * (1/80e6)
         elif self._TR_EDU != 0 and index is not None:
             # If TR_EDU/D > 0: T_EDU/D = (8 x TR_EDU/D + 5) x TSYS_CLK.
-            self.radar_param.sys.t_ed[index] = np.uint32(8 * np.uint32(self._TR_EDU) + 5) * (1/80e6)
+            self.radar_param.sys.t_ed[index] = np.float32(8 * np.uint32(self._TR_EDU) + 5) * (1/80e6)
 
     def set_edu_time(self, edu_time: np.float32) -> None:
         T_SYS_CLK = 1 / (80 * 1e6)  # System clock period (12.5 ns)
@@ -2008,6 +2009,7 @@ class BGT_PLLX_2:
 
         # Convert TR_EDU to appropriate data type
         self.TR_EDU = np.uint8(tr_edu)
+        self.get_edu_time()
         
     def convert_all_values(self):
         self.get_edu_time()
@@ -2376,7 +2378,7 @@ class BGT_PLLX_7:
         if index is not None:
             # T_SED = (TR_SED x 2^TR_SED_MUL x 8 + TR_SED_MUL +3) x TSYS_CLK
             self.radar_param.sys.t_sed[index] = \
-                np.uint32(np.uint32(self._TR_SED) * 2**np.uint32(self._TR_SED_MUL) * 8 + np.uint32(self._TR_SED_MUL) + 3) * (1/80e6)
+                np.float32(np.uint32(self._TR_SED) * 2**np.uint32(self._TR_SED_MUL) * 8 + np.uint32(self._TR_SED_MUL) + 3) * (1/80e6)
 
 
     def set_sed_time(self, sed_time: np.float32) -> None:
@@ -2396,6 +2398,7 @@ class BGT_PLLX_7:
                 break
         self.TR_SED = np.uint8(tr_sed)
         self.TR_SED_MUL = np.uint8(tr_sed_mul)
+        self.get_sed_time()
     
     def convert_all_values(self):
         self.get_shape_repetition()

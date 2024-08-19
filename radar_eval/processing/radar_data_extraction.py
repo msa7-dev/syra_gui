@@ -81,7 +81,6 @@ class MIRA_DATA_EXTRACTOR():
             for header_match in header_matches:
                 header_values = np.asarray(mira_extract_raw_data.prefix_header_cy(
                     raw_fifo_data[header_match: header_match + 9]), np.uint32)
-
                 self.header_dict = {
                     'sync_word1': header_values[0],
                     'sync_word0': header_values[1],
@@ -160,6 +159,7 @@ class MIRA_DATA_EXTRACTOR():
                                                                  int(self.radar_param.sys.shape_set_repetition),  # Dim. 4 - Shape Set Repetition
                                                                  self.radar_param.sys.max_frame_cnt),  # Dim. 5
                                                                  dtype=np.uint16)
+                        
     def _update_header_dict_to_gui(self) -> None:
         if self.prefix_header_queue.empty():
             self.header_dict['temperature'] = self._convert_sadc_data(self.header_dict['sadc_val'])
@@ -169,6 +169,7 @@ class MIRA_DATA_EXTRACTOR():
     def _convert_sadc_data(self, sadc_val: np.uint16) -> np.float32:
         self.radar_param.mon.sadc_output_mode = 0
         self.radar_param.mon.sadc_gain = 1
+        
         if self.radar_param.mon.sadc_output_mode == 0:
             # Temperature Conversion BGT60ATR24 Datasheet: p. 92
             if sadc_val == 0:

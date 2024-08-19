@@ -33,7 +33,6 @@ class MIRA_DEVICE:
         
         self.set_spi_high_speed()
         self.set_header_prefix()
-        # self.init_radar_system_parameters()
 
     def init_device_content(self):
         self._main_reg = MIRA6024_CONTENT.BGT_MAIN(self)
@@ -167,7 +166,7 @@ class MIRA_DEVICE:
         if self.radar_param.sys.rf_test_mode_en:
             self._main_reg.FSM_RESET = 1
             self._adc0_reg.TRIG_MADC = 1
-        
+
         self._main_reg.FRAME_START = 1 # BGT start frame generation
         
     def activate_rf_test_mode(self) -> None:

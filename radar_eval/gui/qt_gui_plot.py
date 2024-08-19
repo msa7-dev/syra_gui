@@ -12,6 +12,7 @@ from radar_eval.radar_system.radar_system_definition import MIRA_RADAR_PARAMETER
 # ==============================================================================
 class MIRA_PLOTTER:
     def __init__(self, qt_self):
+        np.seterr(over='ignore')
         self.qt_self = qt_self
         self.radar_param: MIRA_RADAR_PARAMETER = qt_self.radar_param
         self.time_signal = TIME_SIGNAL_PLOTTER(qt_self)
@@ -19,6 +20,7 @@ class MIRA_PLOTTER:
         self.spectrogram = SPECTROGRAM_PLOTTER(qt_self)
         self.range_doppler = RANGE_DOPPLER_PLOTTER(qt_self)
         self.range_azimuth = RANGE_AZIMUTH_PLOTTER(qt_self)
+        
 
     def calc_plot_axis(self):
         padding_len = self.radar_param.dsp.padding_len
@@ -175,13 +177,17 @@ class TIME_SIGNAL_PLOTTER:
 
     def set_plot_limits(self, x_min_max: tuple, y_min_max: tuple):
         for plot in self.plot_time_list:
-            plot.setXRange(*x_min_max)
-            plot.setYRange(*y_min_max)
-
+            x_min, x_max = np.float32(x_min_max)
+            y_min, y_max = np.float32(y_min_max)
+            
+            if np.isfinite(x_min) and np.isfinite(x_max) and np.isfinite(y_min) and np.isfinite(y_max):
+                plot.setXRange(x_min, x_max)
+                plot.setYRange(y_min, y_max)
+            
     def reset_plot_lines(self):
         for _, plotline in self.plotlines.items():
             plotline.clear()
-            plotline.setData([-9999, -9999])  # Assuming this is how you wish to reset the lines
+            # plotline.setData([-9999, -9999])  # Assuming this is how you wish to reset the lines
 
 
 # ==============================================================================
@@ -258,13 +264,17 @@ class SPECTRUM_PLOTTER:
             self.plot_spectrum.setLabel("bottom", "Range in m")
 
     def set_plot_limits(self, x_min_max: tuple, y_min_max: tuple) -> None:
-        self.plot_spectrum.setXRange(*x_min_max)
-        self.plot_spectrum.setYRange(*y_min_max)
+            x_min, x_max = np.float32(x_min_max)
+            y_min, y_max = np.float32(y_min_max)
+
+            if np.isfinite(x_min) and np.isfinite(x_max) and np.isfinite(y_min) and np.isfinite(y_max):
+                self.plot_spectrum.setXRange(x_min, x_max)
+                self.plot_spectrum.setYRange(y_min, y_max)
 
     def reset_plot_lines(self):
         for name, plotline in self.plotlines.items():
             plotline.clear()
-            plotline.setData([-9999, -9999])
+            # plotline.setData([-9999, -9999])
         for name, marker in self.peak_markers.items():
             marker.clear()  # Clear peak markers
 
