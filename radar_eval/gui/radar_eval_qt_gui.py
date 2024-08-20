@@ -60,7 +60,7 @@ class MIRA_MAIN_GUI(QtWidgets.QMainWindow):
         self.fps_timer = None
         self.connect_timer = None
         self.update_gui_timer = None
-        self.frame_cnt = 0
+        self.frame_cnt = np.uint64(0)
         self.prev_frame_cnt = 0
         
         self.prev_processed_radar_data_shape = {'Channel 1': (2,2,2),
@@ -234,7 +234,7 @@ class MIRA_MAIN_GUI(QtWidgets.QMainWindow):
             if not self.mira_processor.update_gui_info_queue.empty():
                 update_info_dict = self.mira_processor.update_gui_info_queue.get_nowait()
                 self.radar_param.mon.temperature = float(update_info_dict['temperature'])
-                self.radar_param.mon.duration_frame_counter = str(update_info_dict['frame_cnt'])
+                self.radar_param.mon.duration_frame_counter = int(update_info_dict['frame_cnt'])
                 self.radar_param.mon.datarate = float(update_info_dict['datarate'])
             else:
                 return
@@ -246,14 +246,10 @@ class MIRA_MAIN_GUI(QtWidgets.QMainWindow):
             return
             
     def update_frame_cnt(self) -> None:
-        curr_frame_cnt = int(self.radar_param.mon.duration_frame_counter)
-        if self.prev_frame_cnt > curr_frame_cnt:
-            self.frame_cnt += ((4095-self.prev_frame_cnt) + curr_frame_cnt)
-        else:
-            self.frame_cnt += (curr_frame_cnt - self.prev_frame_cnt)
+        # Update the label to display the current frame count
+        self.frame_cnt += np.uint64(self.radar_param.sys.frames_per_second/2)
         self.label_frame_counter.setText(str(self.frame_cnt))
-        self.prev_frame_cnt = curr_frame_cnt
-            
+        
     
     def update_duration_time(self) -> None:
         self.current_time = time.time()

@@ -87,12 +87,12 @@ class MIRA_WIDGET_VALUES():
                                  'kaiser', 'bartlett', 'gaussian',
                                  'flattop', 'chebyshev', 'lanczos', 'None']
         
-        self.padding_len_list = ['0', '2', '4', '8', '16', '32', '64', '128', 
+        self.padding_len_list = ['512', '0', '2', '4', '8', '16', '32', '64', '128', 
                                  '256', '512', '1024', '2048', '4096', '8192']
         
         self.vga_gain_list = ['0 dB', '5 dB', '10 dB', '15 dB', '20 dB', '25 dB', '30 dB']
         
-        self.bgt_hp_fc_list = ['20 kHz', '45 kHz', '70 kHz', '80 kHz']
+        self.bgt_hp_fc_list = ['45 kHz', '20 kHz', '45 kHz', '70 kHz', '80 kHz']
         
         self.bgt_hp_gain_list = ['18 dB', '30 dB']
         
@@ -100,7 +100,7 @@ class MIRA_WIDGET_VALUES():
         
         self.dsp_hp_filter_type_list = ['sos', 'ba', 'None']
         
-        self.dsp_hp_filter_cutoff_list = ['20 kHz', '5 kHz', '10 kHz', '15 kHz', '20 kHz', '25 kHz', 
+        self.dsp_hp_filter_cutoff_list = ['50 kHz', '5 kHz', '10 kHz', '15 kHz', '20 kHz', '25 kHz', 
                                           '30 kHz', '35 kHz', '40 kHz', '45 kHz', '50 kHz',
                                           '55 kHz', '60 kHz', '65 kHz', '70 kHz', '75 kHz',
                                           '80 kHz', '85 kHz', '95 kHz', '100 kHz', '0 kHz']
@@ -180,7 +180,7 @@ class MIRA_WIDGET_VALUES():
                                          '60.00 GHz', '59.75 GHz', '59.50 GHz', '59.25 GHz', 
                                          '59.00 GHz', '58.75 GHz', '58.50 GHz', '58.25 GHz', ] 
 
-        self.set_chirp_samples_list = ['64', '128', '256', '512', '1024', '2048']
+        self.set_chirp_samples_list = ['256', '64', '128', '256', '512', '1024', '2048']
         
         self.set_chirp_end_delay_list = ['10.0375 µs', '25.0375 µs', '50.0500 µs', '100.0620 µs', 
                                          '249.7120 µs', '499.3250 µs', '748.9130 µs', '998.538 µs']
@@ -191,7 +191,7 @@ class MIRA_WIDGET_VALUES():
         self.set_shape_end_delay_list = ['10.0375 µs', '25.0375 µs', '50.0500 µs', '100.0620 µs', 
                                          '249.7120 µs', '499.3250 µs', '748.9130 µs', '998.538 µs']
         
-        self.set_shape_set_repetition_list = ['1', '2', '4', '8', '16', '32', 
+        self.set_shape_set_repetition_list = ['64', '1', '2', '4', '8', '16', '32', 
                                               '64', '128', '256', '512', '1024']
         
         self.set_shape_set_end_delay_list = ['249.7120 µs', '499.3250 µs', '748.9130 µs', '998.538 µs',

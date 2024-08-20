@@ -1545,7 +1545,7 @@
                </font>
               </property>
               <property name="text">
-               <string>Duration time:</string>
+               <string>Record time:</string>
               </property>
               <property name="textFormat">
                <enum>Qt::AutoText</enum>
@@ -4788,7 +4788,7 @@
                <number>31</number>
               </property>
               <property name="value">
-               <number>31</number>
+               <number>16</number>
               </property>
              </widget>
             </item>

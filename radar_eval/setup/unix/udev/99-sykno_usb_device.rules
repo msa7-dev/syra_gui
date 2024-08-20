@@ -4,7 +4,7 @@
 #   $ sudo udevadm control --reload-rules && sudo udevadm trigger
 
 # MiRa6024 USB 2.0 HS interface 
-ACTION=="add", ATTRS{idVendor}=="1337", ATTRS{idProduct}=="6024", MODE="0666", TAG+="uaccess", RUN+="echo Fuck Yeah"
+ACTION=="add", ATTRS{idVendor}=="1337", ATTRS{idProduct}=="6024", MODE="0666", TAG+="uaccess"
 
 # MiRa6013 USB 2.0 HS interface 
 ACTION=="add", ATTRS{idVendor}=="1337", ATTRS{idProduct}=="6013", MODE="0666", TAG+="uaccess"

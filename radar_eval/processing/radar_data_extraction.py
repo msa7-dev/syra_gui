@@ -51,8 +51,10 @@ class MIRA_DATA_EXTRACTOR():
 
         USB_SPI_BRIDGE_DATA_ALLOCATION = np.uint32(self.config.get("MIRA_USB_SPI_BRIDGE",
                                                                    f"USB_SPI_BRIDGE_DATA_ALLOCATION_{self.radar_param.mon.sykno_product_name}"))
-        DATA_ALLOCATION = np.uint32(np.uint32(USB_SPI_BRIDGE_DATA_ALLOCATION) + np.uint32(self.radar_param.sys.n_fifo_overhead) * 9)
-
+        overhead = np.multiply(self.radar_param.sys.n_fifo_overhead, 9, dtype=np.uint8)
+        DATA_ALLOCATION = np.uint32(USB_SPI_BRIDGE_DATA_ALLOCATION + overhead)
+        
+        
         self.package_chirp_header_index_distance = np.uint32(
             self.radar_param.sys.n_samples_per_chirp[0] *
             (self.radar_param.sys.rx_active_antennas[0] /
@@ -110,8 +112,8 @@ class MIRA_DATA_EXTRACTOR():
 
                 cs_index = self.header_dict['cs']
                 shape_grp_cnt_index = np.uint16(self.header_dict['shape_grp_cnt'] / sum(self.radar_param.sys.tx_active_antennas))
-                frame_cnt_index = frame_cnt
 
+                frame_cnt_index = frame_cnt
                 key = (cs_index, shape_grp_cnt_index, frame_cnt_index)
 
                 if key not in accumulated_data:
