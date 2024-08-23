@@ -1227,7 +1227,6 @@ class MIRA_GUI_CTRL():
             self.qt_self.mira_processor.process_param_queue.put(self.build_process_param_queue())
 
     def activate_boot_mode(self):
-        return
         self.qt_self.mira_controller.mira_device.mira_bridge.spi_activate_boot_mode()
         time.sleep(1)
         self.qt_self.start_auto_connect()

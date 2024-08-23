@@ -81,12 +81,12 @@ DIVSET           |      20      |     0x14     |   0b10100
 _____________________________________________________________
 
 SFCTL (0x6):
-Register Value:  0x1517ff
+Register Value:  0x1537ff
 Register Symbol  | Value (dec)  | Value (hex)  | Value (bin) 
 _____________________________________________________________
 PREFIX_EN        |      1       |     0x1      |     0b1     
 MISO_HS_RD       |      1       |     0x1      |     0b1     
-FIFO_LP_MODE     |      0       |     0x0      |     0b0     
+FIFO_LP_MODE     |      1       |     0x1      |     0b1     
 LFSR_EN          |      0       |     0x0      |     0b0     
 QSPI_WT          |      1       |     0x1      |     0b1     
 FIFO_CREF        |     6143     |    0x17ff    | 0b1011111111111
@@ -155,14 +155,14 @@ TX1_EN           |      0       |     0x0      |     0b0
 _____________________________________________________________
 
 CSU1_0 (0x10):
-Register Value:  0x10fc51
+Register Value:  0x13fc51
 Register Symbol  | Value (dec)  | Value (hex)  | Value (bin) 
 _____________________________________________________________
 BBCHGLOB_EN      |      1       |     0x1      |     0b1     
 RX4MIX_EN        |      0       |     0x0      |     0b0     
 RX4LOBUF_EN      |      0       |     0x0      |     0b0     
-RX3MIX_EN        |      0       |     0x0      |     0b0     
-RX3LOBUF_EN      |      0       |     0x0      |     0b0     
+RX3MIX_EN        |      1       |     0x1      |     0b1     
+RX3LOBUF_EN      |      1       |     0x1      |     0b1     
 RX2MIX_EN        |      1       |     0x1      |     0b1     
 RX2LOBUF_EN      |      1       |     0x1      |     0b1     
 RX1MIX_EN        |      1       |     0x1      |     0b1     
@@ -371,10 +371,10 @@ TX1_DAC          |      0       |     0x0      |     0b0
 _____________________________________________________________
 
 CSU1_1 (0x11):
-Register Value:  0x3f1610
+Register Value:  0x7f1610
 Register Symbol  | Value (dec)  | Value (hex)  | Value (bin) 
 _____________________________________________________________
-BBCH_SEL         |      3       |     0x3      |     0b11    
+BBCH_SEL         |      7       |     0x7      |    0b111    
 BB_RSTCNT        |     120      |     0x78     |  0b1111000  
 TEMP_MEAS_EN     |      1       |     0x1      |     0b1     
 MADC_EN          |      1       |     0x1      |     0b1     

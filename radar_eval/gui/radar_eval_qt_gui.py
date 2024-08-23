@@ -248,7 +248,7 @@ class MIRA_MAIN_GUI(QtWidgets.QMainWindow):
     def update_frame_cnt(self) -> None:
         # Update the label to display the current frame count
         self.frame_cnt += np.uint64(self.radar_param.sys.frames_per_second/2)
-        self.label_frame_counter.setText(str(self.frame_cnt))
+        self.label_frame_counter.setText(str(np.uint64(self.frame_cnt)))
         
     
     def update_duration_time(self) -> None:

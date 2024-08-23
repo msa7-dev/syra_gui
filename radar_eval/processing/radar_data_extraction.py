@@ -48,18 +48,17 @@ class MIRA_DATA_EXTRACTOR():
                                                  int(self.radar_param.sys.shape_set_repetition),  # Dim. 4 - Shape Set Repetition
                                                  self.radar_param.sys.max_frame_cnt),  # Dim. 5
                                                  dtype=np.uint16)
-
+        
         USB_SPI_BRIDGE_DATA_ALLOCATION = np.uint32(self.config.get("MIRA_USB_SPI_BRIDGE",
                                                                    f"USB_SPI_BRIDGE_DATA_ALLOCATION_{self.radar_param.mon.sykno_product_name}"))
         overhead = np.multiply(self.radar_param.sys.n_fifo_overhead, 9, dtype=np.uint8)
         DATA_ALLOCATION = np.uint32(USB_SPI_BRIDGE_DATA_ALLOCATION + overhead)
-        
-        
+
         self.package_chirp_header_index_distance = np.uint32(
             self.radar_param.sys.n_samples_per_chirp[0] *
             (self.radar_param.sys.rx_active_antennas[0] /
              sum(self.radar_param.sys.tx_active_antennas)) * self.radar_param.sys.allocation_factor + 9)
-
+        
         header_matches = list()
         for n_headers in range(np.uint32(DATA_ALLOCATION / self.package_chirp_header_index_distance)):
             header_matches.append(self.package_chirp_header_index_distance * n_headers)
@@ -76,10 +75,11 @@ class MIRA_DATA_EXTRACTOR():
             else:
                 time.sleep(20e-6)
                 continue
+            
             self.data_values.append((raw_fifo_data.shape[0] * 8) / (time.time() - start_time))
             self.data_values = self.data_values[-256:]
             start_time = time.time()
-
+            
             for header_match in header_matches:
                 header_values = np.asarray(mira_extract_raw_data.prefix_header_cy(
                     raw_fifo_data[header_match: header_match + 9]), np.uint32)
@@ -98,8 +98,8 @@ class MIRA_DATA_EXTRACTOR():
 
                 self._update_header_dict_to_gui()
                 curr_frame_cnt = np.uint16(self.header_dict['frame_cnt'])
-
                 raw_data_slice = raw_fifo_data[header_match + 9: header_match + self.package_chirp_header_index_distance]
+
                 data_field = np.asarray(mira_extract_raw_data.extract_raw_data_cy(
                     raw_data_slice,
                     raw_data_slice.shape[0],

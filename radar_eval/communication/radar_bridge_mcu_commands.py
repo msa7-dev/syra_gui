@@ -4,6 +4,7 @@
 class MIRA_MCU_COMMANDS():
     def __init__(self) -> None:
         self.read_cmd = 0x22
+        self.flash_cmd = 0xCC
         self.write_cmd = 0x44
         self.read_n_cmd = 0x33
         self.stm_rst_cmd = 0xEE

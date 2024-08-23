@@ -190,14 +190,21 @@ class MIRA_DATA_PROCESSOR():
             return np.asarray((np.divide(raw_radar_data_cube, np.power(2, 12)-1) * 1200), dtype=np.float32)[:,:,0]
 
     def _prepare_time_output_format(self, data: np.ndarray) ->  dict:
+        if self.radar_param.mon.sykno_product_name == 'SY60I11':
+            index = 1
+        elif self.radar_param.mon.sykno_product_name == 'SY60I13':
+            index = 3
+        elif self.radar_param.mon.sykno_product_name == 'MiRa6024I1A':
+            index = 4
+            
         if sum(self.radar_param.sys.n_active_shape) == 1:
             return {'Channel 1': data[:, 0:4],
                     'Channel 2': np.zeros((1,1,1), dtype=np.float32),
-                    'Channel 3': np.mean(data, axis=1, dtype=np.float32)}
+                    'Channel 3': np.mean(data[:,:index], axis=1, dtype=np.float32)}
         elif sum(self.radar_param.sys.n_active_shape) == 2:
             return {'Channel 1': data[:, 0:4],
                     'Channel 2': data[:, 4:8],
-                    'Channel 3': np.mean(data, axis=1, dtype=np.float32)}
+                    'Channel 3': np.mean(data[:,:index], axis=1, dtype=np.float32)}
 
     def _calc_rfft_channels_njit_wrapper(self, ch_data: np.ndarray) -> np.ndarray:
         return _calc_rfft_channels_njit(ch_data, self.padding_len)
@@ -275,17 +282,23 @@ class MIRA_DATA_PROCESSOR():
         
         # for n_shape in range(ch_data.shape[2]):
         # cfar = self.cfar_ca_1d(np.mean(np.mean(ch_data, axis=2, dtype=np.float32), axis=1, dtype=np.float32), 8, 4, -20)
-        
+        if self.radar_param.mon.sykno_product_name == 'SY60I11':
+            index = 1
+        elif self.radar_param.mon.sykno_product_name == 'SY60I13':
+            index = 3
+        elif self.radar_param.mon.sykno_product_name == 'MiRa6024I1A':
+            index = 4
+            
         if sum(self.radar_param.sys.n_active_shape) == 1:
             return {'Channel 1': np.mean(ch_data[:, 0:4,:], axis=2, dtype=np.float32),
                     'Channel 2': np.zeros((1,1,1), dtype=np.float32),
-                    'Channel 3': np.mean(np.mean(ch_data, axis=2, dtype=np.float32), axis=1, dtype=np.float32)}
+                    'Channel 3': np.mean(np.mean(ch_data[:,:index,:], axis=2, dtype=np.float32), axis=1, dtype=np.float32)}
         elif sum(self.radar_param.sys.n_active_shape) == 2:
             # peaks, _ = find_peaks(np.mean(np.mean(ch_data, axis=2, dtype=np.float32), axis=1, dtype=np.float32), height=-20)
             return {'Channel 1': np.mean(ch_data[:,0:4,:], axis=2, dtype=np.float32),
                     'Channel 2': np.mean(ch_data[:,4:8,:], axis=2, dtype=np.float32),
                     # 'Channel 3': cfar}
-                    'Channel 3': np.mean(np.mean(ch_data, axis=2, dtype=np.float32), axis=1, dtype=np.float32)}
+                    'Channel 3': np.mean(np.mean(ch_data[:,:index,:], axis=2, dtype=np.float32), axis=1, dtype=np.float32)}
     
     def _calc_spectogram(self, ch_data: np.ndarray) -> np.ndarray:
         try:
