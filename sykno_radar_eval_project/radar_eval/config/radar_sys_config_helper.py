@@ -1,5 +1,4 @@
 import __init__
-import os
 import configparser
 from pathlib import Path
 

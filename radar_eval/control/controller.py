@@ -31,8 +31,8 @@ class MIRA_CTRL_GUI:
             self.data_replayer = MIRA_DATA_REPLAYER()
         
         self.data_processor = MIRA_DATA_PROCESSOR(radar_param)
-        if self.radar_param.meas.measurement_flag and self.mira_device:
-            self.save_meas = MIRA_SAVE_MEAS(self.mira_device)
+        # if self.radar_param.meas.measurement_flag and self.mira_device:
+        #     self.save_meas = MIRA_SAVE_MEAS(self.mira_device)
 
     def reinit_controller(self, radar_param: MIRA_RADAR_PARAMETER) -> None:
         self.radar_param = radar_param

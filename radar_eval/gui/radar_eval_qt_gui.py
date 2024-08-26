@@ -85,8 +85,7 @@ class MIRA_MAIN_GUI(QtWidgets.QMainWindow):
     def init_gui_controller(self):
         self.radar_param = MIRA_RADAR_PARAMETER()
         self.gui_controller = MIRA_GUI_CTRL(self, self.radar_param)
-        
-        self.gui_controller.update_radar_params()
+        # self.gui_controller.update_radar_params()
 
         self.start_auto_connect()
         self.gui_version = self.config.get("DEFAULT", "VERSION")
@@ -98,9 +97,9 @@ class MIRA_MAIN_GUI(QtWidgets.QMainWindow):
             if self.mira_controller.mira_device is None:
                 self.mira_controller = None
                 return
-            # self.gui_controller.update_gui_sensor_detected()
+            self.gui_controller.update_gui_sensor_detected()
             self.gui_controller.update_sensor_settings(flag=False)            
-            self.mira_controller.reinit_controller(self.gui_controller.radar_param)
+            # self.mira_controller.reinit_controller(self.gui_controller.radar_param)
             self.mira_controller.mira_device.init_radar_system_parameters()
 
             self.firmware_version_label.setText(f"{self.radar_param.mon.product_usb.split('(')[1].replace(') |', '')}")
