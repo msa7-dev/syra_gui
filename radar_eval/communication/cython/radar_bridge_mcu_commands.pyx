@@ -1,6 +1,6 @@
 from libc.stdint cimport uint8_t
 
-cdef class MIRA_MCU_COMMANDS:
+cdef class SYRA_MCU_COMMANDS:
     cdef public uint8_t read_cmd
     cdef public uint8_t write_cmd
     cdef public uint8_t flash_cmd
@@ -30,7 +30,7 @@ cdef class MIRA_MCU_COMMANDS:
         self.set_dummy_cycles_cmd = 0x0A
         self.set_fifo_overhead_cmd = 0x1A
 
-cdef class MIRA_MCU_USB_DEF:
+cdef class SYRA_MCU_USB_DEF:
     cdef public uint8_t get_chip_id_rx_len
     cdef public uint8_t spi_read_reg_cmd_len
 

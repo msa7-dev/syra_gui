@@ -2,7 +2,7 @@ import __init__
 from enum import IntEnum
 
 """
-    File Name: mira6024_reg_def.py
+    File Name: syra6024_reg_def.py
     Author: Sykno GmbH
     Device: MiRa6024|1A
 """

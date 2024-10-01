@@ -2,9 +2,9 @@ from typing import Callable, Dict, List, Any
 
 Function = Callable[[None], None]
 # ==============================================================================
-# Class Name: MIRA_FUNC_PIPELINE
+# Class Name: SYRA_FUNC_PIPELINE
 # ==============================================================================
-class MIRA_FUNC_PIPELINE():
+class SYRA_FUNC_PIPELINE():
     def __init__(self, qt_self) -> None:
         self.qt_self = qt_self
         self._create_func_compose_dict()
@@ -63,9 +63,9 @@ class MIRA_FUNC_PIPELINE():
         }
         
 # ==============================================================================
-# Class Name: MIRA_WIDGET_VALUES
+# Class Name: SYRA_WIDGET_VALUES
 # ==============================================================================
-class MIRA_WIDGET_VALUES():
+class SYRA_WIDGET_VALUES():
     def __init__(self) -> None:
         self._create_values_combo_box()
         
@@ -180,7 +180,7 @@ class MIRA_WIDGET_VALUES():
                                          '60.00 GHz', '59.75 GHz', '59.50 GHz', '59.25 GHz', 
                                          '59.00 GHz', '58.75 GHz', '58.50 GHz', '58.25 GHz', ] 
 
-        self.set_chirp_samples_list = ['256', '64', '128', '256', '512', '1024', '2048']
+        self.set_chirp_samples_list = ['256','16', '32', '64', '128', '256', '512', '1024', '2048']
         
         self.set_chirp_end_delay_list = ['10.0375 µs', '25.0375 µs', '50.0500 µs', '100.0620 µs', 
                                          '249.7120 µs', '499.3250 µs', '748.9130 µs', '998.538 µs']

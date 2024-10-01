@@ -3,7 +3,7 @@
 # import time
 # import paramiko
 
-# class MIRA_TCP_CLIENT:
+# class SYRA_TCP_CLIENT:
 #     def __init__(self, host, port):
 #         self.host = host
 #         self.port = port
@@ -90,5 +90,5 @@
 #             print("Disconnected from server")
 
 # if __name__ == "__main__":
-#     client = MIRA_TCP_CLIENT('192.168.188.21', 12345)
+#     client = SYRA_TCP_CLIENT('192.168.188.21', 12345)
 #     client.connect()

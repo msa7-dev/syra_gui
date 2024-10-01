@@ -12,7 +12,7 @@ class BGT60TR13C_MAIN:
         self._SW_RESET = None  
         self._FRAME_START = None
         
-        self.usb_spi_bridge = device.mira_bridge
+        self.usb_spi_bridge = device.syra_bridge
         self.radar_param = device.radar_param
         self.REG_DEF = BGT_REG.MAIN_REG
     

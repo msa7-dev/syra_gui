@@ -7,7 +7,7 @@ import numpy as np
 import scipy.io as sio
 from loguru import logger
 
-class MIRA_HDF5_CTRL:
+class SYRA_HDF5_CTRL:
     def __init__(self, filename):
         self.filename = filename
         self.datasets = {}
@@ -16,9 +16,9 @@ class MIRA_HDF5_CTRL:
         self.delta_time = None
         self.shape = None
         self.timestamp = None
-        self.mira_config = None
-        self.mira_bgt_reg_content = None
-        self.mira_bgt_reg_content_readable = None
+        self.syra_config = None
+        self.syra_bgt_reg_content = None
+        self.syra_bgt_reg_content_readable = None
         self.radar_param = None
         # self.load_all_data()
 
@@ -34,7 +34,7 @@ class MIRA_HDF5_CTRL:
                 data = np.array(file[f'/Data/{dataset_name}'][:], dtype=np.float32)
                 self.datasets[dataset_name] = np.expand_dims(data, axis=0)
             if self.datasets:
-                self.mira_data_cube = np.concatenate(list(self.datasets.values()), axis=0)
+                self.syra_data_cube = np.concatenate(list(self.datasets.values()), axis=0)
 
     def load_metadata(self):
         with h5py.File(self.filename, 'r') as file:
@@ -223,8 +223,8 @@ class MIRA_HDF5_CTRL:
             for dataset_name in file[group_path]:
                 data = np.array(file[f'{group_path}/{dataset_name}'][:], dtype=dtype)
                 datasets.append(np.expand_dims(data, axis=0))
-        mira_data_cube = np.concatenate(datasets, axis=0)
-        return mira_data_cube
+        syra_data_cube = np.concatenate(datasets, axis=0)
+        return syra_data_cube
 
     def read_dataset_with_attributes(self, dataset_path):
 
@@ -250,7 +250,7 @@ class MIRA_HDF5_CTRL:
                         metadata[name] = {attr: item.attrs[attr] for attr in item.attrs}
         return metadata
 
-    def unpickle_metadata(self, metadata_path='Metadata/mira_radar_parameters/mira_radar_parameters'):
+    def unpickle_metadata(self, metadata_path='Metadata/syra_radar_parameters/syra_radar_parameters'):
 
         with h5py.File(self.filename, 'r') as file:
             if metadata_path in file:

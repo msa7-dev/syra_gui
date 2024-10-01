@@ -1,87 +1,50 @@
 import __init__
-import os
 import numpy as np
 import configparser
-from enum import IntEnum
 from pathlib import Path
+from enum import IntEnum
 from loguru import logger
-
+from typing import Any, Dict, Optional, Union
 import radar_eval.radar_sensor.MiRa6024_register_defintion as BGT_REG
 
-def check_sensor_register(instance) -> bool:
-    checker = False
+def check_sensor_register(instance: Any) -> bool:
+    """Check if all register values in the instance are set."""
     for content in instance.CONTENT:
-        content = getattr(instance, content)
-        # print(content.__dict__)
-        checker = all(value is not None for value in vars(instance).values())
-    return checker
+        content_instance = getattr(instance, content)
+        if not all(value is not None for value in vars(content_instance).values()):
+            return False
+    return True
 
-def status_overview(instance):
-    logger.debug_str = ""
+def status_overview(instance: Any) -> None:
+    """Generate a status overview of all registers in the instance."""
+    log_output = []
 
     for content in instance.CONTENT:
-        content = getattr(instance, content)    
-        try:
-            adr = content.REG_ADR
-        except:
-            adr = 0
-            for name, value in vars(content.REG_DEF).items():
-                if name.endswith('_ADR'):
-                    adr = value
-                    break
-        
-        logger.debug_str += (f"{adr.name[:-4]} ({hex(adr)}):\n")
-        logger.debug_str += (f"Register Value:  {hex(build_register_from_content(content))}\n")
-        format_str = f"{{:<16}} | {{:^12}} | {{:^12}} | {{:^12}}\n"
-        logger.debug_str += (format_str.format("Register Symbol", "Value (dec)", "Value (hex)", "Value (bin)"))
-        line_length = 16 + 3 * 3 + 3 * 12
-        logger.debug_str += ("_" * line_length + "\n")
-        format_str = f"{{:<16}} | {{:^12}} | {{:^12}} | {{:^12}}\n"
-        for attr_name in vars(content):
-            if attr_name.startswith("_"):
-                attr_value = getattr(content, attr_name[1:])
-                logger.debug_str += (format_str.format(
-                    attr_name[1:],  
-                    str(attr_value),
-                    hex(attr_value),
-                    bin(attr_value)
-                ))
-        logger.debug_str += ("_" * line_length + "\n\n")
-                
-    logger.debug(logger.debug_str)
+        content_instance = getattr(instance, content)
+        reg_adr = _get_register_address(content_instance)
+        log_output.append(f"{reg_adr.name[:-4]} ({hex(reg_adr)}):\n")
+        log_output.append(f"Register Value: {hex(build_register_from_content(content_instance))}\n")
+        log_output.append(_format_register_content(content_instance))
+    
+    logger.debug("\n".join(log_output))
 
-
-def build_register_from_content(instance):
-    # Create a dictionary of the register values
-    result = 0
+def build_register_from_content(instance: Any) -> np.uint32:
+    """Build a register value from the content of the instance."""
+    result = np.uint32(0)
     for name, member in instance.REG_DEF.__members__.items():
         if name.endswith("_ID"):
             field_name = name[:-3]  # Remove "_ID" from the end
             pos = np.uint32(getattr(instance.REG_DEF, f"{field_name}_POS"))
             mask = np.uint32(getattr(instance.REG_DEF, f"{field_name}_MSK"))
-            value = np.uint32(instance.CONTENT.get(f"_{field_name}", 0))
-            result |= ((value << pos) & mask)
-    return np.uint32(result)  # Ensure the result is a 24-bit integer
+            value = np.uint32(getattr(instance, f"_{field_name}", 0))
+            result |= (value << pos) & mask
+    return result
 
+def get_reg_def_data(instance: Any, field_id: BGT_REG) -> Dict[str, Union[IntEnum, np.uint32]]:
+    """Retrieve register definition data for a given field ID."""
+    field_name = _get_field_name_from_id(field_id)
+    reg_adr = _get_register_address(instance)
 
-def get_reg_def_data(instance, field_id: BGT_REG=None):
-    field_name = None
-    for name, member in field_id.__class__.__members__.items():
-        if member == field_id and name.endswith("_ID"):
-            field_name = name[:-3]  # Remove "_ID" from the end
-            break
-    if field_name is None:
-        raise ValueError(f"No field found with ID {field_id}")
-    
-    try:
-        reg_adr = instance.REG_ADR
-    except:
-        reg_adr = 0
-        for name, value in vars(instance.REG_DEF).items():
-            if name.endswith('_ADR'):
-                reg_adr = value
-                break
-    
     field_data = {
         "ADR": reg_adr,
         "ID": field_id,
@@ -92,161 +55,152 @@ def get_reg_def_data(instance, field_id: BGT_REG=None):
     }
     return field_data
 
-def set_bgt_dev_register(instance):
-    for attr in build_content(instance):
-        if attr == "usb_spi_bridge": break
+def set_bgt_dev_register(instance: Any) -> None:
+    """Set the BGT device registers based on the instance content."""
+    for attr_name in build_content(instance):
+        if attr_name == "usb_spi_bridge":
+            break
 
-        def_name = attr[1:]
-        id = getattr(instance.REG_DEF, f"{def_name}_ID")
+        def_name = attr_name[1:]
+        reg_id = getattr(instance.REG_DEF, f"{def_name}_ID")
+
+        reg_adr = getattr(instance, 'REG_ADR', None)
+        if reg_adr is not None:
+            new_value = get_reg_val(instance, reg_id, reg_adr)
+        else:
+            new_value = get_reg_val(instance, reg_id)
         
-        try:
-            new_value = get_reg_val(instance, id, instance.REG_ADR)
-        except:
-            new_value = get_reg_val(instance, id)
+        setattr(instance, attr_name, new_value)
 
-        setattr(instance, attr, new_value)
+def build_content(instance: Any) -> Dict[str, Any]:
+    """Build a dictionary of the instance content that starts with '_'."""
+    return {attr: getattr(instance, attr) for attr in vars(instance) if attr.startswith('_')}
 
-
-def build_content(instance):
-    content = {attr: getattr(instance, attr) for attr in vars(instance) \
-                if (not attr.startswith('__') and attr.startswith('_'))}
-    return content
-
-def extract_reg_symbol_value(reg: np.uint32, msk: np.uint32, pos: np.uint32):
+def extract_reg_symbol_value(reg: np.uint32, msk: np.uint32, pos: np.uint32) -> int:
+    """Extract a symbolic register value using mask and position."""
     return (reg & msk) >> pos
 
-def get_reg_val(instance, id: IntEnum, 
-                adr=None,
-                rxData=None) -> np.uint32:
-
-    field_data = get_reg_def_data(instance, id)
+def get_reg_val(instance: Any, reg_id: IntEnum, adr: Optional[IntEnum] = None, rxData: Optional[int] = None) -> np.uint32:
+    """Get the register value for a given ID."""
+    field_data = get_reg_def_data(instance, reg_id)
     if adr is None:
         adr = field_data["ADR"]
     if rxData is None:
-        adr, rxData = instance.usb_spi_bridge.spi_read_reg(adr)
-        rxData = int.from_bytes(rxData, byteorder='big')
+        adr, rx_data_bytes = instance.usb_spi_bridge.spi_read_reg(adr)
+        rxData = int.from_bytes(rx_data_bytes, byteorder='big')
 
     msk = field_data['MSK']
     pos = field_data['POS']
-    reg_val = extract_reg_symbol_value(rxData, msk, pos)
+    return np.uint32(extract_reg_symbol_value(rxData, msk, pos))
+
+def split_24_bit_to_bytes(num: int) -> list[int]:
+    """Split a 24-bit integer into three 8-bit bytes."""
+    return [(num >> shift) & 0xFF for shift in (16, 8, 0)]
+
+def set_reg_val(instance: Any) -> None:
+    """Set a register value using SPI."""
+    adr = _get_register_address(instance)
+    tx_data = build_register_from_content(instance)
+    tx_data_list = split_24_bit_to_bytes(tx_data)
+    instance.usb_spi_bridge.spi_write_reg_val(adr, tx_data_list)
+
+def generate_register_to_readable_txt(instance: Any, save_to_file: bool = True) -> str:
+    """Generate a readable text file representation of the register contents."""
+    result = []
+
+    for content in instance.CONTENT:
+        content_instance = getattr(instance, content)
+        reg_adr = _get_register_address(content_instance)
+        result.append(f"{reg_adr.name[:-4]} ({hex(reg_adr)}):\n")
+        result.append(f"Register Value: {hex(build_register_from_content(content_instance))}\n")
+        result.append(_format_register_content(content_instance))
     
-    return reg_val
+    result_str = "\n".join(result)
+    
+    if save_to_file:
+        filename = _get_configured_file_path("SYRA_REG_LOG_READABLE_TXT")
+        with open(filename, 'w') as file:
+            file.write(result_str)
+    
+    return result_str
 
-def split_24_bit_to_bytes(num):
-    byte1 = (num >> 16) & 0xFF
-    byte2 = (num >> 8) & 0xFF
-    byte3 = num & 0xFF
-    return [byte1, byte2, byte3]
+def generate_register_to_txt(instance: Any, save_to_file: bool = True) -> str:
+    """Generate a plain text file of the register contents."""
+    result = []
 
-def set_reg_val(instance):
+    for content in instance.CONTENT:
+        content_instance = getattr(instance, content)
+        reg_adr = _get_register_address(content_instance)
+        reg_value = build_register_from_content(content_instance)
+        result.append(f"reg {reg_adr:#04x} {reg_value:#08x}\n")
+    
+    result_str = "".join(result)
+    
+    if save_to_file:
+        filename = _get_configured_file_path("SYRA_REG_LOG_TXT")
+        with open(filename, 'w') as file:
+            file.write(result_str)
+    
+    return result_str
+
+def clear_log_file() -> None:
+    """Clear the log files."""
+    file_path = _get_configured_file_path("SYRA_REG_LOG_TXT")
+    file_path_readable = _get_configured_file_path("SYRA_REG_LOG_READABLE_TXT")
+
+    _clear_file(file_path)
+    _clear_file(file_path_readable)
+
+def _get_register_address(instance: Any) -> Optional[IntEnum]:
+    """Helper function to get the register address from the instance."""
     try:
-        adr = instance.REG_ADR
-    except:
-        adr = 0
+        return instance.REG_ADR
+    except AttributeError:
+        # Fallback to find the register address in REG_DEF
         for name, value in vars(instance.REG_DEF).items():
             if name.endswith('_ADR'):
-                adr = value
-                break
+                return value
+        raise AttributeError("Register address not found in instance or REG_DEF")
 
-    txData = build_register_from_content(instance)
-    txData_list = [np.uint8(txData >> 16), np.uint8(txData >> 8), np.uint8(txData >> 0)]
-    # print(hex(adr), txData_list)
-    instance.usb_spi_bridge.spi_write_reg_val(adr, txData_list)
+def _get_field_name_from_id(field_id: IntEnum) -> str:
+    """Helper function to get the field name from the field ID."""
+    for name, member in field_id.__class__.__members__.items():
+        if member == field_id and name.endswith("_ID"):
+            return name[:-3]  # Remove "_ID" from the end
+    raise ValueError(f"No field found with ID {field_id}")
 
-
-def generate_register_to_readable_txt(instance, save_to_file=True):    
-    result = ""  # Initialize an empty string to store the file content
-    
-    for content in instance.CONTENT:
-        content = getattr(instance, content)
-        try:
-            adr = content.REG_ADR
-        except:
-            adr = 0
-            for name, value in vars(content.REG_DEF).items():
-                if name.endswith('_ADR'):
-                    adr = value
-                    break
-        result += f"{adr.name[:-4]} ({hex(adr)}):\n"
-        result += f"Register Value:  {hex(build_register_from_content(content))}\n"
-
-        format_str = f"{{:<16}} | {{:^12}} | {{:^12}} | {{:^12}}\n"
-        result += format_str.format("Register Symbol", "Value (dec)", "Value (hex)", "Value (bin)")
-        line_length = 16 + 3 * 3 + 3 * 12
-        result += "_" * line_length + "\n"
-        format_str = f"{{:<16}} | {{:^12}} | {{:^12}} | {{:^12}}\n"
-
-        for attr_name in vars(content):
-            if attr_name.startswith("_"):
-                attr_value = getattr(content, attr_name[1:])
-                result += format_str.format(
-                    attr_name[1:],  
-                    str(attr_value),
-                    hex(attr_value),
-                    bin(attr_value)
-                )
-        result += "_" * line_length + "\n\n"
-    
-    if save_to_file:
-        config = configparser.ConfigParser()
-        config.read(__init__.MIRA_SYS_CONFIG_PATH)
-        filename = Path(config.get("MIRA_BGT_SETTINGS", "MIRA_REG_LOG_READABLE_TXT")).resolve()
-        with open(filename, 'w') as file:
-            file.write(result)
-    
-    return result  # Return the complete file content as a string if save_to_file is False
-
-
-def generate_register_to_txt(instance, save_to_file=True):
-    result = ""  # Initialize an empty string to store the file content
-    
-    for content in instance.CONTENT:
-        content = getattr(instance, content)
-        try:
-            adr = content.REG_ADR
-        except:
-            adr = 0
-            for name, value in vars(content.REG_DEF).items():
-                if name.endswith('_ADR'):
-                    adr = value
-                    break
-
-        register_value = build_register_from_content(content)
-        result += f"reg {adr:#04x} "
-        result += f"{register_value:#08x}\n"
-    
-    if save_to_file:
-        config = configparser.ConfigParser()
-        config.read(__init__.MIRA_SYS_CONFIG_PATH)
-        filename = Path(config.get("MIRA_BGT_SETTINGS", "MIRA_REG_LOG_TXT")).resolve()
-        with open(filename, 'w') as file:
-            file.write(result)
-    
-    return result  # Return the complete file content as a string if save_to_file is False
-
-
-def clear_log_file():
+def _get_configured_file_path(config_key: str) -> Path:
+    """Helper function to get a file path from the configuration."""
     config = configparser.ConfigParser()
-    config.read(__init__.MIRA_SYS_CONFIG_PATH)
-    file_path = Path(config.get("MIRA_BGT_SETTINGS", 
-                                "MIRA_REG_LOG_TXT")).resolve()
-    file_path_readable = Path(config.get("MIRA_BGT_SETTINGS", 
-                                         "MIRA_REG_LOG_READABLE_TXT")).resolve()
+    config.read(__init__.SYRA_SYS_CONFIG_PATH)
+    return Path(config.get("SYRA_BGT_SETTINGS", config_key)).resolve()
 
-    # Check if the file exists before attempting to remove it
-    if os.path.exists(file_path):
-        os.remove(file_path)
+def _format_register_content(content_instance: Any) -> str:
+    """Helper function to format the content of a register for logging."""
+    format_str = "{:<16} | {:^12} | {:^12} | {:^12}\n"
+    line_length = 16 + 3 * 3 + 3 * 12
+    formatted_content = []
+    formatted_content.append(format_str.format("Register Symbol", "Value (dec)", "Value (hex)", "Value (bin)"))
+    formatted_content.append("_" * line_length)
+
+    for attr_name in vars(content_instance):
+        if attr_name.startswith("_"):
+            attr_value = getattr(content_instance, attr_name[1:])
+            formatted_content.append(format_str.format(
+                attr_name[1:],  
+                str(attr_value),
+                hex(attr_value),
+                bin(attr_value)
+            ))
+    
+    formatted_content.append("_" * line_length + "\n")
+    return "\n".join(formatted_content)
+
+def _clear_file(file_path: Path) -> None:
+    """Helper function to clear or remove a file."""
+    if file_path.exists():
+        file_path.unlink()
         logger.debug(f"\nFile '{file_path}' removed successfully.")
     else:
-        with open(file_path, "w") as file:
-            file.write("")
-        file.close()
-    
-    if os.path.exists(file_path_readable):
-        os.remove(file_path_readable)
-        logger.debug(f"\nFile '{file_path_readable}' removed successfully.")
-    else:
-        with open(file_path_readable, "w") as file:
-            file.write("")
-        file.close()
-        
+        file_path.touch()
+        logger.debug(f"\nFile '{file_path}' created successfully.")

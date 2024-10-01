@@ -29,10 +29,10 @@ $ sudo python3 -m pip install -r ./requirements.txt
 
 ### Start MiRa Eval GUI:
 ```sh
-$ sudo python3 sykno_cli mira-gui
+$ sudo python3 sykno_cli syra-gui
 ```
 
 ### Build MiRa Eval GUI as one-file-executable via nuitka
 ```sh
-$  nuitka3 --standalone --onefile --enable-plugin=pyqt5 --output-dir=./mira_build ./mira_installer.py
+$  nuitka3 --standalone --onefile --enable-plugin=pyqt5 --output-dir=./syra_build ./syra_installer.py
 ```

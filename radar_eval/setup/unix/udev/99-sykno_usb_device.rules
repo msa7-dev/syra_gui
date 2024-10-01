@@ -1,18 +1,23 @@
-# UDEV Rules for Sykno MiRa (STM32 MCU)
+# UDEV rules for Sykno radar evaluation boards (STM32 MCU)
 # copy this file to /etc/udev/rules.d/99-sykno_usb_device.rules
 # reload rules:
 #   $ sudo udevadm control --reload-rules && sudo udevadm trigger
 
-# MiRa6024 USB 2.0 HS interface 
-ACTION=="add", ATTRS{idVendor}=="1337", ATTRS{idProduct}=="6024", MODE="0666", TAG+="uaccess"
+# MiRa6024 - USB 2.0 HS interface 
+SUBSYSTEM=="usb", ACTION=="add", ATTRS{idVendor}=="1337", ATTRS{idProduct}=="6024", MODE="0666", TAG+="uaccess"
 
-# MiRa6013 USB 2.0 HS interface 
-ACTION=="add", ATTRS{idVendor}=="1337", ATTRS{idProduct}=="6013", MODE="0666", TAG+="uaccess"
-# MiRa6011 USB 2.0 HS interface 
-ACTION=="add", ATTRS{idVendor}=="1337", ATTRS{idProduct}=="6011", MODE="0666", TAG+="uaccess"
+# SY60I13 - USB 2.0 HS interface 
+SUBSYSTEM=="usb", ACTION=="add", ATTRS{idVendor}=="1337", ATTRS{idProduct}=="6013", MODE="0666", TAG+="uaccess"
+
+# SY60I11 - USB 2.0 HS interface 
+SUBSYSTEM=="usb", ACTION=="add", ATTRS{idVendor}=="1337", ATTRS{idProduct}=="6011", MODE="0666", TAG+="uaccess"
+
+# ERROR 404 - Sensor Not Found - USB 2.0 HS interface 
+SUBSYSTEM=="usb", ACTION=="add", ATTRS{idVendor}=="1337", ATTRS{idProduct}=="e404", MODE="0666", TAG+="uaccess"
 
 
-# FTDI234XD-R USB to UART bridge for incircuit firmware update via USB
+# FTDI234XD-R - USB 2.0 HS to UART bridge for incircuit firmware update via USB
 ACTION=="add", ATTRS{idVendor}=="0403", ATTRS{idProduct}=="6015", MODE="0666", TAG+="uaccess"
 
  
+

@@ -32,6 +32,6 @@ else
     fi
 fi
 
-sudo apt-get install hdf5-tools
+sudo apt-get install hdf5-tools tree
 sudo chmod u+x ./*.bin
 echo "Done"

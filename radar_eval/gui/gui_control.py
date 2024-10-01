@@ -14,28 +14,28 @@ from PyQt5.QtGui import QPalette, QColor
 from PyQt5.QtGui import QLinearGradient, QColor, QBrush, QFont
 from PyQt5.QtWidgets import QGraphicsScene, QGraphicsRectItem, QGraphicsTextItem
 
-from radar_eval.gui.qt_gui_plot import MIRA_PLOTTER
-from radar_eval.gui.qt_gui_direcotry_browser import MIRA_BROWSER
-from radar_eval.gui.gui_config import MIRA_WIDGET_VALUES, MIRA_FUNC_PIPELINE
-from radar_eval.radar_system.radar_system_definition import MIRA_RADAR_PARAMETER
+from radar_eval.gui.qt_gui_plot import SYRA_PLOTTER
+from radar_eval.gui.qt_gui_direcotry_browser import SYRA_BROWSER
+from radar_eval.gui.gui_config import SYRA_WIDGET_VALUES, SYRA_FUNC_PIPELINE
+from radar_eval.radar_system.radar_system_definition import SYRA_RADAR_PARAMETER
 
 # ==============================================================================
-# Class Name: MIRA_GUI_CTRL
+# Class Name: SYRA_GUI_CTRL
 # ==============================================================================
-class MIRA_GUI_CTRL():
-    def __init__(self, qt_self, radar_param: MIRA_RADAR_PARAMETER) -> None:
+class SYRA_GUI_CTRL():
+    def __init__(self, qt_self, radar_param: SYRA_RADAR_PARAMETER) -> None:
         self.config = configparser.ConfigParser()
-        self.config.read(__init__.MIRA_SYS_CONFIG_PATH)
+        self.config.read(__init__.SYRA_SYS_CONFIG_PATH)
 
         self.qt_self = qt_self
-        self.radar_param: MIRA_RADAR_PARAMETER = radar_param
+        self.radar_param: SYRA_RADAR_PARAMETER = radar_param
         self.prev_select_axis_x = ''
-        self.widget_values = MIRA_WIDGET_VALUES()
-        self.bgt_reg_browser = MIRA_BROWSER(self.qt_self, "bgt_reg_browser")
-        self.meas_in_path_browser = MIRA_BROWSER(self.qt_self, "mira_meas_in_browser")
-        self.meas_out_path_browser = MIRA_BROWSER(self.qt_self, "mira_meas_out_browser")
-        self.mira_plotter = MIRA_PLOTTER(self.qt_self)
-        self.update_pipeline = MIRA_FUNC_PIPELINE(self.qt_self)
+        self.widget_values = SYRA_WIDGET_VALUES()
+        self.bgt_reg_browser = SYRA_BROWSER(self.qt_self, "bgt_reg_browser")
+        self.meas_in_path_browser = SYRA_BROWSER(self.qt_self, "syra_meas_in_browser")
+        self.meas_out_path_browser = SYRA_BROWSER(self.qt_self, "syra_meas_out_browser")
+        self.syra_plotter = SYRA_PLOTTER(self.qt_self)
+        self.update_pipeline = SYRA_FUNC_PIPELINE(self.qt_self)
         self.radar_param.sys.curr_plot_ampl_limit = 0 
 
         self.init_gui_widgets()
@@ -64,8 +64,8 @@ class MIRA_GUI_CTRL():
         self.get_gui_fps()
 
         self.handle_usb_auto_connect_state()
-        self.set_mira_session_label()
-        self.set_mira_project()
+        self.set_syra_session_label()
+        self.set_syra_project()
         self.init_connect_slider()
         self.set_color_bar_graphics()
         
@@ -77,7 +77,7 @@ class MIRA_GUI_CTRL():
         self.bgt_reg_browser.reinit(f"{self.radar_param.mon.sykno_product_name}")
         self.meas_in_path_browser.reinit(f"{self.radar_param.mon.sykno_product_name}")
         self.meas_out_path_browser.reinit(f"{self.radar_param.mon.sykno_product_name}")
-        self.mira_plotter = MIRA_PLOTTER(self.qt_self)
+        self.syra_plotter = SYRA_PLOTTER(self.qt_self)
         self.handle_sensor_state()
 
     def init_connect_buttons(self):
@@ -89,8 +89,8 @@ class MIRA_GUI_CTRL():
         self.qt_self.browse_register_path_button.clicked.connect(self.bgt_reg_browser_open_path_browser)
         self.qt_self.browse_meas_in_path_button.clicked.connect(self.meas_in_path_browser_open_path_browser)
         self.qt_self.browse_meas_out_path_button.clicked.connect(self.meas_out_path_browser_open_path_browser)
-        self.qt_self.mira_project_button.clicked.connect(self.set_mira_project)
-        self.qt_self.browse_meas_data_label_button.clicked.connect(self.set_mira_session_label)
+        self.qt_self.syra_project_button.clicked.connect(self.set_syra_project)
+        self.qt_self.browse_meas_data_label_button.clicked.connect(self.set_syra_session_label)
         self.qt_self.activate_boot_mode_button.clicked.connect(self.activate_boot_mode)
         self.qt_self.usb_device_connect_button.clicked.connect(self.qt_self.auto_connect_device)
         # self.qt_self.load_default_tcp_settings_button.clicked.connect(self.set_remote_tcp_default_settings)
@@ -500,14 +500,14 @@ class MIRA_GUI_CTRL():
         else:
             self.qt_self.usb_device_connected_label.setText(f'No Device')
         
-    def set_mira_project(self) -> None:
-        mira_project = self.qt_self.mira_project_plainTextEdit.toPlainText()
-        self.radar_param.gui.project_name = str(mira_project)
-        self.bgt_reg_browser.reinit(mira_project)
-        self.meas_in_path_browser.reinit(mira_project)
-        self.meas_out_path_browser.reinit(mira_project)
+    def set_syra_project(self) -> None:
+        syra_project = self.qt_self.syra_project_plainTextEdit.toPlainText()
+        self.radar_param.gui.project_name = str(syra_project)
+        self.bgt_reg_browser.reinit(syra_project)
+        self.meas_in_path_browser.reinit(syra_project)
+        self.meas_out_path_browser.reinit(syra_project)
 
-    def set_mira_session_label(self) -> None:
+    def set_syra_session_label(self) -> None:
         self.radar_param.meas.session_label = self.qt_self.session_label_plainTextEdit.toPlainText()
               
     def reinit_qt_widget_plots(self) -> None:
@@ -519,19 +519,19 @@ class MIRA_GUI_CTRL():
         time_axis_max = self.radar_param.sys.ramp_time[0]
 
         if self.tab_name_main_instance_window == 'Time':
-            self.mira_plotter.time_signal.set_plot_limits((0, np.float32(time_axis_max*1e6)), 
+            self.syra_plotter.time_signal.set_plot_limits((0, np.float32(time_axis_max*1e6)), 
                                                           (self.radar_param.sys.plot_ampl_limit_min[self.radar_param.sys.curr_plot_ampl_limit], 
                                                            self.radar_param.sys.plot_ampl_limit_max[self.radar_param.sys.curr_plot_ampl_limit]))
         
         if self.tab_name_main_instance_window == 'Spectrum':
-            self.mira_plotter.spectrum.set_plot_limits((0, np.float32(plot_axis_max_value)), 
+            self.syra_plotter.spectrum.set_plot_limits((0, np.float32(plot_axis_max_value)), 
                                                        (np.float32(self.radar_param.sys.plot_ampl_limit_min[self.radar_param.sys.curr_plot_ampl_limit]), 
                                                         np.float32(self.radar_param.sys.plot_ampl_limit_max[self.radar_param.sys.curr_plot_ampl_limit])))
         
         if self.tab_name_main_instance_window == 'Waterfall Spectrogram' or \
            self.tab_name_main_instance_window == 'Waterfall Azimuth' or \
            self.tab_name_main_instance_window == 'Demo':
-                self.mira_plotter.spectrogram.set_transform(
+                self.syra_plotter.spectrogram.set_transform(
                     (0, plot_axis_max_value),
                     (-self.radar_param.sys.waterfall_spectrogram_time, 0),
                     (np.float32(self.radar_param.sys.plot_ampl_limit_min[3]),
@@ -542,7 +542,7 @@ class MIRA_GUI_CTRL():
         if self.tab_name_main_instance_window == 'Range Doppler' or \
            self.tab_name_main_instance_window == 'Range Doppler Azimuth' or \
            self.tab_name_main_instance_window == 'Demo':
-            self.mira_plotter.range_doppler.set_transform((0, plot_axis_max_value),
+            self.syra_plotter.range_doppler.set_transform((0, plot_axis_max_value),
                                                           (-self.radar_param.sys.max_velocity[0],
                                                            self.radar_param.sys.max_velocity[0]),
                                                           (np.float32(self.radar_param.sys.plot_ampl_limit_min[4]),
@@ -555,7 +555,7 @@ class MIRA_GUI_CTRL():
            self.tab_name_main_instance_window == 'Waterfall Azimuth' or \
            self.tab_name_main_instance_window == 'Range Doppler Azimuth' or \
            self.tab_name_main_instance_window == 'Demo':   
-            self.mira_plotter.range_azimuth.set_transform((0, plot_axis_max_value), 
+            self.syra_plotter.range_azimuth.set_transform((0, plot_axis_max_value), 
                                                           (-plot_axis_max_value, plot_axis_max_value),
                                                           (np.float32(self.radar_param.sys.plot_ampl_limit_min[5]),
                                                            np.float32(self.radar_param.sys.plot_ampl_limit_max[5])),
@@ -564,15 +564,15 @@ class MIRA_GUI_CTRL():
         
     def clear_plots(self) -> None:
         
-        for _, plot in self.mira_plotter.time_signal.plotlines.items():
+        for _, plot in self.syra_plotter.time_signal.plotlines.items():
             plot.clear()
  
-        for _, plot in self.mira_plotter.spectrum.plotlines.items():
+        for _, plot in self.syra_plotter.spectrum.plotlines.items():
             plot.clear()
 
-        self.mira_plotter.spectrogram.clear_plot()
-        self.mira_plotter.range_doppler.clear_plot()
-        self.mira_plotter.range_azimuth.clear_plot()
+        self.syra_plotter.spectrogram.clear_plot()
+        self.syra_plotter.range_doppler.clear_plot()
+        self.syra_plotter.range_azimuth.clear_plot()
 
     def build_process_param_queue(self) -> dict:
         process_param_queue_dict = {
@@ -684,7 +684,7 @@ class MIRA_GUI_CTRL():
                 self.prev_select_axis_x = self.curr_select_axis_x
                 self.radar_param.sys.curr_select_axis_unit = self.curr_select_axis_x
                 
-            self.fft_axis = self.mira_plotter.calc_plot_axis()['freq_axis']
+            self.fft_axis = self.syra_plotter.calc_plot_axis()['freq_axis']
             self.get_max_axis_x()
             
         elif self.curr_select_axis_x == 'range': 
@@ -694,7 +694,7 @@ class MIRA_GUI_CTRL():
                 self.prev_select_axis_x = self.curr_select_axis_x
                 self.radar_param.sys.curr_select_axis_unit = self.curr_select_axis_x
                 
-            self.fft_axis = self.mira_plotter.calc_plot_axis()['range_axis'] 
+            self.fft_axis = self.syra_plotter.calc_plot_axis()['range_axis'] 
             self.get_max_axis_x()
             
     def get_max_axis_x(self):
@@ -844,17 +844,17 @@ class MIRA_GUI_CTRL():
         self.radar_param.sys.rf_test_mode_en_channels[3] = self.qt_self.check_box_rf_test_en_rx4.isChecked()
 
     def set_hp_filter(self, vga_gain: int, hp_gain: int, hp_fc: int, rx_select: int):
-        if self.qt_self.running == True or self.qt_self.mira_controller is None:
+        if self.qt_self.running == True or self.qt_self.syra_controller is None:
             return
-        self.qt_self.mira_controller.mira_device._csu1_2_reg.set_hp_filter(vga_gain, hp_gain, hp_fc, rx_select)
-        self.qt_self.mira_controller.mira_device._csu2_2_reg.set_hp_filter(vga_gain, hp_gain, hp_fc, rx_select)
-        self.qt_self.mira_controller.mira_device._csu3_2_reg.set_hp_filter(vga_gain, hp_gain, hp_fc, rx_select)
-        self.qt_self.mira_controller.mira_device._csu4_2_reg.set_hp_filter(vga_gain, hp_gain, hp_fc, rx_select)
+        self.qt_self.syra_controller.syra_device._csu1_2_reg.set_hp_filter(vga_gain, hp_gain, hp_fc, rx_select)
+        self.qt_self.syra_controller.syra_device._csu2_2_reg.set_hp_filter(vga_gain, hp_gain, hp_fc, rx_select)
+        self.qt_self.syra_controller.syra_device._csu3_2_reg.set_hp_filter(vga_gain, hp_gain, hp_fc, rx_select)
+        self.qt_self.syra_controller.syra_device._csu4_2_reg.set_hp_filter(vga_gain, hp_gain, hp_fc, rx_select)
     
-        self.qt_self.mira_controller.mira_device._csd1_2_reg.set_hp_filter(vga_gain, hp_gain, hp_fc, rx_select)
-        self.qt_self.mira_controller.mira_device._csd2_2_reg.set_hp_filter(vga_gain, hp_gain, hp_fc, rx_select)
-        self.qt_self.mira_controller.mira_device._csd3_2_reg.set_hp_filter(vga_gain, hp_gain, hp_fc, rx_select)
-        self.qt_self.mira_controller.mira_device._csd4_2_reg.set_hp_filter(vga_gain, hp_gain, hp_fc, rx_select)
+        self.qt_self.syra_controller.syra_device._csd1_2_reg.set_hp_filter(vga_gain, hp_gain, hp_fc, rx_select)
+        self.qt_self.syra_controller.syra_device._csd2_2_reg.set_hp_filter(vga_gain, hp_gain, hp_fc, rx_select)
+        self.qt_self.syra_controller.syra_device._csd3_2_reg.set_hp_filter(vga_gain, hp_gain, hp_fc, rx_select)
+        self.qt_self.syra_controller.syra_device._csd4_2_reg.set_hp_filter(vga_gain, hp_gain, hp_fc, rx_select)
 
     def update_bgt_hp_filter(self):
         if self.radar_param.gui.hp_ch_rx[0]:
@@ -895,16 +895,16 @@ class MIRA_GUI_CTRL():
         # self.qt_self.connect_tcp_client()
     
     def set_remote_tcp_default_settings(self) -> None:
-        MIRA_TCP_CLIENT_IP = self.config.get('MIRA_REMOTE_SETTINGS', 'MIRA_TCP_CLIENT_IP')
-        MIRA_TCP_CLIENT_PORT = self.config.get('MIRA_REMOTE_SETTINGS', 'MIRA_TCP_CLIENT_PORT')
-        MIRA_SSH_CLIENT_NAME = self.config.get('MIRA_REMOTE_SETTINGS', 'MIRA_SSH_CLIENT_NAME')
-        MIRA_SSH_CLIENT_PWD = self.config.get('MIRA_REMOTE_SETTINGS', 'MIRA_SSH_CLIENT_PWD')
-        self.radar_param.remt.client_ip_port = [MIRA_TCP_CLIENT_IP, MIRA_TCP_CLIENT_PORT]
-        self.radar_param.remt.client_ssh_name = MIRA_SSH_CLIENT_NAME
-        self.radar_param.remt.client_ssh_pwd = MIRA_SSH_CLIENT_PWD
-        # self.qt_self.client_ip_port_plainTextEdit.setPlainText(f'{MIRA_TCP_CLIENT_IP}:{MIRA_TCP_CLIENT_PORT}')
-        # self.qt_self.client_ssh_name_plainTextEdit.setPlainText(MIRA_SSH_CLIENT_NAME)
-        # self.qt_self.client_ssh_pwd_plainTextEdit.setPlainText(MIRA_SSH_CLIENT_PWD)
+        SYRA_TCP_CLIENT_IP = self.config.get('SYRA_REMOTE_SETTINGS', 'SYRA_TCP_CLIENT_IP')
+        SYRA_TCP_CLIENT_PORT = self.config.get('SYRA_REMOTE_SETTINGS', 'SYRA_TCP_CLIENT_PORT')
+        SYRA_SSH_CLIENT_NAME = self.config.get('SYRA_REMOTE_SETTINGS', 'SYRA_SSH_CLIENT_NAME')
+        SYRA_SSH_CLIENT_PWD = self.config.get('SYRA_REMOTE_SETTINGS', 'SYRA_SSH_CLIENT_PWD')
+        self.radar_param.remt.client_ip_port = [SYRA_TCP_CLIENT_IP, SYRA_TCP_CLIENT_PORT]
+        self.radar_param.remt.client_ssh_name = SYRA_SSH_CLIENT_NAME
+        self.radar_param.remt.client_ssh_pwd = SYRA_SSH_CLIENT_PWD
+        # self.qt_self.client_ip_port_plainTextEdit.setPlainText(f'{SYRA_TCP_CLIENT_IP}:{SYRA_TCP_CLIENT_PORT}')
+        # self.qt_self.client_ssh_name_plainTextEdit.setPlainText(SYRA_SSH_CLIENT_NAME)
+        # self.qt_self.client_ssh_pwd_plainTextEdit.setPlainText(SYRA_SSH_CLIENT_PWD)
     
     def set_remote_tcp_settings(self) -> None:
         pass
@@ -932,16 +932,16 @@ class MIRA_GUI_CTRL():
         self.set_tx_power()
         
     def set_tx_power(self) -> None:
-        if self.qt_self.running == True or self.qt_self.mira_controller is None:
+        if self.qt_self.running == True or self.qt_self.syra_controller is None:
             return
-        self.qt_self.mira_controller.mira_device._csu1_1_reg.set_tx_power(self.radar_param.sens.tx_power, 2)
-        self.qt_self.mira_controller.mira_device._csd1_1_reg.set_tx_power(self.radar_param.sens.tx_power, 2)
-        self.qt_self.mira_controller.mira_device._csu2_1_reg.set_tx_power(self.radar_param.sens.tx_power, 2)
-        self.qt_self.mira_controller.mira_device._csd2_1_reg.set_tx_power(self.radar_param.sens.tx_power, 2)
-        self.qt_self.mira_controller.mira_device._csu3_1_reg.set_tx_power(self.radar_param.sens.tx_power, 2)
-        self.qt_self.mira_controller.mira_device._csd3_1_reg.set_tx_power(self.radar_param.sens.tx_power, 2)
-        self.qt_self.mira_controller.mira_device._csu4_1_reg.set_tx_power(self.radar_param.sens.tx_power, 2)
-        self.qt_self.mira_controller.mira_device._csd4_1_reg.set_tx_power(self.radar_param.sens.tx_power, 2)
+        self.qt_self.syra_controller.syra_device._csu1_1_reg.set_tx_power(self.radar_param.sens.tx_power, 2)
+        self.qt_self.syra_controller.syra_device._csd1_1_reg.set_tx_power(self.radar_param.sens.tx_power, 2)
+        self.qt_self.syra_controller.syra_device._csu2_1_reg.set_tx_power(self.radar_param.sens.tx_power, 2)
+        self.qt_self.syra_controller.syra_device._csd2_1_reg.set_tx_power(self.radar_param.sens.tx_power, 2)
+        self.qt_self.syra_controller.syra_device._csu3_1_reg.set_tx_power(self.radar_param.sens.tx_power, 2)
+        self.qt_self.syra_controller.syra_device._csd3_1_reg.set_tx_power(self.radar_param.sens.tx_power, 2)
+        self.qt_self.syra_controller.syra_device._csu4_1_reg.set_tx_power(self.radar_param.sens.tx_power, 2)
+        self.qt_self.syra_controller.syra_device._csd4_1_reg.set_tx_power(self.radar_param.sens.tx_power, 2)
 
     def get_sample_rate(self) -> None:
         sample_rate = self.qt_self.spin_box_set_sample_rate.value()
@@ -950,31 +950,31 @@ class MIRA_GUI_CTRL():
         self.radar_param.sys.sampling_frequency = sample_rate
             
     def set_sample_rate(self) -> None:
-        if self.qt_self.running == True or self.qt_self.mira_controller is None:
+        if self.qt_self.running == True or self.qt_self.syra_controller is None:
             return
         self.get_sample_rate()
-        self.qt_self.mira_controller.mira_device._pll1_2.set_ramp_time(self.radar_param.sens.sample_rate)
-        self.qt_self.mira_controller.mira_device._pll2_2.set_ramp_time(self.radar_param.sens.sample_rate)
-        self.qt_self.mira_controller.mira_device._pll3_2.set_ramp_time(self.radar_param.sens.sample_rate)
-        self.qt_self.mira_controller.mira_device._pll4_2.set_ramp_time(self.radar_param.sens.sample_rate)
-        self.qt_self.mira_controller.mira_device._adc0_reg.set_sampling_frequency(self.radar_param.sens.sample_rate)
+        self.qt_self.syra_controller.syra_device._pll1_2.set_ramp_time(self.radar_param.sens.sample_rate)
+        self.qt_self.syra_controller.syra_device._pll2_2.set_ramp_time(self.radar_param.sens.sample_rate)
+        self.qt_self.syra_controller.syra_device._pll3_2.set_ramp_time(self.radar_param.sens.sample_rate)
+        self.qt_self.syra_controller.syra_device._pll4_2.set_ramp_time(self.radar_param.sens.sample_rate)
+        self.qt_self.syra_controller.syra_device._adc0_reg.set_sampling_frequency(self.radar_param.sens.sample_rate)
         fsu, rsu, rtu = self.calculate_and_format_radar_params(self.radar_param.sens.bandwidth_lower, 
                                              self.radar_param.sens.bandwidth_upper,
                                              self.radar_param.sys.ramp_time[0])
-        self.qt_self.mira_controller.mira_device._pll1_1.set_ramp_steps(rsu)
-        self.qt_self.mira_controller.mira_device._pll2_1.set_ramp_steps(rsu)
-        self.qt_self.mira_controller.mira_device._pll3_1.set_ramp_steps(rsu)
-        self.qt_self.mira_controller.mira_device._pll4_1.set_ramp_steps(rsu)
+        self.qt_self.syra_controller.syra_device._pll1_1.set_ramp_steps(rsu)
+        self.qt_self.syra_controller.syra_device._pll2_1.set_ramp_steps(rsu)
+        self.qt_self.syra_controller.syra_device._pll3_1.set_ramp_steps(rsu)
+        self.qt_self.syra_controller.syra_device._pll4_1.set_ramp_steps(rsu)
         
-        self.qt_self.mira_controller.mira_device._pll1_1.get_ramp_bandwidth()
-        self.qt_self.mira_controller.mira_device._pll2_1.get_ramp_bandwidth()
-        self.qt_self.mira_controller.mira_device._pll3_1.get_ramp_bandwidth()
-        self.qt_self.mira_controller.mira_device._pll4_1.get_ramp_bandwidth()
+        self.qt_self.syra_controller.syra_device._pll1_1.get_ramp_bandwidth()
+        self.qt_self.syra_controller.syra_device._pll2_1.get_ramp_bandwidth()
+        self.qt_self.syra_controller.syra_device._pll3_1.get_ramp_bandwidth()
+        self.qt_self.syra_controller.syra_device._pll4_1.get_ramp_bandwidth()
 
-        self.qt_self.mira_controller.mira_device._pll1_2.get_bandwidth_slope()
-        self.qt_self.mira_controller.mira_device._pll2_2.get_bandwidth_slope()
-        self.qt_self.mira_controller.mira_device._pll3_2.get_bandwidth_slope()
-        self.qt_self.mira_controller.mira_device._pll4_2.get_bandwidth_slope()
+        self.qt_self.syra_controller.syra_device._pll1_2.get_bandwidth_slope()
+        self.qt_self.syra_controller.syra_device._pll2_2.get_bandwidth_slope()
+        self.qt_self.syra_controller.syra_device._pll3_2.get_bandwidth_slope()
+        self.qt_self.syra_controller.syra_device._pll4_2.get_bandwidth_slope()
         
     def get_bandwidth(self) -> None:
         bandwidth_upper = self.qt_self.spin_box_set_bandwidth_upper.value()
@@ -1016,26 +1016,26 @@ class MIRA_GUI_CTRL():
         return fsu_uint32, rsu_uint16, rtu_uint16
 
     def set_bandwidth(self) -> None:
-        if self.qt_self.running == True or self.qt_self.mira_controller is None:
+        if self.qt_self.running == True or self.qt_self.syra_controller is None:
             return
         fsu, rsu, rtu = self.calculate_and_format_radar_params(self.radar_param.sens.bandwidth_lower, 
                                                      self.radar_param.sens.bandwidth_upper,
                                                      self.radar_param.sys.ramp_time[0])
         
-        self.qt_self.mira_controller.mira_device._pll1_0.set_start_frequency(fsu)
-        self.qt_self.mira_controller.mira_device._pll2_0.set_start_frequency(fsu)
-        self.qt_self.mira_controller.mira_device._pll3_0.set_start_frequency(0)
-        self.qt_self.mira_controller.mira_device._pll4_0.set_start_frequency(0)
+        self.qt_self.syra_controller.syra_device._pll1_0.set_start_frequency(fsu)
+        self.qt_self.syra_controller.syra_device._pll2_0.set_start_frequency(fsu)
+        self.qt_self.syra_controller.syra_device._pll3_0.set_start_frequency(0)
+        self.qt_self.syra_controller.syra_device._pll4_0.set_start_frequency(0)
         
-        self.qt_self.mira_controller.mira_device._pll1_0.get_start_frequency()
-        self.qt_self.mira_controller.mira_device._pll2_0.get_start_frequency()
-        self.qt_self.mira_controller.mira_device._pll3_0.get_start_frequency()
-        self.qt_self.mira_controller.mira_device._pll4_0.get_start_frequency()
+        self.qt_self.syra_controller.syra_device._pll1_0.get_start_frequency()
+        self.qt_self.syra_controller.syra_device._pll2_0.get_start_frequency()
+        self.qt_self.syra_controller.syra_device._pll3_0.get_start_frequency()
+        self.qt_self.syra_controller.syra_device._pll4_0.get_start_frequency()
         
-        self.qt_self.mira_controller.mira_device._pll1_1.set_ramp_steps(rsu)
-        self.qt_self.mira_controller.mira_device._pll2_1.set_ramp_steps(rsu)
-        self.qt_self.mira_controller.mira_device._pll3_1.set_ramp_steps(rsu)
-        self.qt_self.mira_controller.mira_device._pll4_1.set_ramp_steps(rsu)
+        self.qt_self.syra_controller.syra_device._pll1_1.set_ramp_steps(rsu)
+        self.qt_self.syra_controller.syra_device._pll2_1.set_ramp_steps(rsu)
+        self.qt_self.syra_controller.syra_device._pll3_1.set_ramp_steps(rsu)
+        self.qt_self.syra_controller.syra_device._pll4_1.set_ramp_steps(rsu)
         
         self.set_sample_rate()
 
@@ -1044,20 +1044,21 @@ class MIRA_GUI_CTRL():
         chirp_samples = np.float32(chirp_samples.split(' ')[0])
 
         self.radar_param.sens.chirp_samples = chirp_samples
+        print(self.radar_param.sens.chirp_samples)
         self.set_chirp_samples()
         
     def set_chirp_samples(self) -> None:
-        if self.qt_self.running == True or self.qt_self.mira_controller is None:
+        if self.qt_self.running == True or self.qt_self.syra_controller is None:
             return
-        self.qt_self.mira_controller.mira_device._pll1_3.set_chirp_sample_len(self.radar_param.sens.chirp_samples)
-        self.qt_self.mira_controller.mira_device._pll2_3.set_chirp_sample_len(self.radar_param.sens.chirp_samples)
-        self.qt_self.mira_controller.mira_device._pll3_3.set_chirp_sample_len(self.radar_param.sens.chirp_samples)
-        self.qt_self.mira_controller.mira_device._pll4_3.set_chirp_sample_len(self.radar_param.sens.chirp_samples)
+        self.qt_self.syra_controller.syra_device._pll1_3.set_chirp_sample_len(np.uint16(self.radar_param.sens.chirp_samples))
+        self.qt_self.syra_controller.syra_device._pll2_3.set_chirp_sample_len(np.uint16(self.radar_param.sens.chirp_samples))
+        self.qt_self.syra_controller.syra_device._pll3_3.set_chirp_sample_len(np.uint16(self.radar_param.sens.chirp_samples))
+        self.qt_self.syra_controller.syra_device._pll4_3.set_chirp_sample_len(np.uint16(self.radar_param.sens.chirp_samples))
 
-        self.qt_self.mira_controller.mira_device._pll1_3.get_chirp_sample_len()
-        self.qt_self.mira_controller.mira_device._pll2_3.get_chirp_sample_len()
-        self.qt_self.mira_controller.mira_device._pll3_3.get_chirp_sample_len()
-        self.qt_self.mira_controller.mira_device._pll4_3.get_chirp_sample_len()
+        self.qt_self.syra_controller.syra_device._pll1_3.get_chirp_sample_len()
+        self.qt_self.syra_controller.syra_device._pll2_3.get_chirp_sample_len()
+        self.qt_self.syra_controller.syra_device._pll3_3.get_chirp_sample_len()
+        self.qt_self.syra_controller.syra_device._pll4_3.get_chirp_sample_len()
         
     def get_chirp_end_delay(self) -> None:
         chirp_end_delay = self.qt_self.spin_box_set_chirp_end_delay.value()
@@ -1067,17 +1068,17 @@ class MIRA_GUI_CTRL():
         self.set_chirp_end_delay()
         
     def set_chirp_end_delay(self) -> None:
-        if self.qt_self.running == True or self.qt_self.mira_controller is None:
+        if self.qt_self.running == True or self.qt_self.syra_controller is None:
             return
-        self.qt_self.mira_controller.mira_device._pll1_2.set_edu_time(self.radar_param.sens.chirp_end_delay)
-        self.qt_self.mira_controller.mira_device._pll2_2.set_edu_time(self.radar_param.sens.chirp_end_delay)
-        self.qt_self.mira_controller.mira_device._pll3_2.set_edu_time(self.radar_param.sens.chirp_end_delay)
-        self.qt_self.mira_controller.mira_device._pll4_2.set_edu_time(self.radar_param.sens.chirp_end_delay)
+        self.qt_self.syra_controller.syra_device._pll1_2.set_edu_time(self.radar_param.sens.chirp_end_delay)
+        self.qt_self.syra_controller.syra_device._pll2_2.set_edu_time(self.radar_param.sens.chirp_end_delay)
+        self.qt_self.syra_controller.syra_device._pll3_2.set_edu_time(self.radar_param.sens.chirp_end_delay)
+        self.qt_self.syra_controller.syra_device._pll4_2.set_edu_time(self.radar_param.sens.chirp_end_delay)
         
-        self.qt_self.mira_controller.mira_device._pll1_2.get_edu_time()
-        self.qt_self.mira_controller.mira_device._pll2_2.get_edu_time()
-        self.qt_self.mira_controller.mira_device._pll3_2.get_edu_time()
-        self.qt_self.mira_controller.mira_device._pll4_2.get_edu_time()
+        self.qt_self.syra_controller.syra_device._pll1_2.get_edu_time()
+        self.qt_self.syra_controller.syra_device._pll2_2.get_edu_time()
+        self.qt_self.syra_controller.syra_device._pll3_2.get_edu_time()
+        self.qt_self.syra_controller.syra_device._pll4_2.get_edu_time()
                             
     def get_shape_repetition(self) -> None:
         shape_repetition = self.qt_self.combo_box_set_shape_repetition.currentText()
@@ -1095,17 +1096,17 @@ class MIRA_GUI_CTRL():
         self.set_shape_end_delay()
         
     def set_shape_end_delay(self) -> None:
-        if self.qt_self.running == True or self.qt_self.mira_controller is None:
+        if self.qt_self.running == True or self.qt_self.syra_controller is None:
             return
-        self.qt_self.mira_controller.mira_device._pll1_7.set_sed_time(self.radar_param.sens.shape_end_delay)
-        self.qt_self.mira_controller.mira_device._pll2_7.set_sed_time(self.radar_param.sens.shape_end_delay)
-        self.qt_self.mira_controller.mira_device._pll3_7.set_sed_time(0)
-        self.qt_self.mira_controller.mira_device._pll4_7.set_sed_time(0)
+        self.qt_self.syra_controller.syra_device._pll1_7.set_sed_time(self.radar_param.sens.shape_end_delay)
+        self.qt_self.syra_controller.syra_device._pll2_7.set_sed_time(self.radar_param.sens.shape_end_delay)
+        self.qt_self.syra_controller.syra_device._pll3_7.set_sed_time(0)
+        self.qt_self.syra_controller.syra_device._pll4_7.set_sed_time(0)
         
-        self.qt_self.mira_controller.mira_device._pll1_7.get_sed_time()
-        self.qt_self.mira_controller.mira_device._pll2_7.get_sed_time()
-        self.qt_self.mira_controller.mira_device._pll3_7.get_sed_time()
-        self.qt_self.mira_controller.mira_device._pll4_7.get_sed_time()
+        self.qt_self.syra_controller.syra_device._pll1_7.get_sed_time()
+        self.qt_self.syra_controller.syra_device._pll2_7.get_sed_time()
+        self.qt_self.syra_controller.syra_device._pll3_7.get_sed_time()
+        self.qt_self.syra_controller.syra_device._pll4_7.get_sed_time()
 
     def get_shape_set_repetition_(self) -> None:
         pass
@@ -1119,30 +1120,30 @@ class MIRA_GUI_CTRL():
         self.set_shape_set_repetition(np.uint16(shape_set_repetition))
     
     def set_shape_repetition(self, shape_repetition: np.uint16) -> None:
-        if self.qt_self.running == True or self.qt_self.mira_controller is None:
+        if self.qt_self.running == True or self.qt_self.syra_controller is None:
             return
-        self.qt_self.mira_controller.mira_device._ccr0_reg.set_repetition(15)
+        self.qt_self.syra_controller.syra_device._ccr0_reg.set_repetition(15)
 
-        for csc in self.qt_self.mira_controller.mira_device.csc_shape_regs :
+        for csc in self.qt_self.syra_controller.syra_device.csc_shape_regs :
             if shape_repetition == 1:
                 csc.REPC = 0
             elif shape_repetition > 1:
                 csc.REPC = np.uint8(np.log2(shape_repetition))
                 
-        self.qt_self.mira_controller.mira_device._pll1_7.set_shape_repetition(shape_repetition)
-        self.qt_self.mira_controller.mira_device._pll2_7.set_shape_repetition(shape_repetition)
-        self.qt_self.mira_controller.mira_device._pll3_7.set_shape_repetition(0)
-        self.qt_self.mira_controller.mira_device._pll4_7.set_shape_repetition(0)
+        self.qt_self.syra_controller.syra_device._pll1_7.set_shape_repetition(shape_repetition)
+        self.qt_self.syra_controller.syra_device._pll2_7.set_shape_repetition(shape_repetition)
+        self.qt_self.syra_controller.syra_device._pll3_7.set_shape_repetition(0)
+        self.qt_self.syra_controller.syra_device._pll4_7.set_shape_repetition(0)
 
-        self.qt_self.mira_controller.mira_device._pll1_7.get_shape_repetition()
-        self.qt_self.mira_controller.mira_device._pll2_7.get_shape_repetition()
-        self.qt_self.mira_controller.mira_device._pll3_7.get_shape_repetition()
-        self.qt_self.mira_controller.mira_device._pll4_7.get_shape_repetition()
+        self.qt_self.syra_controller.syra_device._pll1_7.get_shape_repetition()
+        self.qt_self.syra_controller.syra_device._pll2_7.get_shape_repetition()
+        self.qt_self.syra_controller.syra_device._pll3_7.get_shape_repetition()
+        self.qt_self.syra_controller.syra_device._pll4_7.get_shape_repetition()
         
     def set_shape_set_repetition(self, shape_set_repetition: np.uint16) -> None:
-        if self.qt_self.running == True or self.qt_self.mira_controller is None:
+        if self.qt_self.running == True or self.qt_self.syra_controller is None:
             return
-        self.qt_self.mira_controller.mira_device._ccr2_reg.FRAME_LEN = np.uint16(((shape_set_repetition-1)*np.uint8(sum(self.radar_param.sys.tx_active_antennas)))+ np.uint8(sum(self.radar_param.sys.tx_active_antennas)-1))
+        self.qt_self.syra_controller.syra_device._ccr2_reg.FRAME_LEN = np.uint16(((shape_set_repetition-1)*np.uint8(sum(self.radar_param.sys.tx_active_antennas)))+ np.uint8(sum(self.radar_param.sys.tx_active_antennas)-1))
 
     def get_shape_set_end_delay(self) -> None:
         shape_set_end_delay = self.qt_self.spin_box_set_shape_set_end_delay.value()
@@ -1151,10 +1152,10 @@ class MIRA_GUI_CTRL():
         self.set_shape_set_end_delay()
 
     def set_shape_set_end_delay(self) -> None:
-        if self.qt_self.running == True or self.qt_self.mira_controller is None:
+        if self.qt_self.running == True or self.qt_self.syra_controller is None:
             return
-        self.qt_self.mira_controller.mira_device._ccr1_reg.set_fed_time(self.radar_param.sens.shape_set_end_delay)
-        self.qt_self.mira_controller.mira_device._ccr1_reg.get_fed_time()
+        self.qt_self.syra_controller.syra_device._ccr1_reg.set_fed_time(self.radar_param.sens.shape_set_end_delay)
+        self.qt_self.syra_controller.syra_device._ccr1_reg.get_fed_time()
         self.update_parameters_plots()
 
     def update_sensor_settings(self, flag: bool=True) -> None:
@@ -1184,8 +1185,8 @@ class MIRA_GUI_CTRL():
         self.reinit_qt_widget_plots()
 
     def reinit_calc_radar_parameters(self) -> None:
-        if self.qt_self.mira_controller is not None and self.qt_self.mira_controller.mira_device is not None:
-            self.qt_self.mira_controller.mira_device.init_radar_system_parameters()
+        if self.qt_self.syra_controller is not None and self.qt_self.syra_controller.syra_device is not None:
+            self.qt_self.syra_controller.syra_device.init_radar_system_parameters()
             self.update_radar_params()
 
     def get_spectrum_rx_tx(self):
@@ -1198,8 +1199,8 @@ class MIRA_GUI_CTRL():
         self.reset_plotline()
         
     def reset_plotline(self):
-        self.mira_plotter.time_signal.reset_plot_lines()
-        self.mira_plotter.spectrum.reset_plot_lines()
+        self.syra_plotter.time_signal.reset_plot_lines()
+        self.syra_plotter.spectrum.reset_plot_lines()
     
     def get_hp_rx(self):
         self.radar_param.gui.hp_ch_rx[0] = self.qt_self.check_box_hp_rx1.isChecked()
@@ -1221,13 +1222,13 @@ class MIRA_GUI_CTRL():
         self.update_processing_parameters()
     
     def update_processing_parameters(self):
-        if self.qt_self.mira_processor is not None:
-            while not self.qt_self.mira_processor.process_param_queue.empty():
-                self.qt_self.mira_processor.process_param_queue.get_nowait()
-            self.qt_self.mira_processor.process_param_queue.put(self.build_process_param_queue())
+        if self.qt_self.syra_processor is not None:
+            while not self.qt_self.syra_processor.process_param_queue.empty():
+                self.qt_self.syra_processor.process_param_queue.get_nowait()
+            self.qt_self.syra_processor.process_param_queue.put(self.build_process_param_queue())
 
     def activate_boot_mode(self):
-        self.qt_self.mira_controller.mira_device.mira_bridge.spi_activate_boot_mode()
+        self.qt_self.syra_controller.syra_device.syra_bridge.spi_activate_boot_mode()
         time.sleep(1)
         self.qt_self.start_auto_connect()
         
@@ -1243,7 +1244,7 @@ class MIRA_GUI_CTRL():
         # Define the color map positions and colors (normalized to [0, 1] for QColor)
         min_dbfs = self.radar_param.sys.plot_ampl_limit_min[self.radar_param.sys.curr_plot_ampl_limit]
         max_dbfs = self.radar_param.sys.plot_ampl_limit_max[self.radar_param.sys.curr_plot_ampl_limit]
-        # self.mira_plotter.time_signal.plot_config.init_color_lut(min_dbfs, max_dbfs)
+        # self.syra_plotter.time_signal.plot_config.init_color_lut(min_dbfs, max_dbfs)
         pos = np.linspace(min_dbfs, max_dbfs, 5)
         
         colors = np.array([
@@ -1351,7 +1352,7 @@ def init_gui_window(app_instance, main_instance) -> QtWidgets.QApplication:
     #base_font = QtGui.QFont("Arial", 20)  # Example: Arial, 10pt
     #app.setFont(base_font)
     config = configparser.ConfigParser()
-    config.read(__init__.MIRA_SYS_CONFIG_PATH)
+    config.read(__init__.SYRA_SYS_CONFIG_PATH)
     
     screen = app.primaryScreen()
     rect = screen.geometry()
@@ -1360,19 +1361,19 @@ def init_gui_window(app_instance, main_instance) -> QtWidgets.QApplication:
     available_styles = QtWidgets.QStyleFactory.keys()
     app.setStyle("Fusion")
     
-    MIRA_GUI_COLOR_PALETTE_PATH = config.get("MIRA_6024_EVAL_GUI", 
-                                         "MIRA_GUI_COLOR_PALETTE_PATH")
-    gui_color_file_paths = [Path(MIRA_GUI_COLOR_PALETTE_PATH).resolve(),
-                            Path(f"{MIRA_GUI_COLOR_PALETTE_PATH}").resolve()]
+    SYRA_GUI_COLOR_PALETTE_PATH = config.get("SYRA_6024_EVAL_GUI", 
+                                         "SYRA_GUI_COLOR_PALETTE_PATH")
+    gui_color_file_paths = [Path(SYRA_GUI_COLOR_PALETTE_PATH).resolve(),
+                            Path(f"{SYRA_GUI_COLOR_PALETTE_PATH}").resolve()]
     for n, path in enumerate(gui_color_file_paths):
         if path.is_file():
-            MIRA_GUI_COLOR_PALETTE_PATH = path
+            SYRA_GUI_COLOR_PALETTE_PATH = path
             pass
         elif n == len(gui_color_file_paths):
             logger.error(f'Error 404: Radar GUI PyQt file not found! Searched here: {path}')
             sys.exit()
             
-    json_palette = load_palette_from_json(Path(MIRA_GUI_COLOR_PALETTE_PATH))
+    json_palette = load_palette_from_json(Path(SYRA_GUI_COLOR_PALETTE_PATH))
     palette = create_palette_from_json(json_palette)
     app.setPalette(palette)
     
@@ -1395,21 +1396,21 @@ def init_gui_window(app_instance, main_instance) -> QtWidgets.QApplication:
     #    new_font_size = current_font_size + offset
     #    app.setStyleSheet(f".{widget} {{ font-size: {new_font_size}pt; }}")
             
-    MIRA_GUI_SCREEN_SIZE_MIN = config.get("MIRA_6024_EVAL_GUI", 
-                                        "MIRA_GUI_SCREEN_SIZE_MIN")
-    MIRA_GUI_SCREEN_SIZE_MIN = tuple(int(part.strip()) 
-                                    for part in MIRA_GUI_SCREEN_SIZE_MIN.split(','))
-    MIRA_GUI_FULL_SCREEN = str(config.get("MIRA_6024_EVAL_GUI", 
-                                        "MIRA_GUI_FULL_SCREEN"))
-    MIRA_GUI_START_MAXIMIZED = str(config.get("MIRA_6024_EVAL_GUI", 
-                                            "MIRA_GUI_START_MAXIMIZED")) 
+    SYRA_GUI_SCREEN_SIZE_MIN = config.get("SYRA_6024_EVAL_GUI", 
+                                        "SYRA_GUI_SCREEN_SIZE_MIN")
+    SYRA_GUI_SCREEN_SIZE_MIN = tuple(int(part.strip()) 
+                                    for part in SYRA_GUI_SCREEN_SIZE_MIN.split(','))
+    SYRA_GUI_FULL_SCREEN = str(config.get("SYRA_6024_EVAL_GUI", 
+                                        "SYRA_GUI_FULL_SCREEN"))
+    SYRA_GUI_START_MAXIMIZED = str(config.get("SYRA_6024_EVAL_GUI", 
+                                            "SYRA_GUI_START_MAXIMIZED")) 
     
-    main_instance.setMinimumSize(QtCore.QSize(*MIRA_GUI_SCREEN_SIZE_MIN))  # Minimum size
+    main_instance.setMinimumSize(QtCore.QSize(*SYRA_GUI_SCREEN_SIZE_MIN))  # Minimum size
     main_instance.setMaximumSize(QSize(3840, 2160))  # Maximum size (4k resolution)
     # main_instance.setMaximumSize(QtCore.QSize(width, height))  
-    if MIRA_GUI_FULL_SCREEN == 'True':
+    if SYRA_GUI_FULL_SCREEN == 'True':
         main_instance.showFullScreen()
-    elif MIRA_GUI_START_MAXIMIZED == 'True':
+    elif SYRA_GUI_START_MAXIMIZED == 'True':
         main_instance.showMaximized()
     else:
         main_instance.showNormal()

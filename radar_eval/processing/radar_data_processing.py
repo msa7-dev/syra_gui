@@ -13,22 +13,22 @@ from typing import Any, Callable, Dict, List
 from scipy.interpolate import griddata
 from scipy.signal import find_peaks, convolve, convolve2d
 
-from radar_eval.radar_system.radar_system_definition import MIRA_RADAR_PARAMETER
-from radar_eval.processing.radar_data_preprocessing import MIRA_DATA_PREPROCESSOR
 from radar_eval.control.multiprocessing import distribute_cores_to_process
-from radar_eval.rf_antenna.MIRA6024I1A import MIRA6024_RF_ANTENNA
+from radar_eval.radar_system.radar_system_definition import SYRA_RADAR_PARAMETER
+from radar_eval.processing.radar_data_preprocessing import SYRA_DATA_PREPROCESSOR
+from radar_eval.rf_antenna.MiRa6024I1A_antenna_definition import MiRa6024_RF_ANTENNA
 
 Function = Callable[[Any], Any]
 # ==============================================================================
-# Class Name: MIRA_DATA_PROCESSOR
+# Class Name: SYRA_DATA_PROCESSOR
 # ==============================================================================
-class MIRA_DATA_PROCESSOR():
-    def __init__(self, radar_param: MIRA_RADAR_PARAMETER) -> None:
+class SYRA_DATA_PROCESSOR():
+    def __init__(self, radar_param: SYRA_RADAR_PARAMETER) -> None:
         self.config = configparser.ConfigParser()
-        self.config.read(Path(__init__.MIRA_SYS_CONFIG_PATH).resolve())
+        self.config.read(Path(__init__.SYRA_SYS_CONFIG_PATH).resolve())
         
         self.radar_param = radar_param
-        self.data_preprocessor = MIRA_DATA_PREPROCESSOR(self.radar_param)
+        self.data_preprocessor = SYRA_DATA_PREPROCESSOR(self.radar_param)
         
         self._init_buffers()
         self.prev_main_index = ''
@@ -99,16 +99,16 @@ class MIRA_DATA_PROCESSOR():
                                 process_stop_event: multiprocessing.Event) -> None:
         self.gui_parameter_queue = gui_parameter_queue
         self.processed_gui_data_queue = processed_gui_data_queue
-        MIRA_PROCESSING_CPU_CORE = int(self.config.get("MIRA_HOST_SYS_PARAMETER",
-                                                       "MIRA_PROCESSING_CPU_CORE"))
-        MIRA_PROCESS_PRIO = np.int8(self.config.get("MIRA_HOST_SYS_PARAMETER", 
-                                                    "MIRA_PROCESS_PRIO"))
+        SYRA_PROCESSING_CPU_CORE = int(self.config.get("SYRA_HOST_SYS_PARAMETER",
+                                                       "SYRA_PROCESSING_CPU_CORE"))
+        SYRA_PROCESS_PRIO = np.int8(self.config.get("SYRA_HOST_SYS_PARAMETER", 
+                                                    "SYRA_PROCESS_PRIO"))
         
         if platform.system() != "Windows":  # Only adjust affinity if not on Windows
-            mira_data_processing_process = psutil.Process(os.getpid())
-            mira_data_processing_process.cpu_affinity([MIRA_PROCESSING_CPU_CORE])
-            mira_data_processing_process.nice(MIRA_PROCESS_PRIO)
-            distribute_cores_to_process(mira_data_processing_process, 2)
+            syra_data_processing_process = psutil.Process(os.getpid())
+            syra_data_processing_process.cpu_affinity([SYRA_PROCESSING_CPU_CORE])
+            syra_data_processing_process.nice(SYRA_PROCESS_PRIO)
+            distribute_cores_to_process(syra_data_processing_process, 2)
             setproctitle.setproctitle("Sykno - Radar Eval GUI - Processing Process")
 
         radar_data_cube = np.zeros((np.uint16(self.radar_param.sys.n_samples_per_chirp[0]), # Dim. 1
@@ -116,7 +116,7 @@ class MIRA_DATA_PROCESSOR():
                                     self.radar_param.sys.shape_set_repetition),             # Dim. 3
                                    dtype=np.uint16) 
         self.counter = 0
-        self.rf_antenna = MIRA6024_RF_ANTENNA()
+        self.rf_antenna = MiRa6024_RF_ANTENNA()
         while not process_stop_event.is_set():
             if not extracted_processing_data_queue.empty():
                 radar_data = np.asarray(extracted_processing_data_queue.get(), dtype=np.uint16)
@@ -169,6 +169,7 @@ class MIRA_DATA_PROCESSOR():
     def scale_raw_data(self, raw_radar_data_cube: np.ndarray,
                        preprocessing: bool=False,
                        output_mean: bool=False) -> np.ndarray:
+        
         if preprocessing and output_mean:
             return np.mean(np.asarray(self.data_preprocessor.preprocess_channels(raw_radar_data_cube), 
                                     dtype=np.float32),

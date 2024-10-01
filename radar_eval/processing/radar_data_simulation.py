@@ -8,13 +8,13 @@ import configparser
 import multiprocessing
 from pathlib import Path
 from datetime import datetime
-from radar_eval.measurement.hdf5_controller import MIRA_HDF5_CTRL
+from radar_eval.measurement.hdf5_controller import SYRA_HDF5_CTRL
 
-class MIRA_DATA_REPLAYER:
+class SYRA_DATA_REPLAYER:
     def __init__(self, hdf5_filename='./radar_eval/measurement/hdf5/SY60I13_Measurement_24_07_2024_17_03_47_Default_Session.hdf5'):
         self.config = configparser.ConfigParser()
-        self.config.read(__init__.MIRA_SYS_CONFIG_PATH)
-        self.hdf5_ctrl = MIRA_HDF5_CTRL(Path(hdf5_filename).resolve())
+        self.config.read(__init__.SYRA_SYS_CONFIG_PATH)
+        self.hdf5_ctrl = SYRA_HDF5_CTRL(Path(hdf5_filename).resolve())
         self.data_index = 0
         
         # Load radar parameters from the HDF5 file
@@ -34,12 +34,12 @@ class MIRA_DATA_REPLAYER:
                                save_data_queue: multiprocessing.Queue,
                                stop_event: multiprocessing.Event,
                                set_header_queue_event: multiprocessing.Event):
-        MIRA_PROCESS_PRIO = np.int8(self.config.get("MIRA_HOST_SYS_PARAMETER", "MIRA_PROCESS_PRIO"))
-        MIRA_EXTRACTING_CPU_CORE = int(self.config.get("MIRA_HOST_SYS_PARAMETER", "MIRA_EXTRACTING_CPU_CORE"))
+        SYRA_PROCESS_PRIO = np.int8(self.config.get("SYRA_HOST_SYS_PARAMETER", "SYRA_PROCESS_PRIO"))
+        SYRA_EXTRACTING_CPU_CORE = int(self.config.get("SYRA_HOST_SYS_PARAMETER", "SYRA_EXTRACTING_CPU_CORE"))
 
         current_process = psutil.Process(os.getpid())
-        current_process.cpu_affinity([MIRA_EXTRACTING_CPU_CORE])
-        current_process.nice(MIRA_PROCESS_PRIO)
+        current_process.cpu_affinity([SYRA_EXTRACTING_CPU_CORE])
+        current_process.nice(SYRA_PROCESS_PRIO)
 
         radar_data_cube_build_buffer = np.zeros((self.radar_param.sys.n_samples_per_chirp[0],  # Dim 1 - Samples
                                                 int(self.radar_param.sys.rx_active_antennas[0]),  # Dim 2 - Number RX Antennas

@@ -9,20 +9,20 @@ import setproctitle
 import configparser
 import multiprocessing
 from pathlib import Path
-from radar_eval.radar_sensor.MiRa6024_sensor_device import MIRA_DEVICE
-from radar_eval.radar_system.radar_system_definition import MIRA_RADAR_PARAMETER
+from radar_eval.radar_sensor.MiRa6024_sensor_device import SYRA_DEVICE
+from radar_eval.radar_system.radar_system_definition import SYRA_RADAR_PARAMETER
 from radar_eval.control.multiprocessing import distribute_cores_to_process
-import radar_eval.processing.cython.radar_extract_raw_data as mira_extract_raw_data
+import radar_eval.processing.cython.radar_extract_raw_data as syra_extract_raw_data
 
 # ==============================================================================
-# Class Name: MIRA_DATA_EXTRACTOR
+# Class Name: SYRA_DATA_EXTRACTOR
 # ==============================================================================
-class MIRA_DATA_EXTRACTOR():
-    def __init__(self, mira_device: MIRA_DEVICE):
+class SYRA_DATA_EXTRACTOR():
+    def __init__(self, syra_device: SYRA_DEVICE):
         self.config = configparser.ConfigParser()
-        self.config.read(Path(__init__.MIRA_SYS_CONFIG_PATH).resolve())
-        self.mira_device = mira_device
-        self.radar_param: MIRA_RADAR_PARAMETER = mira_device.radar_param
+        self.config.read(Path(__init__.SYRA_SYS_CONFIG_PATH).resolve())
+        self.syra_device = syra_device
+        self.radar_param: SYRA_RADAR_PARAMETER = syra_device.radar_param
         
     
     def data_extracting_process(self, usb_extraction_data_queue: multiprocessing.Queue,
@@ -32,14 +32,14 @@ class MIRA_DATA_EXTRACTOR():
                                 process_stop_event: multiprocessing.Event):
         self.prefix_header_queue = prefix_header_queue
 
-        MIRA_PROCESS_PRIO = np.int8(self.config.get("MIRA_HOST_SYS_PARAMETER", "MIRA_PROCESS_PRIO"))
-        MIRA_EXTRACTING_CPU_CORE = int(self.config.get("MIRA_HOST_SYS_PARAMETER", "MIRA_EXTRACTING_CPU_CORE"))
+        SYRA_PROCESS_PRIO = np.int8(self.config.get("SYRA_HOST_SYS_PARAMETER", "SYRA_PROCESS_PRIO"))
+        SYRA_EXTRACTING_CPU_CORE = int(self.config.get("SYRA_HOST_SYS_PARAMETER", "SYRA_EXTRACTING_CPU_CORE"))
 
         if platform.system() != "Windows":  # Only adjust affinity if not on Windows
-            mira_data_extraction_process = psutil.Process(os.getpid())
-            mira_data_extraction_process.cpu_affinity([MIRA_EXTRACTING_CPU_CORE])
-            mira_data_extraction_process.nice(MIRA_PROCESS_PRIO)
-            distribute_cores_to_process(mira_data_extraction_process, 1)
+            syra_data_extraction_process = psutil.Process(os.getpid())
+            syra_data_extraction_process.cpu_affinity([SYRA_EXTRACTING_CPU_CORE])
+            syra_data_extraction_process.nice(SYRA_PROCESS_PRIO)
+            distribute_cores_to_process(syra_data_extraction_process, 1)
             setproctitle.setproctitle("Sykno - Radar Eval GUI - Extraction Process")
 
         radar_data_cube_build_buffer = np.zeros((self.radar_param.sys.n_samples_per_chirp[0],  # Dim 1 - Samples
@@ -49,7 +49,7 @@ class MIRA_DATA_EXTRACTOR():
                                                  self.radar_param.sys.max_frame_cnt),  # Dim. 5
                                                  dtype=np.uint16)
         
-        USB_SPI_BRIDGE_DATA_ALLOCATION = np.uint32(self.config.get("MIRA_USB_SPI_BRIDGE",
+        USB_SPI_BRIDGE_DATA_ALLOCATION = np.uint32(self.config.get("SYRA_USB_SPI_BRIDGE",
                                                                    f"USB_SPI_BRIDGE_DATA_ALLOCATION_{self.radar_param.mon.sykno_product_name}"))
         overhead = np.multiply(self.radar_param.sys.n_fifo_overhead, 9, dtype=np.uint8)
         DATA_ALLOCATION = np.uint32(USB_SPI_BRIDGE_DATA_ALLOCATION + overhead)
@@ -75,13 +75,13 @@ class MIRA_DATA_EXTRACTOR():
             else:
                 time.sleep(20e-6)
                 continue
-            
+
             self.data_values.append((raw_fifo_data.shape[0] * 8) / (time.time() - start_time))
             self.data_values = self.data_values[-256:]
             start_time = time.time()
             
             for header_match in header_matches:
-                header_values = np.asarray(mira_extract_raw_data.prefix_header_cy(
+                header_values = np.asarray(syra_extract_raw_data.prefix_header_cy(
                     raw_fifo_data[header_match: header_match + 9]), np.uint32)
 
                 self.header_dict = {
@@ -100,7 +100,7 @@ class MIRA_DATA_EXTRACTOR():
                 curr_frame_cnt = np.uint16(self.header_dict['frame_cnt'])
                 raw_data_slice = raw_fifo_data[header_match + 9: header_match + self.package_chirp_header_index_distance]
 
-                data_field = np.asarray(mira_extract_raw_data.extract_raw_data_cy(
+                data_field = np.asarray(syra_extract_raw_data.extract_raw_data_cy(
                     raw_data_slice,
                     raw_data_slice.shape[0],
                     self.radar_param.sys.rx_active_antennas[0]), dtype=np.uint16)

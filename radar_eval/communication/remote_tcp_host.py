@@ -1,7 +1,7 @@
 import socket
 import threading
 
-class MIRA_TCP_SERVER:
+class SYRA_TCP_SERVER:
     def __init__(self, 
                  host: str,
                  port: str,
@@ -47,6 +47,6 @@ class MIRA_TCP_SERVER:
         print("Server closed")
 
 if __name__ == "__main__":
-    client = MIRA_TCP_SERVER('0,0,0,0', 22)
+    client = SYRA_TCP_SERVER('0,0,0,0', 22)
     client.connect()
 

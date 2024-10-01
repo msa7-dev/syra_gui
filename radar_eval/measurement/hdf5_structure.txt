@@ -16721,8 +16721,8 @@
       - @shape: (2048, 4, 2, 16)
       - @timestamp: 1707318320.3144016
   - Metadata
-    - mira_bgt_reg_content
-      - @mira_bgt_reg_content: reg 0x00 0x1c9390
+    - syra_bgt_reg_content
+      - @syra_bgt_reg_content: reg 0x00 0x1c9390
 reg 0x01 0x070210
 reg 0x02 0x000504
 reg 0x03 0x000000
@@ -16812,8 +16812,8 @@ reg 0x5f 0x000000
 reg 0x60 0x3020e6
 reg 0x61 0x2c64ac
 
-    - mira_bgt_reg_content_readable
-      - @mira_bgt_reg_content_readable: MAIN (0x0):
+    - syra_bgt_reg_content_readable
+      - @syra_bgt_reg_content_readable: MAIN (0x0):
 Register Value:  0x1c9390
 Register Symbol  | Value (dec)  | Value (hex)  | Value (bin) 
 _____________________________________________________________
@@ -17903,7 +17903,7 @@ CHIP_ID_2        |   2909356    |   0x2c64ac   | 0b1011000110010010101100
 _____________________________________________________________
 
 
-    - mira_config
-      - @mira_config: {"MIRA_BGT_SETTINGS": {"version": "1.1.1", "sykno_product": "MiRa6024|1A", "bgt_reg_path_txt": "./radar_eval/cfg/mira6024_projects/reg_bgt_default.txt", "mira_reg_log_txt": "./radar_eval/log/mira_reg_log.txt", "mira_reg_log_readable_txt": "./radar_eval/log/mira_reg_readable_log.txt"}, "MIRA_HOST_SYS_PARAMETER": {"version": "1.1.1", "sykno_product": "MiRa6024|1A", "mira_aquisition_cpu_core": "0", "mira_extracting_cpu_core": "1", "mira_processing_cpu_core": "2", "mira_process_prio": "-20"}, "MIRA_REMOTE_SETTINGS": {"version": "1.1.1", "sykno_product": "MiRa6024|1A", "mira_tcp_client_ip": "192.168.188.37", "mira_tcp_server_ip": "192.168.188.21", "mira_tcp_client_port": "22", "mira_ssh_client_name": "sykno", "mira_ssh_client_pwd": "syknoerlangen"}, "MIRA_SAVE_MEASUREMENT": {"version": "1.1.1", "sykno_product": "MiRa6024|1A", "mira_meas_hdf5_folder_path": "./radar_eval/meas/hdf5/", "mira_meas_npy_folder_path": "./radar_eval/meas/npy/", "mira_meas_mat_folder_path": "./radar_eval/meas/mat/", "mira_meas_csv_folder_path": "./radar_eval/meas/csv/", "mira_meas_filename": "MiRa6024_Measurement", "mira_meas_meta_group_name": "Metadata", "mira_meas_meta_sys_info": "MiRa_Radar_System_Info", "mira_meas_dataset_group_name": "Data", "mira_meas_dataset_frame_name": "Frame_Data_Cube", "mira_session_label_name": "Default_MiRa6024_Session_Label", "mira_measurement_path": "./radar_eval/meas/hdf5/", "mira_meas_project_name": "Default_MiRa6024_Project"}, "MIRA_USB_SPI_BRIDGE": {"version": "1.1.1", "sykno_product": "MiRa6024|1A", "usb_vendor_id": "0x0483", "usb_product_id": "0x1337", "usb_spi_bridge_timeout": "10000", "usb_spi_bridge_data_allocation": "12288"}, "MIRA_6024_EVAL_GUI": {"version": "1.1.1", "sykno_product": "MiRa6024|1A", "mira_ui_pyqt_file_path": "./radar_eval/gui/resources/mira_gui_window.ui", "mira_gui_color_palette_path": "./radar_eval/gui/resources/sykno_qt_dark_palette.json", "mira_gui_fps_rate": "60", "mira_gui_ups_rate": "2", "mira_gui_full_screen": "False", "mira_gui_start_maximized": "True", "mira_gui_screen_size_min": "640, 480", "mira_plot_pen_width": "1", "mira_plot_pen_cosmetic": "True", "mira_plot_title_font": "20", "mira_plot_axis_label_font": "18", "mira_plot_axis_numbers_font": "18", "mira_plot_axis_label_offset": "10", "mira_plot_color_pen_1": "173, 216, 230", "mira_plot_color_pen_2": "0, 0, 205", "mira_plot_color_pen_3": "144, 238, 144", "mira_plot_color_pen_4": "0, 128, 0", "mira_plot_color_pen_5": "204, 153, 255", "mira_plot_color_pen_6": "128, 0, 128", "mira_plot_color_pen_7": "255, 200, 0", "mira_plot_color_pen_8": "255, 140, 0", "mira_sheet_color": "51, 55, 59", "mira_plot_text_color": "210, 210, 210", "mira_plot_background_color": "40, 40, 40"}}
-    - mira_radar_parameters
-      - mira_radar_parameters (Dataset)
+    - syra_config
+      - @syra_config: {"SYRA_BGT_SETTINGS": {"version": "1.1.1", "sykno_product": "MiRa6024|1A", "bgt_reg_path_txt": "./radar_eval/cfg/syra6024_projects/reg_bgt_default.txt", "syra_reg_log_txt": "./radar_eval/log/syra_reg_log.txt", "syra_reg_log_readable_txt": "./radar_eval/log/syra_reg_readable_log.txt"}, "SYRA_HOST_SYS_PARAMETER": {"version": "1.1.1", "sykno_product": "MiRa6024|1A", "syra_aquisition_cpu_core": "0", "syra_extracting_cpu_core": "1", "syra_processing_cpu_core": "2", "syra_process_prio": "-20"}, "SYRA_REMOTE_SETTINGS": {"version": "1.1.1", "sykno_product": "MiRa6024|1A", "syra_tcp_client_ip": "192.168.188.37", "syra_tcp_server_ip": "192.168.188.21", "syra_tcp_client_port": "22", "syra_ssh_client_name": "sykno", "syra_ssh_client_pwd": "syknoerlangen"}, "SYRA_SAVE_MEASUREMENT": {"version": "1.1.1", "sykno_product": "MiRa6024|1A", "syra_meas_hdf5_folder_path": "./radar_eval/meas/hdf5/", "syra_meas_npy_folder_path": "./radar_eval/meas/npy/", "syra_meas_mat_folder_path": "./radar_eval/meas/mat/", "syra_meas_csv_folder_path": "./radar_eval/meas/csv/", "syra_meas_filename": "MiRa6024_Measurement", "syra_meas_meta_group_name": "Metadata", "syra_meas_meta_sys_info": "MiRa_Radar_System_Info", "syra_meas_dataset_group_name": "Data", "syra_meas_dataset_frame_name": "Frame_Data_Cube", "syra_session_label_name": "Default_MiRa6024_Session_Label", "syra_measurement_path": "./radar_eval/meas/hdf5/", "syra_meas_project_name": "Default_MiRa6024_Project"}, "SYRA_USB_SPI_BRIDGE": {"version": "1.1.1", "sykno_product": "MiRa6024|1A", "usb_vendor_id": "0x0483", "usb_product_id": "0x1337", "usb_spi_bridge_timeout": "10000", "usb_spi_bridge_data_allocation": "12288"}, "SYRA_6024_EVAL_GUI": {"version": "1.1.1", "sykno_product": "MiRa6024|1A", "syra_ui_pyqt_file_path": "./radar_eval/gui/resources/syra_gui_window.ui", "syra_gui_color_palette_path": "./radar_eval/gui/resources/sykno_qt_dark_palette.json", "syra_gui_fps_rate": "60", "syra_gui_ups_rate": "2", "syra_gui_full_screen": "False", "syra_gui_start_maximized": "True", "syra_gui_screen_size_min": "640, 480", "syra_plot_pen_width": "1", "syra_plot_pen_cosmetic": "True", "syra_plot_title_font": "20", "syra_plot_axis_label_font": "18", "syra_plot_axis_numbers_font": "18", "syra_plot_axis_label_offset": "10", "syra_plot_color_pen_1": "173, 216, 230", "syra_plot_color_pen_2": "0, 0, 205", "syra_plot_color_pen_3": "144, 238, 144", "syra_plot_color_pen_4": "0, 128, 0", "syra_plot_color_pen_5": "204, 153, 255", "syra_plot_color_pen_6": "128, 0, 128", "syra_plot_color_pen_7": "255, 200, 0", "syra_plot_color_pen_8": "255, 140, 0", "syra_sheet_color": "51, 55, 59", "syra_plot_text_color": "210, 210, 210", "syra_plot_background_color": "40, 40, 40"}}
+    - syra_radar_parameters
+      - syra_radar_parameters (Dataset)

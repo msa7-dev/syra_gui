@@ -39,7 +39,7 @@
   </property>
   <property name="windowIcon">
    <iconset>
-    <normaloff>pics/icon_Sykno.png</normaloff>pics/icon_Sykno.png</iconset>
+    <normaloff>../../../../../../../.designer/backup/pics/icon_Sykno.png</normaloff>../../../../../../../.designer/backup/pics/icon_Sykno.png</iconset>
   </property>
   <widget class="QWidget" name="centralwidget">
    <property name="sizePolicy">
@@ -181,7 +181,7 @@
              <enum>Qt::AutoText</enum>
             </property>
             <property name="pixmap">
-             <pixmap>pics/Logo_Sykno_white.svg</pixmap>
+             <pixmap>../../../../../../../.designer/backup/pics/Logo_Sykno_white.svg</pixmap>
             </property>
             <property name="scaledContents">
              <bool>false</bool>
@@ -596,7 +596,7 @@
          </layout>
         </item>
         <item>
-         <widget class="QLabel" name="mira_gui_main_window_down_label">
+         <widget class="QLabel" name="syra_gui_main_window_down_label">
           <property name="font">
            <font>
             <pointsize>14</pointsize>
@@ -647,7 +647,7 @@
          </font>
         </property>
         <property name="currentIndex">
-         <number>0</number>
+         <number>1</number>
         </property>
         <widget class="QWidget" name="tab">
          <attribute name="title">
@@ -4174,17 +4174,20 @@
               <property name="suffix">
                <string> µs</string>
               </property>
+              <property name="decimals">
+               <number>3</number>
+              </property>
               <property name="minimum">
-               <double>12.050000000000001</double>
+               <double>0.015000000000000</double>
               </property>
               <property name="maximum">
-               <double>90000.000000000000000</double>
+               <double>99999.000000000000000</double>
               </property>
               <property name="singleStep">
-               <double>12.050000000000001</double>
+               <double>0.025000000000000</double>
               </property>
               <property name="value">
-               <double>250.000000000000000</double>
+               <double>200.000000000000000</double>
               </property>
              </widget>
             </item>
@@ -4270,7 +4273,7 @@
                <double>1.000000000000000</double>
               </property>
               <property name="maximum">
-               <double>2.857140000000000</double>
+               <double>4.000000000000000</double>
               </property>
               <property name="singleStep">
                <double>0.076517000000000</double>
@@ -4387,17 +4390,20 @@
               <property name="suffix">
                <string> µs</string>
               </property>
+              <property name="decimals">
+               <number>3</number>
+              </property>
               <property name="minimum">
-               <double>12.050000000000001</double>
+               <double>0.015000000000000</double>
               </property>
               <property name="maximum">
-               <double>25.100000000000001</double>
+               <double>25.000000000000000</double>
               </property>
               <property name="singleStep">
-               <double>0.250000000000000</double>
+               <double>0.025000000000000</double>
               </property>
               <property name="value">
-               <double>25.100000000000001</double>
+               <double>1.000000000000000</double>
               </property>
              </widget>
             </item>
@@ -4539,6 +4545,9 @@
               <property name="suffix">
                <string> GHz</string>
               </property>
+              <property name="decimals">
+               <number>3</number>
+              </property>
               <property name="minimum">
                <double>58.000000000000000</double>
               </property>
@@ -4546,7 +4555,7 @@
                <double>63.000000000000000</double>
               </property>
               <property name="singleStep">
-               <double>0.250000000000000</double>
+               <double>0.001000000000000</double>
               </property>
              </widget>
             </item>
@@ -4560,6 +4569,9 @@
               <property name="suffix">
                <string> GHz</string>
               </property>
+              <property name="decimals">
+               <number>3</number>
+              </property>
               <property name="minimum">
                <double>58.000000000000000</double>
               </property>
@@ -4567,7 +4579,7 @@
                <double>63.000000000000000</double>
               </property>
               <property name="singleStep">
-               <double>0.250000000000000</double>
+               <double>0.001000000000000</double>
               </property>
               <property name="value">
                <double>63.000000000000000</double>
@@ -4706,10 +4718,10 @@
                <string> µs</string>
               </property>
               <property name="decimals">
-               <number>2</number>
+               <number>0</number>
               </property>
               <property name="minimum">
-               <double>12.050000000000001</double>
+               <double>12.000000000000000</double>
               </property>
               <property name="maximum">
                <double>90000.000000000000000</double>
@@ -5425,7 +5437,7 @@
            </widget>
           </item>
           <item row="6" column="0">
-           <widget class="QTextBrowser" name="mira_system_path_textBrowser">
+           <widget class="QTextBrowser" name="syra_system_path_textBrowser">
             <property name="sizePolicy">
              <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
               <horstretch>0</horstretch>
@@ -5531,7 +5543,7 @@
            </layout>
           </item>
           <item row="4" column="0">
-           <widget class="QPlainTextEdit" name="mira_project_plainTextEdit">
+           <widget class="QPlainTextEdit" name="syra_project_plainTextEdit">
             <property name="sizePolicy">
              <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
               <horstretch>0</horstretch>
@@ -5560,7 +5572,7 @@
           <item row="2" column="0">
            <layout class="QGridLayout" name="gridLayout_25">
             <item row="1" column="1">
-             <widget class="QPushButton" name="mira_project_button">
+             <widget class="QPushButton" name="syra_project_button">
               <property name="sizePolicy">
                <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
                 <horstretch>0</horstretch>

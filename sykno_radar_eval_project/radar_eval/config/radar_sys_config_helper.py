@@ -2,10 +2,10 @@ import __init__
 import configparser
 from pathlib import Path
 
-class MIRA_SYS_CONFIG():
+class SYRA_SYS_CONFIG():
     def __init__(self):
         self.config = configparser.ConfigParser()
-        self.MIRA_SYS_CONFIG_PATH = self.config.read(Path(__init__.MIRA_SYS_CONFIG_PATH).resolve())    
+        self.SYRA_SYS_CONFIG_PATH = self.config.read(Path(__init__.SYRA_SYS_CONFIG_PATH).resolve())    
         
     def update_ini_file(self, section: str, key_word: str, new_value: str):
         """
@@ -22,7 +22,7 @@ class MIRA_SYS_CONFIG():
         """
         # Initialize the configparser
         config = configparser.ConfigParser()
-        config.read(self.MIRA_SYS_CONFIG_PATH)
+        config.read(self.SYRA_SYS_CONFIG_PATH)
 
         # Check if the section exists
         if section in config:
@@ -39,7 +39,7 @@ class MIRA_SYS_CONFIG():
             config.set(section, key_word, new_value)
 
         # Save the updated configuration back to the INI file
-        with open(str(self.MIRA_SYS_CONFIG_PATH), "w") as config_file:
+        with open(str(self.SYRA_SYS_CONFIG_PATH), "w") as config_file:
             config.write(config_file)
 
         return True

@@ -664,7 +664,7 @@
          </layout>
         </item>
         <item>
-         <widget class="QLabel" name="mira_gui_main_window_down_label">
+         <widget class="QLabel" name="syra_gui_main_window_down_label">
           <property name="font">
            <font>
             <pointsize>14</pointsize>
@@ -4867,7 +4867,7 @@
           <item row="2" column="0">
            <layout class="QGridLayout" name="gridLayout_25">
             <item row="1" column="1">
-             <widget class="QPushButton" name="mira_project_button">
+             <widget class="QPushButton" name="syra_project_button">
               <property name="sizePolicy">
                <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
                 <horstretch>0</horstretch>
@@ -5519,7 +5519,7 @@
            </widget>
           </item>
           <item row="7" column="0">
-           <widget class="QTextBrowser" name="mira_system_path_textBrowser">
+           <widget class="QTextBrowser" name="syra_system_path_textBrowser">
             <property name="sizePolicy">
              <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
               <horstretch>0</horstretch>
@@ -5663,7 +5663,7 @@
            </widget>
           </item>
           <item row="5" column="0">
-           <widget class="QPlainTextEdit" name="mira_project_plainTextEdit">
+           <widget class="QPlainTextEdit" name="syra_project_plainTextEdit">
             <property name="sizePolicy">
              <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
               <horstretch>0</horstretch>

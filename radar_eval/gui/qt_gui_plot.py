@@ -4,17 +4,17 @@ import configparser
 import pyqtgraph as pg
 from PyQt5 import QtGui, QtWidgets
 from PyQt5.QtGui import QColor
-from radar_eval.radar_system.radar_system_definition import MIRA_RADAR_PARAMETER
+from radar_eval.radar_system.radar_system_definition import SYRA_RADAR_PARAMETER
 
 
 # ==============================================================================
-# Class Name: MIRA_PLOTTER
+# Class Name: SYRA_PLOTTER
 # ==============================================================================
-class MIRA_PLOTTER:
+class SYRA_PLOTTER:
     def __init__(self, qt_self):
         np.seterr(over='ignore')
         self.qt_self = qt_self
-        self.radar_param: MIRA_RADAR_PARAMETER = qt_self.radar_param
+        self.radar_param: SYRA_RADAR_PARAMETER = qt_self.radar_param
         self.time_signal = TIME_SIGNAL_PLOTTER(qt_self)
         self.spectrum = SPECTRUM_PLOTTER(qt_self)
         self.spectrogram = SPECTROGRAM_PLOTTER(qt_self)
@@ -43,41 +43,41 @@ class MIRA_PLOTTER:
 
 
 # ==============================================================================
-# Class Name: MIRA_PLOT_CONFIG
+# Class Name: SYRA_PLOT_CONFIG
 # ==============================================================================
-class MIRA_PLOT_CONFIG:
+class SYRA_PLOT_CONFIG:
     def __init__(self, qt_self):
         self.config = configparser.ConfigParser()
-        self.config.read(__init__.MIRA_SYS_CONFIG_PATH)
+        self.config.read(__init__.SYRA_SYS_CONFIG_PATH)
 
-        MIRA_PLOT_TITLE_FONT = int(self.config.get("MIRA_6024_EVAL_GUI", "MIRA_PLOT_TITLE_FONT"))
-        self.plot_title_font = f'{MIRA_PLOT_TITLE_FONT}pt'
+        SYRA_PLOT_TITLE_FONT = int(self.config.get("SYRA_6024_EVAL_GUI", "SYRA_PLOT_TITLE_FONT"))
+        self.plot_title_font = f'{SYRA_PLOT_TITLE_FONT}pt'
 
-        MIRA_PLOT_AXIS_LABEL_FONT = int(self.config.get("MIRA_6024_EVAL_GUI", "MIRA_PLOT_AXIS_LABEL_FONT"))
+        SYRA_PLOT_AXIS_LABEL_FONT = int(self.config.get("SYRA_6024_EVAL_GUI", "SYRA_PLOT_AXIS_LABEL_FONT"))
         self.axis_label_font = QtGui.QFont()
-        self.axis_label_font.setPixelSize(MIRA_PLOT_AXIS_LABEL_FONT)
+        self.axis_label_font.setPixelSize(SYRA_PLOT_AXIS_LABEL_FONT)
 
-        MIRA_PLOT_AXIS_NUMBERS_FONT = int(self.config.get("MIRA_6024_EVAL_GUI", "MIRA_PLOT_AXIS_NUMBERS_FONT"))
+        SYRA_PLOT_AXIS_NUMBERS_FONT = int(self.config.get("SYRA_6024_EVAL_GUI", "SYRA_PLOT_AXIS_NUMBERS_FONT"))
         self.axis_numbers_font = QtGui.QFont()
-        self.axis_numbers_font.setPixelSize(MIRA_PLOT_AXIS_NUMBERS_FONT)
+        self.axis_numbers_font.setPixelSize(SYRA_PLOT_AXIS_NUMBERS_FONT)
 
-        self.axis_label_offset = int(self.config.get("MIRA_6024_EVAL_GUI", "MIRA_PLOT_AXIS_LABEL_OFFSET"))
+        self.axis_label_offset = int(self.config.get("SYRA_6024_EVAL_GUI", "SYRA_PLOT_AXIS_LABEL_OFFSET"))
 
-        MIRA_PLOT_BACKGROUND_COLOR = self.config.get('MIRA_6024_EVAL_GUI', 'MIRA_PLOT_BACKGROUND_COLOR')
-        color_tuple_plot_background = tuple(map(int, MIRA_PLOT_BACKGROUND_COLOR.split(',')))
+        SYRA_PLOT_BACKGROUND_COLOR = self.config.get('SYRA_6024_EVAL_GUI', 'SYRA_PLOT_BACKGROUND_COLOR')
+        color_tuple_plot_background = tuple(map(int, SYRA_PLOT_BACKGROUND_COLOR.split(',')))
         self.plot_background = QColor(*color_tuple_plot_background)
 
-        MIRA_PLOT_TEXT_COLOR = self.config.get('MIRA_6024_EVAL_GUI', 'MIRA_PLOT_TEXT_COLOR')
-        color_tuple_plot_text = tuple(map(int, MIRA_PLOT_TEXT_COLOR.split(',')))
+        SYRA_PLOT_TEXT_COLOR = self.config.get('SYRA_6024_EVAL_GUI', 'SYRA_PLOT_TEXT_COLOR')
+        color_tuple_plot_text = tuple(map(int, SYRA_PLOT_TEXT_COLOR.split(',')))
         self.plot_text_color = QColor(*color_tuple_plot_text)
 
-        MIRA_SHEET_COLOR = self.config.get('MIRA_6024_EVAL_GUI', 'MIRA_SHEET_COLOR')
-        color_tuple_sheet_color = tuple(map(int, MIRA_SHEET_COLOR.split(',')))
+        SYRA_SHEET_COLOR = self.config.get('SYRA_6024_EVAL_GUI', 'SYRA_SHEET_COLOR')
+        color_tuple_sheet_color = tuple(map(int, SYRA_SHEET_COLOR.split(',')))
         qt_self.setStyleSheet(f"background-color: rgb({color_tuple_sheet_color});")
 
-        self.mira_plot_pen_width = int(self.config.get("MIRA_6024_EVAL_GUI", "MIRA_PLOT_PEN_WIDTH"))
-        MIRA_PLOT_PEN_COSMETIC = str(self.config.get("MIRA_6024_EVAL_GUI", "MIRA_PLOT_PEN_COSMETIC"))
-        self.pen_cosmetic_bool = True if MIRA_PLOT_PEN_COSMETIC == "True" else False
+        self.syra_plot_pen_width = int(self.config.get("SYRA_6024_EVAL_GUI", "SYRA_PLOT_PEN_WIDTH"))
+        SYRA_PLOT_PEN_COSMETIC = str(self.config.get("SYRA_6024_EVAL_GUI", "SYRA_PLOT_PEN_COSMETIC"))
+        self.pen_cosmetic_bool = True if SYRA_PLOT_PEN_COSMETIC == "True" else False
 
         self.plot_pens = self.init_pen_colors()
         self.init_color_lut(qt_self.radar_param.sys.plot_ampl_limit_min, qt_self.radar_param.sys.plot_ampl_limit_max)
@@ -87,13 +87,13 @@ class MIRA_PLOT_CONFIG:
         pen_colors = []
 
         for i in range(1, num_pens + 1):
-            config_key = f'MIRA_PLOT_COLOR_PEN_{i}'
-            color_str = self.config.get('MIRA_6024_EVAL_GUI', config_key)
+            config_key = f'SYRA_PLOT_COLOR_PEN_{i}'
+            color_str = self.config.get('SYRA_6024_EVAL_GUI', config_key)
             color_tuple = tuple(map(int, color_str.split(',')))
 
             pen = pg.mkPen(cosmetic=self.pen_cosmetic_bool,
                            color=QColor(*color_tuple),
-                           width=self.mira_plot_pen_width)
+                           width=self.syra_plot_pen_width)
             pen_colors.append(pen)
 
         return pen_colors
@@ -117,7 +117,7 @@ class MIRA_PLOT_CONFIG:
 class TIME_SIGNAL_PLOTTER:
     def __init__(self, qt_self):
         self.qt_self = qt_self
-        self.plot_config = MIRA_PLOT_CONFIG(qt_self)
+        self.plot_config = SYRA_PLOT_CONFIG(qt_self)
         self.plot_time_list = [qt_self.plot_time_raw_data,
                                qt_self.plot_time_dsp_output]
         self.init_plot_parameters()
@@ -196,7 +196,7 @@ class TIME_SIGNAL_PLOTTER:
 class SPECTRUM_PLOTTER:
     def __init__(self, qt_self):
         self.qt_self = qt_self
-        self.plot_config = MIRA_PLOT_CONFIG(qt_self)
+        self.plot_config = SYRA_PLOT_CONFIG(qt_self)
         self.plot_spectrum = qt_self.plot_spectrum
         self.radar_param = qt_self.radar_param
         self.init_plot_parameters()
@@ -286,7 +286,7 @@ class SPECTROGRAM_PLOTTER:
     def __init__(self, qt_self):
         self.qt_self = qt_self
         
-        self.plot_config = MIRA_PLOT_CONFIG(qt_self)
+        self.plot_config = SYRA_PLOT_CONFIG(qt_self)
         self.plot_spectrogram_list = [qt_self.plot_spectrogram_1,
                                       qt_self.plot_spectrogram_2,
                                       qt_self.plot_spectrogram_3,
@@ -399,7 +399,7 @@ class SPECTROGRAM_PLOTTER:
 class RANGE_DOPPLER_PLOTTER:
     def __init__(self, qt_self):
         self.qt_self = qt_self
-        self.plot_config = MIRA_PLOT_CONFIG(qt_self)
+        self.plot_config = SYRA_PLOT_CONFIG(qt_self)
         self.plot_range_doppler_list = [qt_self.plot_range_doppler_1,
                                         qt_self.plot_range_doppler_2,
                                         qt_self.plot_range_doppler_3,
@@ -514,7 +514,7 @@ class RANGE_AZIMUTH_PLOTTER:
     def __init__(self, qt_self):
         self.qt_self = qt_self
 
-        self.plot_config = MIRA_PLOT_CONFIG(qt_self)
+        self.plot_config = SYRA_PLOT_CONFIG(qt_self)
         self.plot_range_azimuth_list = [qt_self.plot_range_azimuth,
                                         qt_self.plot_waterfall_azimuth_range_azimuth,
                                         qt_self.plot_range_doppler_azimuth_azimuth,

@@ -2,23 +2,23 @@ import numpy as np
 from pathlib import Path
 
 # ==============================================================================
-# Class Name: MIRA_RADAR_PARAMETER
+# Class Name: SYRA_RADAR_PARAMETER
 # ==============================================================================
-class MIRA_RADAR_PARAMETER():
+class SYRA_RADAR_PARAMETER():
     def __init__(self) -> None:
-        self.gui  = MIRA_RADAR_GUI_PARAMETER()
-        self.dsp  = MIRA_RADAR_DSP_PARAMETER()
-        self.sens = MIRA_RADAR_SENS_PARAMETER()
-        self.sys  = MIRA_RADAR_SYS_PARAMETER()
-        self.mon  = MIRA_RADAR_MON_PARAMETER()
-        self.meas = MIRA_RADAR_MEAS_PARAMETER()
-        self.rply = MIRA_RADAR_RPLY_PARAMETER()
-        self.remt = MIRA_RADAR_REMT_PARAMETER()
+        self.gui  = SYRA_RADAR_GUI_PARAMETER()
+        self.dsp  = SYRA_RADAR_DSP_PARAMETER()
+        self.sens = SYRA_RADAR_SENS_PARAMETER()
+        self.sys  = SYRA_RADAR_SYS_PARAMETER()
+        self.mon  = SYRA_RADAR_MON_PARAMETER()
+        self.meas = SYRA_RADAR_MEAS_PARAMETER()
+        self.rply = SYRA_RADAR_RPLY_PARAMETER()
+        self.remt = SYRA_RADAR_REMT_PARAMETER()
 
 # ==============================================================================
-# Class Name: MIRA_RADAR_DSP_PARAMETER
+# Class Name: SYRA_RADAR_DSP_PARAMETER
 # ==============================================================================
-class MIRA_RADAR_DSP_PARAMETER():
+class SYRA_RADAR_DSP_PARAMETER():
     def __init__(self) -> None:
         self.axis_max_value = np.uint32(0)
         self.padding_len = np.uint16(0)
@@ -32,9 +32,9 @@ class MIRA_RADAR_DSP_PARAMETER():
         
 
 # ==============================================================================
-# Class Name: MIRA_RADAR_MON_PARAMETER
+# Class Name: SYRA_RADAR_MON_PARAMETER
 # ==============================================================================
-class MIRA_RADAR_MON_PARAMETER():
+class SYRA_RADAR_MON_PARAMETER():
     def __init__(self) -> None:
         self.duration_frame_counter = np.uint32(0)
         self.duration_time = np.float32(0)
@@ -54,9 +54,9 @@ class MIRA_RADAR_MON_PARAMETER():
         
 
 # ==============================================================================
-# Class Name: MIRA_RADAR_SENS_PARAMETER
+# Class Name: SYRA_RADAR_SENS_PARAMETER
 # ==============================================================================
-class MIRA_RADAR_SENS_PARAMETER():
+class SYRA_RADAR_SENS_PARAMETER():
     def __init__(self) -> None:
         self.tx_power = np.float32(0)
         self.sample_rate = np.float32(0)
@@ -70,9 +70,9 @@ class MIRA_RADAR_SENS_PARAMETER():
         self.shape_set_end_delay = np.float32(0)
         
 # ==============================================================================
-# Class Name: MIRA_RADAR_SYS_PARAMETER
+# Class Name: SYRA_RADAR_SYS_PARAMETER
 # ==============================================================================
-class MIRA_RADAR_SYS_PARAMETER():
+class SYRA_RADAR_SYS_PARAMETER():
     def __init__(self) -> None:
         self.allocation_factor = np.float16(3)
         self.rx_active_antennas = np.zeros((8), dtype=np.uint8)
@@ -170,9 +170,9 @@ class MIRA_RADAR_SYS_PARAMETER():
         self.rf_antenna = np.uint8(0)
         
 # ==============================================================================
-# Class Name: MIRA_RADAR_GUI_PARAMETER
+# Class Name: SYRA_RADAR_GUI_PARAMETER
 # ==============================================================================
-class MIRA_RADAR_GUI_PARAMETER():
+class SYRA_RADAR_GUI_PARAMETER():
     def __init__(self) -> None:
         self.fps = np.uint8(0)
         self.project_name = str('')
@@ -186,9 +186,9 @@ class MIRA_RADAR_GUI_PARAMETER():
                          False, False]
         
 # ==============================================================================
-# Class Name: MIRA_RADAR_MEAS_PARAMETER
+# Class Name: SYRA_RADAR_MEAS_PARAMETER
 # ==============================================================================
-class MIRA_RADAR_MEAS_PARAMETER():
+class SYRA_RADAR_MEAS_PARAMETER():
     def __init__(self) -> None:
         self.folder_path = Path()
         self.session_label = str('')
@@ -198,17 +198,17 @@ class MIRA_RADAR_MEAS_PARAMETER():
         self.recording_n_frames = np.uint32(0)
 
 # ==============================================================================
-# Class Name: MIRA_RADAR_RPLY_PARAMETER
+# Class Name: SYRA_RADAR_RPLY_PARAMETER
 # ==============================================================================
-class MIRA_RADAR_RPLY_PARAMETER():
+class SYRA_RADAR_RPLY_PARAMETER():
     def __init__(self) -> None:
         self.replay_flag = False
         self.load_path_hdf5 = Path()
         
 # ==============================================================================
-# Class Name: MIRA_RADAR_REMT_PARAMETER
+# Class Name: SYRA_RADAR_REMT_PARAMETER
 # ==============================================================================
-class MIRA_RADAR_REMT_PARAMETER():
+class SYRA_RADAR_REMT_PARAMETER():
     def __init__(self) -> None:
         self.remote_flag = False
         self.client_flag = False
