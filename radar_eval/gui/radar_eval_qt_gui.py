@@ -573,18 +573,18 @@ class SYRA_MAIN_GUI(QtWidgets.QMainWindow):
                 self._update_range_doppler_plot_line(channel, 'Channel 1', plot_counter - 4)
 
     def _update_range_doppler_plot_line(self, channel_name: str, channel: str, plot_counter: int) -> None:
-        radar_data_buffer = self.range_doppler_buffer
+        # radar_data_buffer = self.range_doppler_buffer
 
-        new_radar_data = self.processed_radar_data[channel]
+        # new_radar_data = self.processed_radar_data[channel]
 
-        radar_data_buffer = np.roll(radar_data_buffer, shift=-1, axis=-1)
+        # radar_data_buffer = np.roll(radar_data_buffer, shift=-1, axis=-1)
 
-        radar_data_buffer[:, :, :, -1] = new_radar_data
-        self.range_doppler_buffer = radar_data_buffer
-        mean_range_doppler_map = np.mean(radar_data_buffer, axis=-1)
+        # radar_data_buffer[:, :, :, -1] = new_radar_data
+        # self.range_doppler_buffer = radar_data_buffer
+        # mean_range_doppler_map = np.mean(radar_data_buffer, axis=-1)
         
-        # mean_range_doppler_map = self.processed_radar_data[channel]
-        
+        mean_range_doppler_map = self.processed_radar_data[channel]
+
         self.gui_controller.syra_plotter.range_doppler.plotlines[f'{self.gui_controller.tab_name_main_instance_window} {channel_name}'].setImage(
             np.transpose(np.flip(mean_range_doppler_map, axis=0), (0, 1, 2))[:, :, plot_counter],
             autoLevels=False

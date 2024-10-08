@@ -793,7 +793,7 @@ class SYRA_GUI_CTRL():
         elif measurement_duration_unit == 'h':
             measurement_duration_value *= 3600
         self.radar_param.meas.recording_duration = int(measurement_duration_value)
-    
+     
     def get_headless_recording_state(self) -> None:
         if self.qt_self.headless_recording_check_box.isChecked():
             self.radar_param.meas.record_headless = True
@@ -925,23 +925,27 @@ class SYRA_GUI_CTRL():
         self.radar_param.remt.client_ssh_pwd = \
             self.qt_self.client_ssh_pwd_plainTextEdit.toPlainText()
     
+    def _map_value(self, x, x_min=-10, x_max=5, y_min=0, y_max=31):
+        return (x - x_min) * (y_max - y_min) / (x_max - x_min) + y_min
+
     def get_tx_power(self) -> None:
         tx_power = self.qt_self.spin_box_set_tx_power.value()
-        tx_power = np.uint8(tx_power)
         self.radar_param.sens.tx_power = tx_power
+        self.tx_power_mapped_value = np.uint8(self._map_value(tx_power))
+        print(self.tx_power_mapped_value)
         self.set_tx_power()
         
     def set_tx_power(self) -> None:
         if self.qt_self.running == True or self.qt_self.syra_controller is None:
             return
-        self.qt_self.syra_controller.syra_device._csu1_1_reg.set_tx_power(self.radar_param.sens.tx_power, 2)
-        self.qt_self.syra_controller.syra_device._csd1_1_reg.set_tx_power(self.radar_param.sens.tx_power, 2)
-        self.qt_self.syra_controller.syra_device._csu2_1_reg.set_tx_power(self.radar_param.sens.tx_power, 2)
-        self.qt_self.syra_controller.syra_device._csd2_1_reg.set_tx_power(self.radar_param.sens.tx_power, 2)
-        self.qt_self.syra_controller.syra_device._csu3_1_reg.set_tx_power(self.radar_param.sens.tx_power, 2)
-        self.qt_self.syra_controller.syra_device._csd3_1_reg.set_tx_power(self.radar_param.sens.tx_power, 2)
-        self.qt_self.syra_controller.syra_device._csu4_1_reg.set_tx_power(self.radar_param.sens.tx_power, 2)
-        self.qt_self.syra_controller.syra_device._csd4_1_reg.set_tx_power(self.radar_param.sens.tx_power, 2)
+        self.qt_self.syra_controller.syra_device._csu1_1_reg.set_tx_power(self.tx_power_mapped_value, 2)
+        self.qt_self.syra_controller.syra_device._csd1_1_reg.set_tx_power(self.tx_power_mapped_value, 2)
+        self.qt_self.syra_controller.syra_device._csu2_1_reg.set_tx_power(self.tx_power_mapped_value, 2)
+        self.qt_self.syra_controller.syra_device._csd2_1_reg.set_tx_power(self.tx_power_mapped_value, 2)
+        self.qt_self.syra_controller.syra_device._csu3_1_reg.set_tx_power(self.tx_power_mapped_value, 2)
+        self.qt_self.syra_controller.syra_device._csd3_1_reg.set_tx_power(self.tx_power_mapped_value, 2)
+        self.qt_self.syra_controller.syra_device._csu4_1_reg.set_tx_power(self.tx_power_mapped_value, 2)
+        self.qt_self.syra_controller.syra_device._csd4_1_reg.set_tx_power(self.tx_power_mapped_value, 2)
 
     def get_sample_rate(self) -> None:
         sample_rate = self.qt_self.spin_box_set_sample_rate.value()

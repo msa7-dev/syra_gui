@@ -7,7 +7,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1926</width>
+    <width>1920</width>
     <height>1720</height>
    </rect>
   </property>
@@ -4175,10 +4175,10 @@
                <string> µs</string>
               </property>
               <property name="decimals">
-               <number>3</number>
+               <number>4</number>
               </property>
               <property name="minimum">
-               <double>0.015000000000000</double>
+               <double>0.012500000000000</double>
               </property>
               <property name="maximum">
                <double>99999.000000000000000</double>
@@ -4394,7 +4394,7 @@
                <number>3</number>
               </property>
               <property name="minimum">
-               <double>0.015000000000000</double>
+               <double>0.025000000000000</double>
               </property>
               <property name="maximum">
                <double>25.000000000000000</double>
@@ -4769,7 +4769,7 @@
              </widget>
             </item>
             <item row="0" column="1">
-             <widget class="QSpinBox" name="spin_box_set_tx_power">
+             <widget class="QDoubleSpinBox" name="spin_box_set_tx_power">
               <property name="sizePolicy">
                <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
                 <horstretch>0</horstretch>
@@ -4793,14 +4793,26 @@
                 <pointsize>12</pointsize>
                </font>
               </property>
+              <property name="prefix">
+               <string/>
+              </property>
               <property name="suffix">
                <string> dBm</string>
               </property>
+              <property name="decimals">
+               <number>2</number>
+              </property>
+              <property name="minimum">
+               <double>-10.000000000000000</double>
+              </property>
               <property name="maximum">
-               <number>31</number>
+               <double>5.000000000000000</double>
+              </property>
+              <property name="singleStep">
+               <double>0.480000000000000</double>
               </property>
               <property name="value">
-               <number>16</number>
+               <double>5.000000000000000</double>
               </property>
              </widget>
             </item>
