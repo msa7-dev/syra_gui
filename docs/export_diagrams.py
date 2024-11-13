@@ -12,7 +12,7 @@ def export_help():
             print("Help command executed successfully.")
 
 def model():
-    return Path("./mira_system_diagrams.gaphor")
+    return Path("./syra_system_diagrams.gaphor")
 
 def export_diagrams(output_directory, format="pdf"):
     model_file = model()

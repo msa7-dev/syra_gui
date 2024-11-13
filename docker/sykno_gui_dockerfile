@@ -1,5 +1,5 @@
-# Use an official Ubuntu as a parent image
-FROM ubuntu:latest
+# Use an official ARM64 Ubuntu as a parent image
+FROM arm64v8/ubuntu:latest
 
 # Set the working directory in the container
 WORKDIR /home/sykno/
@@ -11,34 +11,104 @@ COPY . .
 ENV DEBIAN_FRONTEND=noninteractive
 ENV TZ=UTC
 
-# Update and upgrade the system, and install necessary packages
-RUN apt-get update -y && apt-get upgrade -y && \
+RUN apt-get update -y && \
+    apt-get upgrade -y && \
     apt-get install -y apt-utils sudo tzdata usbutils udev \
     wget build-essential checkinstall libreadline-dev \
     libncursesw5-dev libssl-dev libsqlite3-dev tk-dev \
     libgdbm-dev libc6-dev libbz2-dev libffi-dev zlib1g-dev \
     tzdata x11-xserver-utils libusb-1.0-0-dev libftdi1-dev \
     libqt5svg5* libglib2.0-0 libsm6 libxrender1 libxext6 \
-    libgl1-mesa-glx build-essential && \
-    ln -fs /usr/share/zoneinfo/$TZ /etc/localtime && \
+    qtbase5-dev qt5-qmake qtbase5-dev-tools python3-pyqt5\
+    libqt5gui5 libqt5widgets5 libqt5core5a libxcb-xinerama0 \
+    libxcb-xinerama0-dev libxkbcommon-x11-0 \
+    qemu-user-static pkg-config libhdf5-dev &&  \
+    ln -fs /usr/share/zoneinfo/UTC /etc/localtime && \
     dpkg-reconfigure -f noninteractive tzdata && \
     apt-get autoremove -y && apt-get autoclean -y
 
-# Copy the udev rules
-RUN cp /home/sykno/mira/setup/unix/udev/99-mira_sykno.rules /etc/udev/rules.d/
+# Check if QEMU binfmt interpreters are already set up
+RUN [ ! -f /proc/sys/fs/binfmt_misc/qemu-arm ] && \
+    update-binfmts --enable qemu-arm || echo "QEMU ARM interpreter already set up"
 
-# Download and install Python 3.12
+# Copy the udev rules
+RUN cp /home/sykno/radar_eval/setup/unix/udev/99-sykno_usb_device.rules /etc/udev/rules.d/
+
+# Download and install Python 3.11
 RUN cd /tmp && \
-    wget https://www.python.org/ftp/python/3.12.2/Python-3.12.2.tar.xz && \
-    tar -xf Python-3.12.2.tar.xz && \
-    cd Python-3.12.2 && \
+    wget https://www.python.org/ftp/python/3.11.2/Python-3.11.2.tar.xz && \
+    tar -xf Python-3.11.2.tar.xz && \
+    cd Python-3.11.2 && \
     ./configure --enable-optimizations && \
     make -j 8 && \
     make altinstall
 
-# Upgrade pip and install Python packages
-RUN python3.12 -m pip install --upgrade pip && \
-    python3.12 -m pip install -r /home/sykno/mira/setup/requirements.txt
+# Set up and activate a Python virtual environment before installing requirements
+RUN python3.11 -m venv /home/sykno/sykno_env && \
+    /home/sykno/sykno_env/bin/pip install --upgrade pip && \
+    /home/sykno/sykno_env/bin/pip install -r /home/sykno/radar_eval/setup/requirements.txt
 
-# Define the command to run the application
-# CMD ["sh", "-c", "taskset -c 1 python3.12 -B ./sykno_cli mira-gui"]
+# Set the DISPLAY environment variable
+ENV DISPLAY=:0
+
+# Verify the installation
+RUN ls /home/sykno/sykno_radar_eval_project/
+
+# Command to run your application
+# CMD ["sh", "-c", "taskset -c 1 /home/sykno/sykno_radar_eval_project/radar_gui_starter.bin"]
+
+# Command to run your application
+# CMD ["sh", "-c", "taskset -c 1 /home/sykno/sykno_radar_eval_project/radar_gui_starter.bin"]
+
+# # Use an official Ubuntu as a parent image
+# FROM ubuntu:latest
+
+# # Set the working directory in the container
+# WORKDIR /home/sykno/
+
+# # Copy the current directory contents into the container at /home/sykno
+# COPY . .
+
+# # Avoid interactive dialogues from apt-get and set the timezone
+# ENV DEBIAN_FRONTEND=noninteractive
+# ENV TZ=UTC
+
+# # Install necessary packages
+# RUN apt-get update -y && apt-get upgrade -y && \
+#     apt-get install -y apt-utils sudo tzdata usbutils udev \
+#     wget build-essential checkinstall libreadline-dev \
+#     libncursesw5-dev libssl-dev libsqlite3-dev tk-dev \
+#     libgdbm-dev libc6-dev libbz2-dev libffi-dev zlib1g-dev \
+#     tzdata x11-xserver-utils libusb-1.0-0-dev libftdi1-dev \
+#     libqt5svg5* libglib2.0-0 libsm6 libxrender1 libxext6 \
+#     qtbase5-dev qt5-qmake qtbase5-dev-tools \
+#     libqt5gui5 libqt5widgets5 libqt5core5a libxcb-xinerama0 \
+#     libxcb-xinerama0-dev libxkbcommon-x11-0 && \
+#     ln -fs /usr/share/zoneinfo/UTC /etc/localtime && \
+#     dpkg-reconfigure -f noninteractive tzdata && \
+#     apt-get autoremove -y && apt-get autoclean -y
+
+# # Copy the udev rules
+# RUN cp /home/sykno/radar_eval/setup/unix/udev/99-sykno_usb_device.rules /etc/udev/rules.d/
+
+# # Download and install Python 3.11
+# RUN cd /tmp && \
+#     wget https://www.python.org/ftp/python/3.11.2/Python-3.11.2.tar.xz && \
+#     tar -xf Python-3.11.2.tar.xz && \
+#     cd Python-3.11.2 && \
+#     ./configure --enable-optimizations && \
+#     make -j 8 && \
+#     make altinstall
+
+# # Upgrade pip and install Python packages
+# RUN python3.11 -m pip install --upgrade pip && \
+#     python3.11 -m pip install -r /home/sykno/radar_eval/setup/requirements.txt
+
+# # Set the DISPLAY environment variable
+# ENV DISPLAY=:0
+
+# # Verify the installation
+# RUN ls /home/sykno/sykno_radar_eval_project/
+
+# # Command to run your application
+# # CMD ["sh", "-c", "taskset -c 1 /home/sykno/sykno_radar_eval_project/radar_gui_starter.bin"]

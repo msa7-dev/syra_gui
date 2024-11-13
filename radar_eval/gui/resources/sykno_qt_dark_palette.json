@@ -1,0 +1,18 @@
+{
+    "Window": "#282828",
+    "WindowText": "#C8C8C8",
+    "Base": "#282828",
+    "AlternateBase": "#383838",
+    "ToolTipBase": "#282828",
+    "ToolTipText": "#C8C8C8",
+    "Text": "#C8C8C8",
+    "Button": "#282828",
+    "ButtonText": "#C8C8C8",
+    "BrightText": "#FF0000",
+    "Link": "#2A82DA",
+    "Highlight": "#3498DB",
+    "HighlightedText": "#FFFFFF",
+    "DisabledWindowText": "#646464",
+    "DisabledButtonText": "#646464",
+    "DisabledText": "#646464"
+}

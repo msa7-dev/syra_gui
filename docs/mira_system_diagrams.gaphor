@@ -1262,7 +1262,7 @@ class {
 </Diagram>
 <Class id="859301c2-c474-11ee-9169-b98b3618f18e">
 <name>
-<val>MIRA_MULTIPROCESSOR</val>
+<val>SYRA_MULTIPROCESSOR</val>
 </name>
 <package>
 <ref refid="6b4f023e-c475-11ee-9e98-b98b3618f18e"/>
@@ -1348,7 +1348,7 @@ class {
 </PackageItem>
 <Class id="d6a57a87-c474-11ee-9c12-b98b3618f18e">
 <name>
-<val>MIRA_CTRL_GUI</val>
+<val>SYRA_CTRL_GUI</val>
 </name>
 <package>
 <ref refid="514e8d41-c475-11ee-83a3-b98b3618f18e"/>
@@ -1384,7 +1384,7 @@ class {
 </ClassItem>
 <Class id="34e9339f-c475-11ee-894f-b98b3618f18e">
 <name>
-<val>MIRA_CTRL_CLI</val>
+<val>SYRA_CTRL_CLI</val>
 </name>
 <package>
 <ref refid="514e8d41-c475-11ee-83a3-b98b3618f18e"/>
@@ -1420,7 +1420,7 @@ class {
 </ClassItem>
 <Package id="514e8d41-c475-11ee-83a3-b98b3618f18e">
 <name>
-<val>mira_ctrl.py</val>
+<val>syra_ctrl.py</val>
 </name>
 <ownedType>
 <reflist>
@@ -1468,7 +1468,7 @@ class {
 </PackageItem>
 <Package id="6b4f023e-c475-11ee-9e98-b98b3618f18e">
 <name>
-<val>mira_multiprocessing.py</val>
+<val>syra_multiprocessing.py</val>
 </name>
 <ownedType>
 <reflist>
@@ -1591,7 +1591,7 @@ class {
 </PackageItem>
 <Class id="1b306f4f-c476-11ee-8244-b98b3618f18e">
 <name>
-<val>MIRA_DEVICE</val>
+<val>SYRA_DEVICE</val>
 </name>
 <package>
 <ref refid="23034fe0-c476-11ee-a458-b98b3618f18e"/>
@@ -1627,7 +1627,7 @@ class {
 </ClassItem>
 <Package id="23034fe0-c476-11ee-a458-b98b3618f18e">
 <name>
-<val>mira_device_bgt.py</val>
+<val>syra_device_bgt.py</val>
 </name>
 <ownedType>
 <reflist>
@@ -1709,7 +1709,7 @@ class {
 </ClassItem>
 <Package id="4d006d3b-c476-11ee-b7bb-b98b3618f18e">
 <name>
-<val>mira_reg_cont_bgt.py</val>
+<val>syra_reg_cont_bgt.py</val>
 </name>
 <ownedType>
 <reflist>
@@ -1755,7 +1755,7 @@ class {
 </PackageItem>
 <Package id="61ae49c8-c476-11ee-a12b-b98b3618f18e">
 <name>
-<val>mira_reg_cont_helper.py</val>
+<val>syra_reg_cont_helper.py</val>
 </name>
 <package>
 <ref refid="d732981a-c475-11ee-88b9-b98b3618f18e"/>
@@ -1791,7 +1791,7 @@ class {
 </PackageItem>
 <Package id="6b524dfb-c476-11ee-b5f0-b98b3618f18e">
 <name>
-<val>mira6024_reg_def.py</val>
+<val>syra6024_reg_def.py</val>
 </name>
 <ownedType>
 <reflist>
@@ -1941,7 +1941,7 @@ class {
 </PackageItem>
 <Package id="0a9ed3ed-c478-11ee-a309-b98b3618f18e">
 <name>
-<val>mira_radar_sys.py</val>
+<val>syra_radar_sys.py</val>
 </name>
 <ownedType>
 <reflist>
@@ -1987,7 +1987,7 @@ class {
 </PackageItem>
 <Class id="1fbf96f8-c478-11ee-a9af-b98b3618f18e">
 <name>
-<val>MIRA_RADAR_DSP_PARAMETER</val>
+<val>SYRA_RADAR_DSP_PARAMETER</val>
 </name>
 <nestingClass>
 <ref refid="380d3248-c478-11ee-a48c-b98b3618f18e"/>
@@ -2023,7 +2023,7 @@ class {
 </ClassItem>
 <Class id="380d3248-c478-11ee-a48c-b98b3618f18e">
 <name>
-<val>MIRA_RADAR_PARAMETER</val>
+<val>SYRA_RADAR_PARAMETER</val>
 </name>
 <nestedClassifier>
 <reflist>
@@ -2081,7 +2081,7 @@ class {
 </ClassItem>
 <Class id="5bbc84c4-c478-11ee-b1d3-b98b3618f18e">
 <name>
-<val>MIRA_RADAR_MONITORING_PARAMETER</val>
+<val>SYRA_RADAR_MONITORING_PARAMETER</val>
 </name>
 <nestingClass>
 <ref refid="380d3248-c478-11ee-a48c-b98b3618f18e"/>
@@ -2117,7 +2117,7 @@ class {
 </ClassItem>
 <Class id="a9ba59f7-c478-11ee-9f05-b98b3618f18e">
 <name>
-<val>MIRA_RADAR_GUI_PARAMETER</val>
+<val>SYRA_RADAR_GUI_PARAMETER</val>
 </name>
 <nestingClass>
 <ref refid="380d3248-c478-11ee-a48c-b98b3618f18e"/>
@@ -2153,7 +2153,7 @@ class {
 </ClassItem>
 <Class id="ae61228c-c478-11ee-8cb9-b98b3618f18e">
 <name>
-<val>MIRA_RADAR_SYSTEM_PARAMETER</val>
+<val>SYRA_RADAR_SYSTEM_PARAMETER</val>
 </name>
 <nestingClass>
 <ref refid="380d3248-c478-11ee-a48c-b98b3618f18e"/>
@@ -2189,7 +2189,7 @@ class {
 </ClassItem>
 <Class id="d25aa929-c478-11ee-9981-b98b3618f18e">
 <name>
-<val>MIRA_RADAR_MEAS_PARAMETER</val>
+<val>SYRA_RADAR_MEAS_PARAMETER</val>
 </name>
 <nestingClass>
 <ref refid="380d3248-c478-11ee-a48c-b98b3618f18e"/>
@@ -2225,7 +2225,7 @@ class {
 </ClassItem>
 <Class id="d80c8120-c478-11ee-acb2-b98b3618f18e">
 <name>
-<val>MIRA_RADAR_RPLY_PARAMETER</val>
+<val>SYRA_RADAR_RPLY_PARAMETER</val>
 </name>
 <nestingClass>
 <ref refid="380d3248-c478-11ee-a48c-b98b3618f18e"/>
@@ -2261,7 +2261,7 @@ class {
 </ClassItem>
 <Class id="ecc131e1-c478-11ee-ae5b-b98b3618f18e">
 <name>
-<val>MIRA_RADAR_REMT_PARAMETER</val>
+<val>SYRA_RADAR_REMT_PARAMETER</val>
 </name>
 <nestingClass>
 <ref refid="380d3248-c478-11ee-a48c-b98b3618f18e"/>
