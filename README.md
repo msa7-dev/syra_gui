@@ -20,19 +20,19 @@ $ sudo python3 sykno_cli setup
 $ python3 sykno_cli build
 ```
 
-### Python virtuel enviorment:
+### Python virtual enviorment:
 ```sh
 $ python3 -m venv sykno_env
 $ source ./sykno_env/bin/activate
-$ sudo python3 -m pip install -r ./requirements.txt
+$ sudo python3 -m pip install -r ./radar_eval/setup/requirements.txt
 ```
 
 ### Start MiRa Eval GUI:
 ```sh
-$ sudo python3 sykno_cli syra-gui
+$ sudo python3 sykno_cli start-gui
 ```
 
 ### Build MiRa Eval GUI as one-file-executable via nuitka
 ```sh
-$  nuitka3 --standalone --onefile --enable-plugin=pyqt5 --output-dir=./syra_build ./syra_installer.py
+$  nuitka3 --standalone --onefile --enable-plugin=pyqt5 --output-dir=./compiled ./radar_gui_starter.py
 ```
