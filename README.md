@@ -27,12 +27,13 @@ $ source ./sykno_env/bin/activate
 $ sudo python3 -m pip install -r ./radar_eval/setup/requirements.txt
 ```
 
-### Start MiRa Eval GUI:
+### Start MiRa eval GUI:
 ```sh
 $ sudo python3 sykno_cli start-gui
 ```
 
-### Build MiRa Eval GUI as one-file-executable via nuitka
+### Build MiRa eval GUI as one-file executable via nuitka
+To be executed in the virtual enviorment:
 ```sh
 $  nuitka3 --standalone --onefile --enable-plugin=pyqt5 --output-dir=./compiled ./radar_gui_starter.py
 ```
