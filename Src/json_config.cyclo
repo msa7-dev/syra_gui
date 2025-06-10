@@ -1,0 +1,2 @@
+../Core/Src/json_config.c:7:6:load_config	3
+../Core/Src/json_config.c:35:5:validate_config	7

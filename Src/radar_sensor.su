@@ -1,0 +1,15 @@
+../Core/Src/radar_sensor.c:39:6:Sensor_Init	8	static
+../Core/Src/radar_sensor.c:46:6:init_bgt_registers	16	static
+../Core/Src/radar_sensor.c:63:6:read_singel_bgt_register	16	static
+../Core/Src/radar_sensor.c:80:6:write_bgt_reg	8	static
+../Core/Src/radar_sensor.c:94:6:init_qspi_commands	8	static
+../Core/Src/radar_sensor.c:132:6:init_qspi_dio3_pull_pin	4	static
+../Core/Src/radar_sensor.c:144:6:get_chip_ids	48	static
+../Core/Src/radar_sensor.c:217:6:activate_qspi_gpios	8	static
+../Core/Src/radar_sensor.c:225:6:deactivate_qspi_gpios	8	static
+../Core/Src/radar_sensor.c:233:6:write_bgt_reg_generic	16	static
+../Core/Src/radar_sensor.c:247:6:read_single_bgt_register_generic	16	static
+../Core/Src/radar_sensor.c:260:6:decode_chip_version	24	static
+../Core/Src/radar_sensor.c:305:13:HAL_OSPI_RxCpltCallback	16	static
+../Core/Src/radar_sensor.c:323:13:HAL_GPIO_EXTI_Callback	16	static
+../Core/Src/radar_sensor.c:342:6:read_n_bgt_register	16	static

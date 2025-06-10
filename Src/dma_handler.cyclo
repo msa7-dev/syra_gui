@@ -1,0 +1,2 @@
+../Core/Src/dma_handler.c:3:6:MX_DMA_Init	2
+../Core/Src/dma_handler.c:31:6:MX_MDMA_Init	1

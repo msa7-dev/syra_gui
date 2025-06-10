@@ -1,0 +1,6 @@
+../Core/Src/usb_handler.c:10:13:bgt_reset	16	static
+../Core/Src/usb_handler.c:30:6:USB_CDC_ReceiveCallback	24	static
+../Core/Src/usb_handler.c:43:6:USB_CDC_Tx_Buf_Callback	8	static
+../Core/Src/usb_handler.c:57:6:usb_rx_handle_cases	16	static,ignoring_inline_asm
+../Core/Src/usb_handler.c:138:9:compare_rx_usb_cmd	16	static
+../Core/Src/usb_handler.c:143:6:boot_rst	32	static,ignoring_inline_asm
