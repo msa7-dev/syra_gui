@@ -18,6 +18,8 @@
 /* USER CODE END Header */
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
+#include "usb_device.h"
+#include "usbd_cdc_if.h"
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
@@ -65,11 +67,27 @@ static void MX_OCTOSPI1_Init(void);
 static void MX_TIM15_Init(void);
 static void MX_USART1_UART_Init(void);
 /* USER CODE BEGIN PFP */
+#define REG_MAIN   0x00
+#define REG_ADC0   0x01
+#define REG_STAT0  0x5D
+
+#define MAIN_FRAME_START_BIT 0x000001
+#define MAIN_FSM_RESET_BIT   0x000004
+#define ADC0_TRIG_MADC_BIT   0x001000
+
+#define REG0_BASE 0x1C0E20
+#define REG1_BASE 0x140210
+
 void Read_BGT60TR13C_ChipID(uint8_t reg_addr);
 void configure_bgt60utr11(void);
+void start_frame_generation(void);
 void write_radar_register(uint8_t reg_addr, uint32_t reg_data);
+uint32_t read_radar_register(uint8_t reg_addr);
+
 #define FRAME_SIZE (16384 * 2) // 16,384 samples × 2 bytes/sample = 32 KB
-uint8_t radar_frame_raw[FRAME_SIZE];
+#define FIFO_BUFFERS 2
+static uint8_t fifo_buf[FIFO_BUFFERS][FRAME_SIZE];
+static volatile uint8_t fifo_idx = 0;
 
 /* USER CODE END PFP */
 
@@ -113,9 +131,13 @@ int main(void)
   MX_OCTOSPI1_Init();
   MX_TIM15_Init();
   MX_USART1_UART_Init();
+  MX_USB_DEVICE_Init();
   /* USER CODE BEGIN 2 */
 
   configure_bgt60utr11();
+  Read_BGT60TR13C_ChipID(0x02);
+  HAL_Delay(10);
+  start_frame_generation();
 
   //write_radar_register(0x00, 0x1C0E21);
  // HAL_GPIO_WritePin(PIN_LED_GPIO_Port, PIN_LED_Pin, GPIO_PIN_RESET);
@@ -544,57 +566,98 @@ void write_radar_register(uint8_t reg_addr, uint32_t reg_data)
 
 }
 
+uint32_t read_radar_register(uint8_t reg_addr)
+{
+    uint8_t rx[3] = {0};
+    OSPI_RegularCmdTypeDef cmd = {
+        .Instruction = (reg_addr << 1),
+        .InstructionMode = HAL_OSPI_INSTRUCTION_1_LINE,
+        .InstructionSize = HAL_OSPI_INSTRUCTION_8_BITS,
+        .AddressMode = HAL_OSPI_ADDRESS_NONE,
+        .DataMode = HAL_OSPI_DATA_1_LINE,
+        .NbData = 3,
+        .DummyCycles = 0
+    };
+
+    HAL_GPIO_WritePin(CSN_GPIO_Port, CSN_Pin, GPIO_PIN_RESET);
+    HAL_OSPI_Command(&hospi1, &cmd, HAL_MAX_DELAY);
+    HAL_OSPI_Receive(&hospi1, rx, HAL_MAX_DELAY);
+    HAL_GPIO_WritePin(CSN_GPIO_Port, CSN_Pin, GPIO_PIN_SET);
+
+    return ((uint32_t)rx[0] << 16) | ((uint32_t)rx[1] << 8) | rx[2];
+}
+
+void start_frame_generation(void)
+{
+    write_radar_register(REG_MAIN, REG0_BASE | MAIN_FSM_RESET_BIT);
+    HAL_Delay(1);
+    write_radar_register(REG_MAIN, REG0_BASE);
+
+    write_radar_register(REG_ADC0, REG1_BASE | ADC0_TRIG_MADC_BIT);
+    HAL_Delay(1);
+    write_radar_register(REG_ADC0, REG1_BASE);
+
+    write_radar_register(REG_MAIN, REG0_BASE | MAIN_FRAME_START_BIT);
+    HAL_Delay(1);
+    write_radar_register(REG_MAIN, REG0_BASE);
+}
+
 
 
 
 
 void configure_bgt60utr11()
 {
-    write_radar_register(0x00, 0x1C0E20);
-    write_radar_register(0x01, 0x140210);
-    write_radar_register(0x04, 0xE967FD);
-    write_radar_register(0x05, 0x4805B4);
-    write_radar_register(0x06, 0x1083FF);
-    write_radar_register(0x08, 0x000000);
-    write_radar_register(0x09, 0x000000);
-    write_radar_register(0x0A, 0x000000);
-    write_radar_register(0x0B, 0xD0D9E0);
-    write_radar_register(0x0C, 0x000000);
-    write_radar_register(0x0D, 0x000000);
-    write_radar_register(0x0E, 0x000000);
-    write_radar_register(0x0F, 0x000960);
-    write_radar_register(0x10, 0x003C71);
-    write_radar_register(0x11, 0x13C41F);
-    write_radar_register(0x12, 0x00000B);
-    write_radar_register(0x16, 0x000492);
-    write_radar_register(0x1D, 0x000480);
-    write_radar_register(0x24, 0x000480);
-    write_radar_register(0x2B, 0x000480);
-    write_radar_register(0x2C, 0x11BE0E);
-    write_radar_register(0x2D, 0x8A6C0A);
-    write_radar_register(0x2E, 0x000000);
-    write_radar_register(0x2F, 0xBF3E1E);
-    write_radar_register(0x30, 0xA808AE);
-    write_radar_register(0x31, 0x00035B);
-    write_radar_register(0x32, 0x780532);
-    write_radar_register(0x33, 0x000080);
-    write_radar_register(0x34, 0x000000);
-    write_radar_register(0x35, 0x000000);
-    write_radar_register(0x36, 0x000000);
-    write_radar_register(0x37, 0x000112);
-    write_radar_register(0x3F, 0x393B00);
-    write_radar_register(0x47, 0x393B00);
-    write_radar_register(0x4F, 0x393B00);
-    write_radar_register(0x50, 0x000000);
-    write_radar_register(0x56, 0x000000);
-    write_radar_register(0x5B, 0x000000);
-    write_radar_register(0x5F, 0x000400);
-    write_radar_register(0x60, 0x000827);
+    const struct { uint8_t addr; uint32_t val; } reg_cfg[] = {
+        {0x00, REG0_BASE},
+        {0x01, REG1_BASE},
+        {0x04, 0xE967FD},
+        {0x05, 0x4805B4},
+        {0x06, 0x1083FF},
+        {0x08, 0x000000},
+        {0x09, 0x000000},
+        {0x0A, 0x000000},
+        {0x0B, 0xD0D9E0},
+        {0x0C, 0x000000},
+        {0x0D, 0x000000},
+        {0x0E, 0x000000},
+        {0x0F, 0x000960},
+        {0x10, 0x003C71},
+        {0x11, 0x13C41F},
+        {0x12, 0x00000B},
+        {0x16, 0x000492},
+        {0x1D, 0x000480},
+        {0x24, 0x000480},
+        {0x2B, 0x000480},
+        {0x2C, 0x11BE0E},
+        {0x2D, 0x8A6C0A},
+        {0x2E, 0x000000},
+        {0x2F, 0xBF3E1E},
+        {0x30, 0xA808AE},
+        {0x31, 0x00035B},
+        {0x32, 0x780532},
+        {0x33, 0x000080},
+        {0x34, 0x000000},
+        {0x35, 0x000000},
+        {0x36, 0x000000},
+        {0x37, 0x000112},
+        {0x3F, 0x393B00},
+        {0x47, 0x393B00},
+        {0x4F, 0x393B00},
+        {0x50, 0x000000},
+        {0x56, 0x000000},
+        {0x5B, 0x000000},
+        {0x5F, 0x000400},
+        {0x60, 0x000827},
+    };
 
+    for (size_t i = 0; i < sizeof(reg_cfg)/sizeof(reg_cfg[0]); ++i) {
+        write_radar_register(reg_cfg[i].addr, reg_cfg[i].val);
+    }
 }
 
 
-void read_fifo_burst(void) {
+static void read_fifo_burst(uint8_t *dest) {
     //HAL_GPIO_WritePin(PIN_LED_GPIO_Port, PIN_LED_Pin, GPIO_PIN_SET);
 
     uint8_t burst_cmd[4] = {
@@ -622,33 +685,17 @@ void read_fifo_burst(void) {
     sCmd.SIOOMode = HAL_OSPI_SIOO_INST_EVERY_CMD;
 
     HAL_OSPI_Command(&hospi1, &sCmd, HAL_MAX_DELAY);
-    HAL_OSPI_Receive(&hospi1, radar_frame_raw, HAL_MAX_DELAY);
+    HAL_OSPI_Receive(&hospi1, dest, HAL_MAX_DELAY);
 
     HAL_GPIO_WritePin(CSN_GPIO_Port, CSN_Pin, GPIO_PIN_SET);
-    HAL_GPIO_Init(USB_MUX_GPIO_Port, USB_MUX_Pin);
-    decode_fifo_data(radar_frame_raw, FRAME_SIZE);
-    //HAL_UART_Transmit(&huart1, radar_frame_raw, FRAME_SIZE, HAL_MAX_DELAY);
 }
-
-// Decode packed 12-bit samples from radar_frame_raw[]
-void decode_fifo_data(uint8_t *buf, size_t length) {
-    for (int i = 0; i + 2 < length; i += 3) {
-        uint32_t word24 = (buf[i] << 16) | (buf[i+1] << 8) | buf[i+2];
-
-        uint16_t sample1 = (word24 >> 12) & 0x0FFF;  // Trig1/3 ADC1
-        uint16_t sample2 = word24 & 0x0FFF;          // Trig2/4 ADC1
-
-        char msg[64];
-        snprintf(msg, sizeof(msg), "ADC samples: %u, %u\r\n", sample1, sample2);
-        HAL_UART_Transmit(&huart1, (uint8_t*)msg, strlen(msg), HAL_MAX_DELAY);
-    }
-}
-
-
 
 void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin) {
     if (GPIO_Pin == FIFO_IRQ_Pin) {
-        read_fifo_burst();
+        uint8_t *buf = fifo_buf[fifo_idx];
+        read_fifo_burst(buf);
+        CDC_Transmit_HS(buf, FRAME_SIZE);
+        fifo_idx ^= 1;
     }
 }
 /* USER CODE END 4 */
